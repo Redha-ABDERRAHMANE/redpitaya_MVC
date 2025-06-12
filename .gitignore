@@ -81,3 +81,4 @@ CMakeLists.txt.user*
 .uic/
 /build*/
 /.vs
+/release/redpitaya_GUI.tlog/redpitaya_GUI.write.1u.tlog
