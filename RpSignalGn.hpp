@@ -18,10 +18,10 @@
 
 //STRUCT TO USE FOR apply_preset_value method
 struct TaskConfig {
-    int board;
-    int nextPresetIndex;
-    int currentPresetIndex;
-    int source;
+    const int board;
+    const int nextPresetIndex;
+    const int currentPresetIndex;
+    const int source;
     const char* param;
 };
 
@@ -63,7 +63,7 @@ public:
 
 
 
-    void ramp_up_and_down(const uint8_t& card, uint8_t source, float current_value, float target_value, const std::string& V_P = "VOLT") {
+    void ramp_up_and_down(const int& card, const int& source, const float& current_value, const float& target_value, const std::string& V_P = "VOLT") {
 		float step_size = (target_value - current_value) / STEPS;
 		const std::string command = "SOUR" + std::to_string(source) + ":" + V_P + " ";
 		float new_value = current_value;
@@ -83,7 +83,7 @@ public:
 
 	}
 
-	void detect_ramp_up_or_down(const uint8_t& card, const float& target_value, const float& current_value,const uint8_t& source, const std::string& V_P = "VOLT"){
+	void detect_ramp_up_or_down(const int& card, const float& target_value, const float& current_value,const int& source, const std::string& V_P = "VOLT"){
 		if (target_value != current_value){
 			ramp_up_and_down(card, source, current_value, target_value, V_P);
 		}
@@ -115,7 +115,7 @@ public:
 	}
 
 
-    void  apply_frequency_values(const int& nextFrequency){
+    void  apply_frequency_values(const float& nextFrequency){
         std::cout<<"currentFrequency:"<<currentFrequency<<std::endl;
         std::array<std::future<void>, 4> threadArray={
 
