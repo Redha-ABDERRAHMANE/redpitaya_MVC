@@ -1,0 +1,34 @@
+#ifndef APPLYINPUTWORKER_H
+#define APPLYINPUTWORKER_H
+#pragma once
+
+#include <QObject>
+
+#include "MVC_Model.hpp"
+#include <QThread>
+class ApplyInputWorker : public QObject {
+    Q_OBJECT
+
+private:
+    MVC_Model* model;
+
+public:
+    ApplyInputWorker(MVC_Model* m)
+        : model(m) {}
+
+signals:
+    void finished();
+    void validInputDetected(int button_value);
+
+public slots:
+    void apply_GUIInput(ButtonCombination button_combination) {
+        model->get_and_applyPreset_MVC( button_combination.nextButton, button_combination.currentHat);
+    }
+    void apply_ControllerInput(const int& button_value){
+        model->get_and_applyPreset(button_value);
+    }
+
+
+};
+
+#endif // GUIINPUTWORKER_H
