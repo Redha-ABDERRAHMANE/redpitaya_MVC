@@ -101,6 +101,10 @@ public slots:
 
     }
 
+    void apply_FrequencyValue(const int& frequencyValue) {
+        SignalGn.apply_frequency_values(frequencyValue);
+    }
+
 
 
 

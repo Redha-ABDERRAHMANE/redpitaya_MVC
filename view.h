@@ -17,6 +17,7 @@
 #include <QIcon>
 #include <QSlider>
 #include <QGridLayout>
+#include <QLineEdit>
 #include <unordered_map>
 #include <array>
 #include "controller.hpp"
@@ -48,7 +49,7 @@ public:
 
 signals:
     void buttonDirection_pressed( ButtonCombination button_combination);
-
+    void frequencyChange_pressed(const int& frequency_value);
 
 private slots:
     void selectCam();

@@ -78,9 +78,10 @@ View::View(QWidget *parent)
 
     // Frequency group box with no margins
     QGroupBox* frequencyGroupBox = new QGroupBox("", this);
-    QGridLayout* frequencyLayout = new QGridLayout();
-    frequencyLayout->setContentsMargins(5, 5, 5, 5);  // Minimal margins
-    frequencyLayout->setVerticalSpacing(0);           // No vertical spacing
+    QVBoxLayout* frequencyLayout = new QVBoxLayout();
+    
+    frequencyLayout->setSpacing(50);        
+    frequencyLayout->setAlignment(Qt::AlignTop);
 
     // Create the slider
     QSlider* frequencySlider = new QSlider(Qt::Horizontal);
@@ -89,17 +90,33 @@ View::View(QWidget *parent)
     frequencySlider->setSingleStep(5);
     frequencySlider->setPageStep(5);
     frequencySlider->setTickPosition(QSlider::TicksBothSides);
+    frequencySlider->setFixedHeight(50);
+    frequencySlider->setContentsMargins(5,5,5,5);
+    frequencySlider->setValue(5);
 
     // Create the label to be overlaid
-    QLabel* display_FrequencyValue = new QLabel("Frequency");
-    display_FrequencyValue->setStyleSheet("font-weight: bold;");
-    display_FrequencyValue->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
-    // display_FrequencyValue->setAttribute(Qt::WA_TransparentForMouseEvents); // Let slider handle mouse
-    display_FrequencyValue->raise(); // Make sure it's drawn on top
+    QLabel* display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz",this);
+    display_FrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_FrequencyValue->setMargin(0);
+    display_FrequencyValue->setAlignment(Qt::AlignHCenter);
+    
+
+
+  
+
+    // Create the button to confirm the new frequency value 
+    QPushButton* button_frequencyConfirmation = new QPushButton("Confirm",this);
+
+    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this,frequencySlider]() {
+        emit frequencyChange_pressed(frequencySlider->value());
+        });
+
 
     // Add both widgets to the same cell to stack them
-    frequencyLayout->addWidget(frequencySlider, 1, 0);
-    frequencyLayout->addWidget(display_FrequencyValue, 0, 0, Qt::AlignHCenter);
+    frequencyLayout->addWidget(display_FrequencyValue);
+    frequencyLayout->addWidget(frequencySlider);
+    frequencyLayout->addWidget(button_frequencyConfirmation);
+    
 
     frequencyGroupBox->setLayout(frequencyLayout);
 
@@ -117,8 +134,10 @@ View::View(QWidget *parent)
     });
 
     // Output the snapped value when user releases the slider
-    connect(frequencySlider, &QSlider::sliderReleased, [frequencySlider]() {
-        qDebug() << "Frequency value:" << frequencySlider->value();
+    connect(frequencySlider, &QSlider::sliderReleased, [display_FrequencyValue,frequencySlider]() {
+        qDebug() << "Frequency value :" << frequencySlider->value();
+        QString messageToDisplay = "Frequency slider value : " + QString::number(frequencySlider->value()) + " Hz";
+        display_FrequencyValue->setText(messageToDisplay);
     });
 
     // Other group box
