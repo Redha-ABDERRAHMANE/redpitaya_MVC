@@ -95,7 +95,7 @@ public:
 		//WARNING : THE SOURCES IN THE PRESET ARRAY ARE INVERTED FOR THE SECONDARY BOARD : nextPreset[3] -> GO TO SOURCE_2 ,nextPreset[4] -> GO TO SOURCE_1
 
         std::array<std::future<void>, 8> threadArray;
-        for (size_t i = 0; i < taskConfigs.size(); ++i) {  //size_t to avoid getting errors about i < taskConfigs.size() because .size() returns size_t
+        for (size_t i = 0; i < taskConfigs.size(); ++i) {  //size_t to avoid getting warnings about i < taskConfigs.size() because .size() returns size_t
             const auto& config = taskConfigs[i];
             threadArray[i] = std::async(
                 std::launch::async,

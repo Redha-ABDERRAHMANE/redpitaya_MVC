@@ -70,7 +70,8 @@ public slots:
 
         // lastDpadUsed must be coherent to user input to avoid problems
 
-
+        // Change this by signal emition 
+        // Let the MVC_Controller handle the lastDpasUsed update
         controller.set_lastDpadUsed(button_current_value != -1 ? button_current_value : button_next_value);
 
 
