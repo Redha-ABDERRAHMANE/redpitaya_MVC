@@ -1,15 +1,19 @@
-﻿   Qt/MSBuild: 3.4.0.1
+﻿  Generate moc_predefs.h
+   Qt/MSBuild: 3.4.0.1
   Reading Qt configuration (C:/Qt/6.9.1/msvc2022_64/bin/qmake)
    Qt: 6.9.1
   main.cpp
+  view.cpp
   moc_MVC_Controller.cpp
   moc_MVC_Model.cpp
   moc_applyInputworker.cpp
+  moc_inputworker.cpp
+  moc_view.cpp
 C:\Users\Redha\Documents\cnrs\redpitaya_GUI\RpSignalGn.hpp(134,27): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
-  (compiling source file 'Release/moc_MVC_Model.cpp')
+  (compiling source file 'Debug/moc_MVC_Model.cpp')
   
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\type_traits(1686,77): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-  (compiling source file 'Release/moc_MVC_Model.cpp')
+  (compiling source file 'Debug/moc_MVC_Model.cpp')
       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\type_traits(1686,77):
       the template instantiation context (the oldest one first) is
           C:\Users\Redha\Documents\cnrs\redpitaya_GUI\RpSignalGn.hpp(124,14):
@@ -36,4 +40,4 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.3520
               _Ty1=RpSignalGn *
           ]
   
-  redpitaya_GUI.vcxproj -> C:\Users\Redha\Documents\cnrs\redpitaya_GUI\release\redpitaya_GUI.exe
+  redpitaya_GUI.vcxproj -> C:\Users\Redha\Documents\cnrs\redpitaya_GUI\debug\redpitaya_GUI.exe

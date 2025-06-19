@@ -22,35 +22,36 @@ using preset_array_t = std::array<float, 6>;
 using pair_p_array_t = std::pair<preset_array_t, preset_array_t>;
 
 private:
+
     std::map<int, preset_array_t> dictionary_bumperHatPreset{
-	  { Buttons::BUMPER_LEFT,  { AMPLITUDE_0,   AMPLITUDE_0,   PHASE_0,   AMPLITUDE_0,   AMPLITUDE_0,   PHASE_0   } },
-	  { Buttons::BUMPER_RIGHT, { 0.4f,          0.2f,          PHASE_0,   0.35f,         0.2f,          PHASE_50 } },
-	  { Buttons::HAT_UP,       { 0.4f,          0.2f,          PHASE_0,   0.5f,          AMPLITUDE_0,   PHASE_50 } },
-	  { Buttons::HAT_DOWN,     { 0.4f,          0.2f,          PHASE_140, 0.5f,          AMPLITUDE_0,   PHASE_50 } },
-	  { Buttons::HAT_RIGHT,    { 0.75f,         AMPLITUDE_0,   PHASE_0,   0.35f,         0.2f,          PHASE_50 } },
-	  { Buttons::HAT_LEFT,     { AMPLITUDE_0,   0.35f,         PHASE_0,   0.35f,         0.2f,          PHASE_50 } }
+  { Buttons::BUMPER_LEFT,  { AMPLITUDE_0,	AMPLITUDE_0,   PHASE_0,   AMPLITUDE_0,   AMPLITUDE_0,   PHASE_0   } },
+  { Buttons::BUMPER_RIGHT, { 0.11f,				0.11f,	PHASE_0,   0.15f,         0.15f,          85 } },
+  { Buttons::HAT_UP,       { 0.11f,          0.11f,          175,   0.285f,          AMPLITUDE_0,   85} },
+  { Buttons::HAT_DOWN,     { 0.11f,          0.11f,         PHASE_0	, 0.285f,          AMPLITUDE_0,   85 } },
+  { Buttons::HAT_RIGHT,    { 0.22f,				AMPLITUDE_0,			PHASE_0,   0.15f,         0.15f,          85 } },
+  { Buttons::HAT_LEFT,     {0.22f,   0,         175,   0.15f,         0.15f,          85 } }
 	};
 	// Button combinations - each button has 2 presets (up/down or left/right variants)
     std::map<int, pair_p_array_t> dictionary_buttonPreset{
 		{ Buttons::X, {
-			{ 0.4f, 0.2f, PHASE_140, AMPLITUDE_0, 0.35f, PHASE_50 },  // up‐X
-			{ 0.4f, 0.2f, PHASE_0,   AMPLITUDE_0, 0.35f, PHASE_50 }   // down‐X
+			{ 0.11f, 0.11f, PHASE_0,AMPLITUDE_0, 0.32f, 85 },  // up‐X
+			{ 0.11f, 0.11f, 175,   AMPLITUDE_0, 0.32f, 85 }   // down‐X
 		  }
 		},
 		{ Buttons::B, {
-			{ 0.4f, 0.2f, PHASE_0,   0.5f,AMPLITUDE_0, PHASE_50 },  // up‐B
-			{ 0.4f, 0.2f, PHASE_140, 0.5f,AMPLITUDE_0, PHASE_50 }   // down‐B
+			{ 0.11f, 0.11f,175,   0.285f,  AMPLITUDE_0,   85},  // up‐B
+			{ 0.11f, 0.11f, PHASE_0	, 0.285f,AMPLITUDE_0,   85 }   // down‐B
 		  }
 		},
 		{ Buttons::Y, {
-            { 0.75f,      AMPLITUDE_0, PHASE_140, 0.35f, 0.2f, PHASE_50 },  // left‐Y
-            { AMPLITUDE_0, 0.35f, PHASE_140, 0.35f, 0.2f, PHASE_50 }   // right‐Y
+			{ AMPLITUDE_0,  0.21f, PHASE_0, 0.15f, 0.15f, 85 },  // left‐Y
+			{ AMPLITUDE_0, 0.21f, 175, 0.15f, 0.15f, 85 }   // right‐Y
 
 		  }
 		},
 		{ Buttons::A, {
-            { AMPLITUDE_0, 0.35f,      PHASE_0, 0.35f, 0.2f, PHASE_50 },   // left‐A
-            { 0.75f,      AMPLITUDE_0, PHASE_0, 0.35f, 0.2f, PHASE_50 }  // right‐A
+			{0.22f,   AMPLITUDE_0,175,   0.15f,   0.15f,  85 },   // left‐A
+			{ 0.22f,AMPLITUDE_0, PHASE_0,   0.15f, 0.15f, 85 }  // right‐A
 
 		  }
 		}

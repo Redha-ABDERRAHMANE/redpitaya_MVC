@@ -10,6 +10,7 @@ View::View(QWidget *parent)
 
     std::cout << "entered"<<std::endl;
     setFixedSize(1600, 900);
+
     QHBoxLayout* mainLayout = new QHBoxLayout(ui->centralwidget);
     mediaCaptureSession = new QMediaCaptureSession();
     currentCam = new QCamera();
