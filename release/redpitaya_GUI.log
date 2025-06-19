@@ -1,9 +1,11 @@
 ﻿   Qt/MSBuild: 3.4.0.1
   Reading Qt configuration (C:/Qt/6.9.1/msvc2022_64/bin/qmake)
    Qt: 6.9.1
-  Moc'ing view.h...
   main.cpp
-  view.cpp
-  moc_MVC_Controller.cpp
-  moc_view.cpp
-  redpitaya_GUI.vcxproj -> C:\Users\Redha\Documents\cnrs\redpitaya_GUI\release\redpitaya_GUI.exe
+C:\Users\Redha\Documents\cnrs\redpitaya_GUI\applyInputworker.h(36,16): error C2660: 'MVC_Model::apply_PhaseValue': function does not take 1 arguments
+  (compiling source file 'main.cpp')
+      C:\Users\Redha\Documents\cnrs\redpitaya_GUI\MVC_Model.hpp(108,10):
+      see declaration of 'MVC_Model::apply_PhaseValue'
+      C:\Users\Redha\Documents\cnrs\redpitaya_GUI\applyInputworker.h(36,16):
+      while trying to match the argument list '(const int)'
+  

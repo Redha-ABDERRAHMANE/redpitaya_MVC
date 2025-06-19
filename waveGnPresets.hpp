@@ -35,7 +35,7 @@ private:
     std::map<int, pair_p_array_t> dictionary_buttonPreset{
 		{ Buttons::X, {
 			{ 0.11f, 0.11f, 85,0.285f, AMPLITUDE_0, 175 },  // up‐X
-			{ 0.11, 0.11f, 85,   AMPLITUDE_0, 0.32f, 175 }   // down‐X
+			{ 0.11f, 0.11f, 85,   AMPLITUDE_0, 0.32f, 175 }   // down‐X
 		  }
 		},
 		{ Buttons::B, {
