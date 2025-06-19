@@ -140,6 +140,68 @@ View::View(QWidget *parent)
         QString messageToDisplay = "Frequency slider value : " + QString::number(frequencySlider->value()) + " Hz";
         display_FrequencyValue->setText(messageToDisplay);
     });
+    ///////////////////////////////////////////////////////////////////
+    // PHASE SLIDER
+        // phase group box with no margins
+    QGroupBox* phaseGroupBox = new QGroupBox("", this);
+    QVBoxLayout* phaseLayout = new QVBoxLayout();
+
+    
+
+    // Create the label to be overlaid
+    QLabel* display_primaryPhaseValue = new QLabel("Primary card phase value :", this);
+    display_primaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_primaryPhaseValue->setMargin(0);
+    display_primaryPhaseValue->setAlignment(Qt::AlignHCenter);
+
+    QLineEdit* textBox_primaryPhaseValue = new QLineEdit("0", this);
+
+    // Create the button to confirm the new phase value 
+    QPushButton* button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
+
+    connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_primaryPhaseValue]() {
+        emit primaryPhaseChange_pressed(textBox_primaryPhaseValue->text().toInt());
+        });
+
+    // Create the label to be overlaid
+    QLabel* display_secondaryPhaseValue = new QLabel("Secondary card phase value :", this);
+    display_secondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_secondaryPhaseValue->setMargin(0);
+    display_secondaryPhaseValue->setAlignment(Qt::AlignHCenter);
+
+    QLineEdit* textBox_secondaryPhaseValue = new QLineEdit("0", this);
+
+    // Create the button to confirm the new phase value 
+    QPushButton* button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
+
+    connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_secondaryPhaseValue]() {
+        emit secondaryPhaseChange_pressed(textBox_secondaryPhaseValue->text().toInt());
+        });
+
+
+
+    // Add both widgets to the same cell to stack them
+    phaseLayout->addWidget(display_primaryPhaseValue);
+    phaseLayout->addWidget(textBox_primaryPhaseValue);
+    phaseLayout->addWidget(button_primaryPhaseConfirmation);
+
+    phaseLayout->addWidget(display_secondaryPhaseValue);
+    phaseLayout->addWidget(textBox_secondaryPhaseValue);
+    phaseLayout->addWidget(button_secondaryPhaseConfirmation);
+
+
+
+    phaseGroupBox->setLayout(phaseLayout);
+
+
+  
+
+
+
+
+
+
+    ///////////////////////////////////////////////////////////////////
 
     // Other group box
     QGroupBox* otherGroupBox = new QGroupBox("", this);
@@ -149,6 +211,7 @@ View::View(QWidget *parent)
     // Final assembly
     infoLayout->addWidget(frequencyGroupBox);
     infoLayout->addWidget(otherGroupBox);
+    infoLayout->addWidget(phaseGroupBox);
     infoGroupBox->setLayout(infoLayout);
 
 

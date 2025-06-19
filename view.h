@@ -18,6 +18,7 @@
 #include <QSlider>
 #include <QGridLayout>
 #include <QLineEdit>
+#include <QTextEdit>
 #include <unordered_map>
 #include <array>
 #include "controller.hpp"
@@ -50,6 +51,8 @@ public:
 signals:
     void buttonDirection_pressed( ButtonCombination button_combination);
     void frequencyChange_pressed(const int& frequency_value);
+    void primaryPhaseChange_pressed(const int& phase_value);
+    void secondaryPhaseChange_pressed(const int& phase_value);
 
 private slots:
     void selectCam();

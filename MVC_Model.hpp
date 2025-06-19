@@ -105,6 +105,19 @@ public slots:
         SignalGn.apply_frequency_values(frequencyValue);
     }
 
+    void apply_PhaseValue(const int& card,const int& phaseValue) {
+        int phaseIndex = card == 1 ? 2 : 5;
+        int currentPhase = GnPresets.get_currentPreset()[phaseIndex];
+        SignalGn.apply_phase_values(card,phaseValue,currentPhase);
+        preset_array_t newPreset = GnPresets.get_currentPreset();
+        newPreset[phaseIndex] = phaseValue;
+        GnPresets.set_currentPreset(newPreset);
+
+        //TODO FINISH THE METHOD , ADD IT TO APPLYINPUTWORKER AND CONNECT IN MVC_CONTROLLER
+    }
+
+
+
 
 
 
