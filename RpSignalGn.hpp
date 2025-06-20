@@ -42,8 +42,8 @@ private:
         {SECONDARY_BOARD, 5, 5, SOURCE_2, "PHAS"},
         {PRIMARY_BOARD,   0, 0, SOURCE_1, "VOLT"},
         {PRIMARY_BOARD,   1, 1, SOURCE_2, "VOLT"},
-        {SECONDARY_BOARD, 3, 3, SOURCE_2, "VOLT"},
-        {SECONDARY_BOARD, 4, 4, SOURCE_1, "VOLT"}
+        {SECONDARY_BOARD, 3, 3, SOURCE_1, "VOLT"},
+        {SECONDARY_BOARD, 4, 4, SOURCE_2, "VOLT"}
     }};
 
 
@@ -68,13 +68,19 @@ public:
 		const std::string command = "SOUR" + std::to_string(source) + ":" + V_P + " ";
 		float new_value = current_value;
 
+        if (V_P == "PHAS") {
+            rp_boards.send_txt(card, command + std::to_string(target_value));
+            return; 
+
+        }
+
         for (uint8_t i = 0; i < STEPS; i++) {
 			
             new_value += step_size;
             rp_boards.send_txt(card, command + std::to_string(new_value));
             //std::cout << command + std::to_string(new_value) << std::endl;
 	
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
         std::cout << command + std::to_string(target_value) << std::endl;
@@ -132,6 +138,18 @@ public:
         for (std::future<void>& thread : threadArray) {thread.get();}
 
         currentFrequency= nextFrequency;
+
+
+    }
+    void  apply_phase_values(const int& card,const int& nextPhase, const int& currentPhase) {
+        
+   
+        std::array<std::future<void>, 2> threadArray = {
+        std::async(std::launch::async,&RpSignalGn::detect_ramp_up_or_down,this, card, nextPhase, currentPhase, SOURCE_1, "PHAS"),
+        std::async(std::launch::async,&RpSignalGn::detect_ramp_up_or_down,this, card, nextPhase, currentPhase, SOURCE_2, "PHAS"),
+        };
+
+        for (std::future<void>& thread : threadArray) { thread.get(); }
 
 
     }

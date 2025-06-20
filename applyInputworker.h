@@ -28,6 +28,15 @@ public slots:
         model->get_and_applyPreset(button_value);
     }
 
+    void apply_FrequencyShift(const int& frequencyValue) {
+        model->apply_FrequencyValue(frequencyValue);
+    }
+
+    void apply_PhaseShift(const int& card,const int& phaseValue) {
+        model->apply_PhaseValue( card, phaseValue);
+    }
+
+
 
 };
 

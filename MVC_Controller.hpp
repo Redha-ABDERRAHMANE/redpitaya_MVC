@@ -89,6 +89,8 @@ public:
         connect(worker_controllerInput.get(),&InputWorker::validInputDetected,worker_ApplyInput.get(),&ApplyInputWorker::apply_ControllerInput);
         connect(worker_controllerInput.get(),&InputWorker::validInputDetected,this,&MVC_Controller::send_ControllerInput_Direction);
         connect(view.get(),&View::buttonDirection_pressed,worker_ApplyInput.get(),&ApplyInputWorker::apply_GUIInput);
+        connect(view.get(), &View::frequencyChange_pressed, worker_ApplyInput.get(), &ApplyInputWorker::apply_FrequencyShift);
+        connect(view.get(), &View::phaseChange_pressed, worker_ApplyInput.get(), &ApplyInputWorker::apply_PhaseShift);
         thread_controllerInput->start();
         thread_GUIInput->start();
         emit startCheckInput();

@@ -10,6 +10,7 @@ View::View(QWidget *parent)
 
     std::cout << "entered"<<std::endl;
     setFixedSize(1600, 900);
+
     QHBoxLayout* mainLayout = new QHBoxLayout(ui->centralwidget);
     mediaCaptureSession = new QMediaCaptureSession();
     currentCam = new QCamera();
@@ -78,9 +79,10 @@ View::View(QWidget *parent)
 
     // Frequency group box with no margins
     QGroupBox* frequencyGroupBox = new QGroupBox("", this);
-    QGridLayout* frequencyLayout = new QGridLayout();
-    frequencyLayout->setContentsMargins(5, 5, 5, 5);  // Minimal margins
-    frequencyLayout->setVerticalSpacing(0);           // No vertical spacing
+    QVBoxLayout* frequencyLayout = new QVBoxLayout();
+    
+    frequencyLayout->setSpacing(50);        
+    frequencyLayout->setAlignment(Qt::AlignTop);
 
     // Create the slider
     QSlider* frequencySlider = new QSlider(Qt::Horizontal);
@@ -89,17 +91,33 @@ View::View(QWidget *parent)
     frequencySlider->setSingleStep(5);
     frequencySlider->setPageStep(5);
     frequencySlider->setTickPosition(QSlider::TicksBothSides);
+    frequencySlider->setFixedHeight(50);
+    frequencySlider->setContentsMargins(5,5,5,5);
+    frequencySlider->setValue(5);
 
     // Create the label to be overlaid
-    QLabel* display_FrequencyValue = new QLabel("Frequency");
-    display_FrequencyValue->setStyleSheet("font-weight: bold;");
-    display_FrequencyValue->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
-    // display_FrequencyValue->setAttribute(Qt::WA_TransparentForMouseEvents); // Let slider handle mouse
-    display_FrequencyValue->raise(); // Make sure it's drawn on top
+    QLabel* display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz",this);
+    display_FrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_FrequencyValue->setMargin(0);
+    display_FrequencyValue->setAlignment(Qt::AlignHCenter);
+    
+
+
+  
+
+    // Create the button to confirm the new frequency value 
+    QPushButton* button_frequencyConfirmation = new QPushButton("Confirm",this);
+
+    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this,frequencySlider]() {
+        emit frequencyChange_pressed(frequencySlider->value());
+        });
+
 
     // Add both widgets to the same cell to stack them
-    frequencyLayout->addWidget(frequencySlider, 1, 0);
-    frequencyLayout->addWidget(display_FrequencyValue, 0, 0, Qt::AlignHCenter);
+    frequencyLayout->addWidget(display_FrequencyValue);
+    frequencyLayout->addWidget(frequencySlider);
+    frequencyLayout->addWidget(button_frequencyConfirmation);
+    
 
     frequencyGroupBox->setLayout(frequencyLayout);
 
@@ -117,9 +135,73 @@ View::View(QWidget *parent)
     });
 
     // Output the snapped value when user releases the slider
-    connect(frequencySlider, &QSlider::sliderReleased, [frequencySlider]() {
-        qDebug() << "Frequency value:" << frequencySlider->value();
+    connect(frequencySlider, &QSlider::sliderReleased, [display_FrequencyValue,frequencySlider]() {
+        qDebug() << "Frequency value :" << frequencySlider->value();
+        QString messageToDisplay = "Frequency slider value : " + QString::number(frequencySlider->value()) + " Hz";
+        display_FrequencyValue->setText(messageToDisplay);
     });
+    ///////////////////////////////////////////////////////////////////
+    // PHASE SLIDER
+        // phase group box with no margins
+    QGroupBox* phaseGroupBox = new QGroupBox("", this);
+    QVBoxLayout* phaseLayout = new QVBoxLayout();
+
+    
+
+    // Create the label to be overlaid
+    QLabel* display_primaryPhaseValue = new QLabel("Primary card phase value :", this);
+    display_primaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_primaryPhaseValue->setMargin(0);
+    display_primaryPhaseValue->setAlignment(Qt::AlignHCenter);
+
+    QLineEdit* textBox_primaryPhaseValue = new QLineEdit("0", this);
+
+    // Create the button to confirm the new phase value 
+    QPushButton* button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
+
+    connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_primaryPhaseValue]() {
+        emit phaseChange_pressed(1,textBox_primaryPhaseValue->text().toInt());
+        });
+
+    // Create the label to be overlaid
+    QLabel* display_secondaryPhaseValue = new QLabel("Secondary card phase value :", this);
+    display_secondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_secondaryPhaseValue->setMargin(0);
+    display_secondaryPhaseValue->setAlignment(Qt::AlignHCenter);
+
+    QLineEdit* textBox_secondaryPhaseValue = new QLineEdit("0", this);
+
+    // Create the button to confirm the new phase value 
+    QPushButton* button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
+
+    connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_secondaryPhaseValue]() {
+        emit phaseChange_pressed(2,textBox_secondaryPhaseValue->text().toInt());
+        });
+
+
+
+    // Add both widgets to the same cell to stack them
+    phaseLayout->addWidget(display_primaryPhaseValue);
+    phaseLayout->addWidget(textBox_primaryPhaseValue);
+    phaseLayout->addWidget(button_primaryPhaseConfirmation);
+
+    phaseLayout->addWidget(display_secondaryPhaseValue);
+    phaseLayout->addWidget(textBox_secondaryPhaseValue);
+    phaseLayout->addWidget(button_secondaryPhaseConfirmation);
+
+
+
+    phaseGroupBox->setLayout(phaseLayout);
+
+
+  
+
+
+
+
+
+
+    ///////////////////////////////////////////////////////////////////
 
     // Other group box
     QGroupBox* otherGroupBox = new QGroupBox("", this);
@@ -129,6 +211,7 @@ View::View(QWidget *parent)
     // Final assembly
     infoLayout->addWidget(frequencyGroupBox);
     infoLayout->addWidget(otherGroupBox);
+    infoLayout->addWidget(phaseGroupBox);
     infoGroupBox->setLayout(infoLayout);
 
 
