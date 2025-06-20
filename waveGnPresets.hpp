@@ -34,24 +34,24 @@ private:
 	// Button combinations - each button has 2 presets (up/down or left/right variants)
     std::map<int, pair_p_array_t> dictionary_buttonPreset{
 		{ Buttons::X, {
-			{ 0.11f, 0.11f, 85,0.285f, AMPLITUDE_0, 175 },  // up‐X
-			{ 0.11f, 0.11f, 85,   AMPLITUDE_0, 0.32f, 175 }   // down‐X
+			{ 0.11f, 0.11f, 85.0f,   AMPLITUDE_0, 0.32f, 175.0f } ,  // up‐X{ 0.11f, 0.11f, 85.0f,   AMPLITUDE_0, 0.32f, 175.0f } 
+			{ 0.11f, 0.11f, 85.0f,0.285f, AMPLITUDE_0, 175.0f }   // down‐X
 		  }
 		},
 		{ Buttons::B, {
-			{ 0.11f,0.11f,  85, 0.285f, AMPLITUDE_0,PHASE_0},  // up‐B
-			{ 0.11f,0.11f	, 85, AMPLITUDE_0,0.32f,PHASE_0 }   // down‐B
+			{ 0.11f,0.11f,  85.0f, 0.285f, AMPLITUDE_0,PHASE_0},  // up‐B
+			{ 0.11f,0.11f	, 85.0f, AMPLITUDE_0,0.32f,PHASE_0 }   // down‐B
 		  }
 		},
 		{ Buttons::Y, {
-			{ 0.22f, AMPLITUDE_0, 85,0.15f, 0.15f, PHASE_0 },  // left‐Y
-			{ AMPLITUDE_0, 0.21f, 85,   0.15f, 0.15f, PHASE_0 }   // right‐Y
+			{ 0.22f, AMPLITUDE_0, 85.0f,0.15f, 0.15f, PHASE_0 },  // left‐Y { AMPLITUDE_0, 0.21f, 85.0f,   0.15f, 0.15f, PHASE_0 }
+			{ AMPLITUDE_0, 0.21f, 85.0f,   0.15f, 0.15f, PHASE_0 }  // right‐Y
 
 		  }
 		},
 		{ Buttons::A, {
-			{ AMPLITUDE_0,0.21f	,85, 0.15f,  0.15f, 175 }, // left-A
-			{0.22f,  AMPLITUDE_0,  85, 0.15f, 0.15f, 175 },   // right‐A
+			{ AMPLITUDE_0,0.21f	,85.0f, 0.15f,  0.15f, 175.0f }, // left-A
+			{0.22f,  AMPLITUDE_0,  85.0f, 0.15f, 0.15f, 175.0f },   // right‐A
 
 
 		  }
