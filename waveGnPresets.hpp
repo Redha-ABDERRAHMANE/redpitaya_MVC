@@ -24,12 +24,12 @@ using pair_p_array_t = std::pair<preset_array_t, preset_array_t>;
 private:
 
     std::map<int, preset_array_t> dictionary_bumperHatPreset{
-		{ Buttons::BUMPER_LEFT,  { AMPLITUDE_0,	AMPLITUDE_0	,   PHASE_0,	AMPLITUDE_0	,   AMPLITUDE_0,   PHASE_0   } },
-		{ Buttons::BUMPER_RIGHT, { 0.11f,			0.11f	,	PHASE_0,	0.15f		,         0.15f,          PHASE_0 } },
-		{ Buttons::HAT_UP,       { 0.11f,			0.11f	,          85,   0.285f,          AMPLITUDE_0,   PHASE_0} },
-		{ Buttons::HAT_DOWN,     { 0.11f,			0.11f	,         85	, AMPLITUDE_0,          0.32f,   PHASE_0 } },
-		{ Buttons::HAT_RIGHT,    { 0.22f,		AMPLITUDE_0	,			85,   0.15f,         0.15f,          175 } },
-		{ Buttons::HAT_LEFT,     {AMPLITUDE_0,   0.21f,         85,   0.15f,         0.15f,          175 } }
+	{ Buttons::BUMPER_LEFT,  { AMPLITUDE_0,	AMPLITUDE_0	,   PHASE_0,	AMPLITUDE_0	,   AMPLITUDE_0,   PHASE_0   } },
+	{ Buttons::BUMPER_RIGHT, { 0.11f,			0.11f	,	PHASE_0,	0.15f		,         0.15f,          PHASE_0 } },
+	{ Buttons::HAT_UP,       { 0.11f,			0.11f	,          85,   0.285f,          AMPLITUDE_0,   PHASE_0} },
+	{ Buttons::HAT_DOWN,     { 0.11f,			0.11f	,         85	, AMPLITUDE_0,          0.32f,   PHASE_0 } },
+	{ Buttons::HAT_RIGHT,    { 0.22f,		AMPLITUDE_0	,			85,   0.15f,         0.15f,          175 } },
+	{ Buttons::HAT_LEFT,     {AMPLITUDE_0,   0.21f,         85,   0.15f,         0.15f,          175 } }
 	};
 	// Button combinations - each button has 2 presets (up/down or left/right variants)
     std::map<int, pair_p_array_t> dictionary_buttonPreset{
@@ -50,8 +50,8 @@ private:
 		  }
 		},
 		{ Buttons::A, {
-			{0.22f,  AMPLITUDE_0,  85, 0.15f, 0.15f, 175 }, // left-A
-			{ AMPLITUDE_0,0.21f	,85, 0.15f,  0.15f, 175 },   // right‐A
+			{ AMPLITUDE_0,0.21f	,85, 0.15f,  0.15f, 175 }, // left-A
+			{0.22f,  AMPLITUDE_0,  85, 0.15f, 0.15f, 175 },   // right‐A
 
 
 		  }

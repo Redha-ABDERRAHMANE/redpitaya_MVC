@@ -1,19 +1,18 @@
 ﻿   Qt/MSBuild: 3.4.0.1
   Reading Qt configuration (C:/Qt/6.9.1/msvc2022_64/bin/qmake)
    Qt: 6.9.1
-  Moc'ing MVC_Model.hpp...
   main.cpp
   moc_MVC_Controller.cpp
   moc_MVC_Model.cpp
   moc_applyInputworker.cpp
-C:\Users\Redha\Documents\cnrs\redpitaya_GUI\RpSignalGn.hpp(134,27): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+C:\Users\Redha\Documents\cnrs\redpitaya_GUI\RpSignalGn.hpp(140,27): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
   (compiling source file 'Release/moc_MVC_Model.cpp')
   
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\type_traits(1686,77): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
   (compiling source file 'Release/moc_MVC_Model.cpp')
       C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\type_traits(1686,77):
       the template instantiation context (the oldest one first) is
-          C:\Users\Redha\Documents\cnrs\redpitaya_GUI\RpSignalGn.hpp(124,14):
+          C:\Users\Redha\Documents\cnrs\redpitaya_GUI\RpSignalGn.hpp(130,14):
           see reference to function template instantiation 'std::future<void> std::async<void(__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn*,int,const float&,int&,int,const char(&)[17]>(std::launch,_Fty &&,RpSignalGn *&&,int &&,const float &,int &,int &&,const char (&)[17])' being compiled
           with
           [
