@@ -113,7 +113,7 @@ public slots:
         newPreset[phaseIndex] = phaseValue;
         GnPresets.set_currentPreset(newPreset);
 
-        //TODO FINISH THE METHOD , ADD IT TO APPLYINPUTWORKER AND CONNECT IN MVC_CONTROLLER
+        
     }
 
 

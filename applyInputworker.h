@@ -32,8 +32,8 @@ public slots:
         model->apply_FrequencyValue(frequencyValue);
     }
 
-    void apply_PhaseShift(const int& card,const int& frequencyValue) {
-        model->apply_PhaseValue(frequencyValue);
+    void apply_PhaseShift(const int& card,const int& phaseValue) {
+        model->apply_PhaseValue( card, phaseValue);
     }
 
 

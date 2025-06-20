@@ -68,6 +68,12 @@ public:
 		const std::string command = "SOUR" + std::to_string(source) + ":" + V_P + " ";
 		float new_value = current_value;
 
+        if (V_P == "PHAS") {
+            rp_boards.send_txt(card, command + std::to_string(target_value));
+            return; 
+
+        }
+
         for (uint8_t i = 0; i < STEPS; i++) {
 			
             new_value += step_size;
@@ -139,8 +145,8 @@ public:
         
    
         std::array<std::future<void>, 2> threadArray = {
-        std::async(std::launch::async,&RpSignalGn::detect_ramp_up_or_down,this, card, nextPhase, currentPhase, SOURCE_1, "PHAS "),
-        std::async(std::launch::async,&RpSignalGn::detect_ramp_up_or_down,this, card, nextPhase, currentPhase, SOURCE_2, "PHAS "),
+        std::async(std::launch::async,&RpSignalGn::detect_ramp_up_or_down,this, card, nextPhase, currentPhase, SOURCE_1, "PHAS"),
+        std::async(std::launch::async,&RpSignalGn::detect_ramp_up_or_down,this, card, nextPhase, currentPhase, SOURCE_2, "PHAS"),
         };
 
         for (std::future<void>& thread : threadArray) { thread.get(); }

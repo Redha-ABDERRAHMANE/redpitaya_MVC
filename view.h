@@ -51,8 +51,7 @@ public:
 signals:
     void buttonDirection_pressed( ButtonCombination button_combination);
     void frequencyChange_pressed(const int& frequency_value);
-    void primaryPhaseChange_pressed(const int& phase_value);
-    void secondaryPhaseChange_pressed(const int& phase_value);
+    void phaseChange_pressed(const int& card,const int& phase_value);
 
 private slots:
     void selectCam();

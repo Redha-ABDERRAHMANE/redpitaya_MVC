@@ -1,11 +1,40 @@
 ﻿   Qt/MSBuild: 3.4.0.1
   Reading Qt configuration (C:/Qt/6.9.1/msvc2022_64/bin/qmake)
    Qt: 6.9.1
+  Moc'ing MVC_Model.hpp...
   main.cpp
-C:\Users\Redha\Documents\cnrs\redpitaya_GUI\applyInputworker.h(36,16): error C2660: 'MVC_Model::apply_PhaseValue': function does not take 1 arguments
-  (compiling source file 'main.cpp')
-      C:\Users\Redha\Documents\cnrs\redpitaya_GUI\MVC_Model.hpp(108,10):
-      see declaration of 'MVC_Model::apply_PhaseValue'
-      C:\Users\Redha\Documents\cnrs\redpitaya_GUI\applyInputworker.h(36,16):
-      while trying to match the argument list '(const int)'
+  moc_MVC_Controller.cpp
+  moc_MVC_Model.cpp
+  moc_applyInputworker.cpp
+C:\Users\Redha\Documents\cnrs\redpitaya_GUI\RpSignalGn.hpp(134,27): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+  (compiling source file 'Release/moc_MVC_Model.cpp')
   
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\type_traits(1686,77): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  (compiling source file 'Release/moc_MVC_Model.cpp')
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\type_traits(1686,77):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Redha\Documents\cnrs\redpitaya_GUI\RpSignalGn.hpp(124,14):
+          see reference to function template instantiation 'std::future<void> std::async<void(__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn*,int,const float&,int&,int,const char(&)[17]>(std::launch,_Fty &&,RpSignalGn *&&,int &&,const float &,int &,int &&,const char (&)[17])' being compiled
+          with
+          [
+              _Fty=void (__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &)
+          ]
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\future(1368,96):
+          see reference to class template instantiation 'std::_Fake_no_copy_callable_adapter<void (__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn *,int,const float &,int &,int,const char (&)[17]>' being compiled
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\future(1341,20):
+          while compiling class template member function 'void std::_Fake_no_copy_callable_adapter<void (__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn *,int,const float &,int &,int,const char (&)[17]>::operator ()(void)'
+              C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\type_traits(1767,63):
+              see the first reference to 'std::_Fake_no_copy_callable_adapter<void (__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn *,int,const float &,int &,int,const char (&)[17]>::operator ()'
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\future(1342,16):
+          see reference to function template instantiation 'void std::_Invoke_stored<void(__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn*,int,float,int,int,const char*>(std::tuple<void (__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn *,int,float,int,int,const char *> &&)' being compiled
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\future(1315,12):
+          see reference to function template instantiation 'void std::_Invoke_stored_explicit<void(__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn*,int,float,int,int,const char*,0,1,2,3,4,5,6>(std::tuple<void (__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn *,int,float,int,int,const char *> &&,std::integer_sequence<size_t,0,1,2,3,4,5,6>)' being compiled
+          C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\future(1310,17):
+          see reference to function template instantiation 'void std::invoke<void(__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),RpSignalGn*,int,float,int,int,const char*>(_Callable &&,_Ty1 &&,int &&,float &&,int &&,int &&,const char *&&) noexcept(false)' being compiled
+          with
+          [
+              _Callable=void (__cdecl RpSignalGn::* )(const int &,const float &,const float &,const int &,const std::string &),
+              _Ty1=RpSignalGn *
+          ]
+  
+  redpitaya_GUI.vcxproj -> C:\Users\Redha\Documents\cnrs\redpitaya_GUI\release\redpitaya_GUI.exe

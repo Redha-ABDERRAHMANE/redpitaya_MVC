@@ -160,7 +160,7 @@ View::View(QWidget *parent)
     QPushButton* button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
 
     connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_primaryPhaseValue]() {
-        emit primaryPhaseChange_pressed(textBox_primaryPhaseValue->text().toInt());
+        emit phaseChange_pressed(1,textBox_primaryPhaseValue->text().toInt());
         });
 
     // Create the label to be overlaid
@@ -175,7 +175,7 @@ View::View(QWidget *parent)
     QPushButton* button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
 
     connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_secondaryPhaseValue]() {
-        emit secondaryPhaseChange_pressed(textBox_secondaryPhaseValue->text().toInt());
+        emit phaseChange_pressed(2,textBox_secondaryPhaseValue->text().toInt());
         });
 
 
