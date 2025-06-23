@@ -91,3 +91,5 @@ CMakeLists.txt.user*
 /release/redpitaya_GUI.tlog/moc.write.1u.tlog
 /release/redpitaya_GUI.Build.CppClean.log
 /release/redpitaya_GUI.log
+/release/redpitaya_GUI.tlog/link.read.1.tlog
+/release/redpitaya_GUI.tlog/Cl.items.tlog
