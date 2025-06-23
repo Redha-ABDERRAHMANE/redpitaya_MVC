@@ -58,6 +58,10 @@ public:
 
 	}
 
+    bool connect_configure_rpBoards() {
+        return rp_boards.connect_configure_rpBoards();
+    }
+
 
 
     void ramp_up_and_down(const int& card, const int& source, const float& current_value, const float& target_value, const std::string& V_P = "VOLT") {

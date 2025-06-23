@@ -27,7 +27,7 @@ public:
     }
 
 
-    void connect_configure_rpBoards(const int& frequency) {
+    bool connect_configure_rpBoards(const int& frequency=5) {
         rp_primary.set_connectionToSCPIServer();
         rp_secondary.set_connectionToSCPIServer();
         if (rp_primary.get_connectionStatus() && rp_secondary.get_connectionStatus()) {
@@ -42,8 +42,10 @@ public:
             displayBoardsConfig();
 
             rp_primary.tx_txt("SOUR:TRig:INT");
+            return true;
 
         }
+        return false;
     }
 
 

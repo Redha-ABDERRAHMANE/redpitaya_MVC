@@ -80,6 +80,14 @@ public slots:
         }
     }
 
+    void retry_connectRpBoards() {
+        std::cout << "entered retry mode" << std::endl;
+        if (!SignalGn.connect_configure_rpBoards()) {
+            emit rpBoards_connectionFailed();
+        }
+            
+    }
+
 
     void get_and_applyPreset_MVC(const int& button_next_value,const int& button_current_value=-1){
         //In this function current_preset should not be updated before the call of SignalGn.apply_preset_values()

@@ -450,6 +450,7 @@ void View:: connectionFailedPopUp() {
         retryBox.setText("Trying to connect...");
         retryBox.setStandardButtons(QMessageBox::NoButton);
         retryBox.show();
+        emit retryButton_pressed(true);
 
     }
 }

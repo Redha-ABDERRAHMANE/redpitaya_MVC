@@ -98,6 +98,7 @@ public:
         connect(view.get(), &View::frequencyChange_pressed, worker_ApplyInput.get(), &ApplyInputWorker::apply_FrequencyShift);
         connect(view.get(), &View::phaseChange_pressed, worker_ApplyInput.get(), &ApplyInputWorker::apply_PhaseShift);
         connect(view.get(), &View::initialize_MVCModel, this, &MVC_Controller::initialize_MVCModel);
+        connect(view.get(), &View::retryButton_pressed, model.get(), &MVC_Model::retry_connectRpBoards);
         connect(model.get(), & MVC_Model::rpBoards_connectionFailed, view.get(), &View::connectionFailedPopUp);
         connect(model.get(), &MVC_Model::rpBoards_connectionSuccess, view.get(), &View::trigger_initialization);
         model->setup_MVCModel();
@@ -106,7 +107,7 @@ public:
         thread_GUIInput->start();
         emit startCheckInput();
 
-        //TO DO FIXXXXXXXX POP UP GUI NOT SHOWING UP WHEN RECONNECTING
+        
     }
     ~MVC_Controller(){
     }
