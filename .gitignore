@@ -82,3 +82,12 @@ CMakeLists.txt.user*
 /build*/
 /.vs
 /release/redpitaya_GUI.tlog/redpitaya_GUI.write.1u.tlog
+/release/qt/qt_work.log
+/release/redpitaya_GUI.tlog/CL.command.1.tlog
+/release/redpitaya_GUI.tlog/CL.read.1.tlog
+/release/redpitaya_GUI.tlog/CL.write.1.tlog
+/release/redpitaya_GUI.tlog/link.command.1.tlog
+/release/redpitaya_GUI.tlog/moc.read.1u.tlog
+/release/redpitaya_GUI.tlog/moc.write.1u.tlog
+/release/redpitaya_GUI.Build.CppClean.log
+/release/redpitaya_GUI.log
