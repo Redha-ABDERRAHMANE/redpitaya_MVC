@@ -3,7 +3,7 @@
 #include "waveGnPresets.hpp"
 #include <QObject>
 #include <QThread>
-
+#include <QDebug>
 typedef std::array<float, 6> preset_array_t ;
 class MVC_Model: public QObject
 {
@@ -17,7 +17,7 @@ private:
     RpSignalGn SignalGn;
     waveGnPresets GnPresets;
     Controller& controller ;
-
+  
 
     
     preset_array_t nextPreset;
@@ -25,13 +25,31 @@ private:
     
 
 public:
-    MVC_Model(Controller& c) : SignalGn(IP_PRIMARY, IP_SECONDARY),GnPresets(),controller(c) {
-        currentPreset = GnPresets.get_currentPreset();
-        nextPreset = GnPresets.get_currentPreset();
+    
+    MVC_Model(Controller& c) : SignalGn(IP_PRIMARY, IP_SECONDARY), GnPresets(), controller(c), nextPreset({}), currentPreset({}) {
+
     }
-      virtual ~MVC_Model() = default;
+    virtual ~MVC_Model() = default;
 
 
+    void setup_MVCModel() {
+        
+        std::cout << "status : " << SignalGn.get_connectionStatus() << std::endl;
+
+        if (SignalGn.get_connectionStatus()!=0) {
+            currentPreset = GnPresets.get_currentPreset();
+            nextPreset = GnPresets.get_currentPreset();
+            emit rpBoards_connectionSuccess();
+
+        }
+        else { emit  rpBoards_connectionFailed(); }
+
+    }
+
+
+signals:
+    void rpBoards_connectionFailed();
+    void rpBoards_connectionSuccess();
 
 
 public slots:

@@ -19,6 +19,7 @@
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QTextEdit>
+#include <QMessageBox>
 #include <unordered_map>
 #include <array>
 #include "controller.hpp"
@@ -47,11 +48,14 @@ public:
     QPushButton* button_Direction_Primary ;
     QPushButton* button_Direction_Secondary;
 
+    
+
 
 signals:
     void buttonDirection_pressed( ButtonCombination button_combination);
     void frequencyChange_pressed(const int& frequency_value);
     void phaseChange_pressed(const int& card,const int& phase_value);
+    void initialize_MVCModel(bool state);
 
 private slots:
     void selectCam();
@@ -61,11 +65,16 @@ private slots:
 public slots:
     void load_ControllerImage(const int& button_value);
     void handleInputReceived(const int& button_value , const int& directionIndex);
+    void connectionFailedPopUp();
+    void trigger_initialization();
 
 private:
 
     Ui::View *ui;
     int8_t last_DirectionIndexUsed=-1;
+
+
+
     void getCameras();
     void update_DirectionButton_clicked(const int& directionIndex);
     void update_lastDirectionButtonUsed(const int& newDirectionIndex);

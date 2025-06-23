@@ -6,9 +6,13 @@ View::View(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::View)
 {
+    
+}
+
+void View::trigger_initialization() {
     ui->setupUi(this);
 
-    std::cout << "entered"<<std::endl;
+    std::cout << "entered" << std::endl;
     setFixedSize(1600, 900);
 
     QHBoxLayout* mainLayout = new QHBoxLayout(ui->centralwidget);
@@ -55,7 +59,7 @@ View::View(QWidget *parent)
 
     // Direction text group :
     QHBoxLayout* directionIndicatorHorizontalLayout = new QHBoxLayout();
-    set_Axis_Direction_buttons(movementInfoVerticalLayout,axisInfoHorizontalLayout,directionIndicatorHorizontalLayout);
+    set_Axis_Direction_buttons(movementInfoVerticalLayout, axisInfoHorizontalLayout, directionIndicatorHorizontalLayout);
 
 
 
@@ -64,7 +68,7 @@ View::View(QWidget *parent)
 
     // Add both to horizontal layout
     horizontalControllerLayout->addWidget(controllerImageLabel, 2);
-    horizontalControllerLayout->addWidget(movementInfoGroupBox,1);
+    horizontalControllerLayout->addWidget(movementInfoGroupBox, 1);
     horizontalControllerLayout->addWidget(directionGroupBox, 1);
 
 
@@ -80,8 +84,8 @@ View::View(QWidget *parent)
     // Frequency group box with no margins
     QGroupBox* frequencyGroupBox = new QGroupBox("", this);
     QVBoxLayout* frequencyLayout = new QVBoxLayout();
-    
-    frequencyLayout->setSpacing(50);        
+
+    frequencyLayout->setSpacing(50);
     frequencyLayout->setAlignment(Qt::AlignTop);
 
     // Create the slider
@@ -92,23 +96,23 @@ View::View(QWidget *parent)
     frequencySlider->setPageStep(5);
     frequencySlider->setTickPosition(QSlider::TicksBothSides);
     frequencySlider->setFixedHeight(50);
-    frequencySlider->setContentsMargins(5,5,5,5);
+    frequencySlider->setContentsMargins(5, 5, 5, 5);
     frequencySlider->setValue(5);
 
     // Create the label to be overlaid
-    QLabel* display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz",this);
+    QLabel* display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz", this);
     display_FrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
     display_FrequencyValue->setMargin(0);
     display_FrequencyValue->setAlignment(Qt::AlignHCenter);
-    
 
 
-  
+
+
 
     // Create the button to confirm the new frequency value 
-    QPushButton* button_frequencyConfirmation = new QPushButton("Confirm",this);
+    QPushButton* button_frequencyConfirmation = new QPushButton("Confirm", this);
 
-    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this,frequencySlider]() {
+    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this, frequencySlider]() {
         emit frequencyChange_pressed(frequencySlider->value());
         });
 
@@ -117,7 +121,7 @@ View::View(QWidget *parent)
     frequencyLayout->addWidget(display_FrequencyValue);
     frequencyLayout->addWidget(frequencySlider);
     frequencyLayout->addWidget(button_frequencyConfirmation);
-    
+
 
     frequencyGroupBox->setLayout(frequencyLayout);
 
@@ -132,21 +136,21 @@ View::View(QWidget *parent)
             frequencySlider->setValue(snappedValue);
             frequencySlider->blockSignals(false);
         }
-    });
+        });
 
     // Output the snapped value when user releases the slider
-    connect(frequencySlider, &QSlider::sliderReleased, [display_FrequencyValue,frequencySlider]() {
+    connect(frequencySlider, &QSlider::sliderReleased, [display_FrequencyValue, frequencySlider]() {
         qDebug() << "Frequency value :" << frequencySlider->value();
         QString messageToDisplay = "Frequency slider value : " + QString::number(frequencySlider->value()) + " Hz";
         display_FrequencyValue->setText(messageToDisplay);
-    });
+        });
     ///////////////////////////////////////////////////////////////////
     // PHASE SLIDER
         // phase group box with no margins
     QGroupBox* phaseGroupBox = new QGroupBox("", this);
     QVBoxLayout* phaseLayout = new QVBoxLayout();
 
-    
+
 
     // Create the label to be overlaid
     QLabel* display_primaryPhaseValue = new QLabel("Primary card phase value :", this);
@@ -160,7 +164,7 @@ View::View(QWidget *parent)
     QPushButton* button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
 
     connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_primaryPhaseValue]() {
-        emit phaseChange_pressed(1,textBox_primaryPhaseValue->text().toInt());
+        emit phaseChange_pressed(1, textBox_primaryPhaseValue->text().toInt());
         });
 
     // Create the label to be overlaid
@@ -175,7 +179,7 @@ View::View(QWidget *parent)
     QPushButton* button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
 
     connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_secondaryPhaseValue]() {
-        emit phaseChange_pressed(2,textBox_secondaryPhaseValue->text().toInt());
+        emit phaseChange_pressed(2, textBox_secondaryPhaseValue->text().toInt());
         });
 
 
@@ -194,7 +198,7 @@ View::View(QWidget *parent)
     phaseGroupBox->setLayout(phaseLayout);
 
 
-  
+
 
 
 
@@ -229,9 +233,10 @@ View::View(QWidget *parent)
 
     getCameras();
     connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
+    qDebug() << "here view";
 
+  
 }
-
 
 View::~View()
 {
@@ -428,4 +433,23 @@ void View::handleInputReceived(const int& button_value , const int& directionInd
 
 
 
+}
+
+void View:: connectionFailedPopUp() {
+    // With custom buttons
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Connection Failed");
+    msgBox.setText("Could not connect to SCPI server.one or multiple Red Pitaya boards are not connected (The boards needs to be connected to power and connected to the same network as the pc)");
+    msgBox.setInformativeText("Would you like to retry?");
+    msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Retry);
+
+    if (msgBox.exec() == QMessageBox::Retry) {
+        // Retry connection
+        QMessageBox retryBox;
+        retryBox.setText("Trying to connect...");
+        retryBox.setStandardButtons(QMessageBox::NoButton);
+        retryBox.show();
+
+    }
 }

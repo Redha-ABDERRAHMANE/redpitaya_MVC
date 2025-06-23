@@ -33,6 +33,7 @@ class RpSignalGn
 private:
 	
 	//waveGnPresets presetFactory;
+
 	RedpitayaCards rp_boards;
     int currentFrequency=5;
     const std::array<TaskConfig, 8> taskConfigs = {{
@@ -52,11 +53,7 @@ public:
 	
 	RpSignalGn(const char* primaryBoardIP, const char* secondaryBoardIP) :
         rp_boards(primaryBoardIP, secondaryBoardIP, 5),currentFrequency(5){
-
-		std::cout << "in" << std::endl;
-
-
-
+        
 
 
 	}
@@ -152,6 +149,10 @@ public:
         for (std::future<void>& thread : threadArray) { thread.get(); }
 
 
+    }
+
+    bool get_connectionStatus()const {
+        return rp_boards.get_connectionStatus();
     }
 
 

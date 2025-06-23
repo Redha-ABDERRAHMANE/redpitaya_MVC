@@ -31,9 +31,11 @@
 
 class scpi {
 private:
+
     std::string delimiter = "\r\n";
     const char* host_address;
     int port_number;
+    bool connectionSuccess ;
 
     WSADATA Winsockdata;
     int iWsaStartup;
@@ -56,40 +58,7 @@ public:
     scpi(const char* host, const int& port = 5000):iCloseSocket(),iConnect(),RecvBuffer() {
         host_address = host;
         port_number = port;
-
-
-        iWsaStartup = WSAStartup(MAKEWORD(2, 2), &Winsockdata);
-        if (iWsaStartup != 0)
-        {
-            std::cout << "WSAStartup Failed" << std::endl;
-        }
-        std::cout << "WSAStartup Success" << std::endl;
-
-        //Step -2 Socket Creation------------------------------------
-
-        TCPClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        if (TCPClientSocket == INVALID_SOCKET)
-        {
-            std::cout << "TCP Client Socket Creation failed" << WSAGetLastError() << std::endl;
-        }
-        std::cout << "TCP client socket creation success";
-        // STEP -3 Fill the structure-------------------------------
-
-        TCPServerAdd.sin_family = AF_INET;
-        if (inet_pton(AF_INET, host_address, &TCPServerAdd.sin_addr) != 1) {
-            std::cout << "Invalid IPv4 address: " << host_address << std::endl;
-            return;
-        }
-        TCPServerAdd.sin_port = htons(port_number);
-
-        // STEP-4 Connect fun---------------------------------------------
-
-        iConnect = connect(TCPClientSocket, (SOCKADDR*)&TCPServerAdd, sizeof(TCPServerAdd));
-        if (iConnect == SOCKET_ERROR)
-        {
-            std::cout << "Connection failed & Error No ->" << WSAGetLastError() << std::endl;
-        }
-        std::cout << "Connection success" << std::endl;
+        
     }
 
     ~scpi() {
@@ -102,6 +71,74 @@ public:
         }
         std::cout << "Closing Socket success" << std::endl;
     }
+
+    void set_connectionToSCPIServer() {
+        if (initialize_iWsaStartup() && initialize_clientSocket() && initialize_TCPServerStruct() && connectServer()) {
+            connectionSuccess = true;
+       }
+        else { connectionSuccess = false; }
+
+
+    }
+
+    bool initialize_iWsaStartup(){
+
+
+        iWsaStartup = WSAStartup(MAKEWORD(2, 2), &Winsockdata);
+        if (iWsaStartup != 0)
+        {
+            std::cout << "WSAStartup Failed" << std::endl;
+            
+            return false;
+        }
+        std::cout << "WSAStartup Success" << std::endl;
+        return true;
+
+    }
+
+    bool initialize_clientSocket() {
+
+        TCPClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if (TCPClientSocket == INVALID_SOCKET)
+        {
+            std::cout << "TCP Client Socket Creation failed" << WSAGetLastError() << std::endl;
+           
+            return false;
+        }
+        std::cout << "TCP client socket creation success";
+        return true;
+
+    }
+
+    bool initialize_TCPServerStruct() {
+
+        TCPServerAdd.sin_family = AF_INET;
+        if (inet_pton(AF_INET, host_address, &TCPServerAdd.sin_addr) != 1) {
+            std::cout << "Invalid IPv4 address: " << host_address << std::endl;
+            return false;
+        }
+        TCPServerAdd.sin_port = htons(port_number);
+        return true;
+
+    }
+    bool connectServer() {
+
+        iConnect = connect(TCPClientSocket, (SOCKADDR*)&TCPServerAdd, sizeof(TCPServerAdd));
+        if (iConnect == SOCKET_ERROR)
+        {
+            std::cout << "Connection failed & Error No ->" << WSAGetLastError() << std::endl;
+            return false;
+        }
+        std::cout << "Connection success" << std::endl;
+        return true;
+    }
+
+
+
+
+
+
+
     // STEP-6 Send Data to the server
 
     bool tx_txt(const std::string& message) const {
@@ -153,6 +190,10 @@ public:
             std::cout<<"failed"<<std::endl;
         }
         return rx_txt();  // Return received response
+    }
+
+    bool get_connectionStatus()const {
+        return connectionSuccess;
     }
 };
 

@@ -48,6 +48,7 @@ signals:
     void startCheckInput();
 
     void controllerInput_Direction(const int& button_value , const int& directionIndex);
+    void rpBoards_connectionFailed();
 
 public slots:
 
@@ -61,6 +62,11 @@ public slots:
 
 
     }
+    void initialize_MVCModel() {
+        qDebug() << "here initialize";
+        model->setup_MVCModel();
+    }
+
 
 
 
@@ -91,11 +97,16 @@ public:
         connect(view.get(),&View::buttonDirection_pressed,worker_ApplyInput.get(),&ApplyInputWorker::apply_GUIInput);
         connect(view.get(), &View::frequencyChange_pressed, worker_ApplyInput.get(), &ApplyInputWorker::apply_FrequencyShift);
         connect(view.get(), &View::phaseChange_pressed, worker_ApplyInput.get(), &ApplyInputWorker::apply_PhaseShift);
+        connect(view.get(), &View::initialize_MVCModel, this, &MVC_Controller::initialize_MVCModel);
+        connect(model.get(), & MVC_Model::rpBoards_connectionFailed, view.get(), &View::connectionFailedPopUp);
+        connect(model.get(), &MVC_Model::rpBoards_connectionSuccess, view.get(), &View::trigger_initialization);
+        model->setup_MVCModel();
+        //view->trigger_initialization();
         thread_controllerInput->start();
         thread_GUIInput->start();
         emit startCheckInput();
 
-
+        //TO DO FIXXXXXXXX POP UP GUI NOT SHOWING UP WHEN RECONNECTING
     }
     ~MVC_Controller(){
     }

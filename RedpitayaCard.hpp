@@ -5,6 +5,7 @@
 class RedpitayaCards
 {
 private:
+    
     scpi rp_primary;
     scpi rp_secondary;
 
@@ -12,19 +13,11 @@ private:
 
 public:
 
-    RedpitayaCards(const char* host_primary, const char* host_secondary, const int& frequency) :rp_primary(host_primary), rp_secondary(host_secondary) {
+    RedpitayaCards(const char* host_primary, const char* host_secondary, const int& frequency=5) :rp_primary(host_primary), rp_secondary(host_secondary) {
         std::cout<<"frequency:"<<frequency<<std::endl;
-        reset_generators();
-        set_DaisyChain_SourceTrigger_MasterBoard();
-        set_DaisyChain_SourceTrigger_SlaveBoard();
-        verify_board_daisy_configuration();
-        set_InitialSource_sineWave_parameters(PRIMARY_BOARD, frequency,PHASE_0);
-        set_InitialSource_sineWave_parameters(SECONDARY_BOARD, frequency,PHASE_0);
-        enable_board_outputs();
-        set_arm_trigger_slave_board(rp_secondary);
-        displayBoardsConfig();
+        connect_configure_rpBoards(frequency);
 
-        rp_primary.tx_txt("SOUR:TRig:INT");
+
 
 
     }
@@ -33,6 +26,25 @@ public:
         disable_daisy_chain_configuration(rp_secondary);
     }
 
+
+    void connect_configure_rpBoards(const int& frequency) {
+        rp_primary.set_connectionToSCPIServer();
+        rp_secondary.set_connectionToSCPIServer();
+        if (rp_primary.get_connectionStatus() && rp_secondary.get_connectionStatus()) {
+            reset_generators();
+            set_DaisyChain_SourceTrigger_MasterBoard();
+            set_DaisyChain_SourceTrigger_SlaveBoard();
+            verify_board_daisy_configuration();
+            set_InitialSource_sineWave_parameters(PRIMARY_BOARD, frequency, PHASE_0);
+            set_InitialSource_sineWave_parameters(SECONDARY_BOARD, frequency, PHASE_0);
+            enable_board_outputs();
+            set_arm_trigger_slave_board(rp_secondary);
+            displayBoardsConfig();
+
+            rp_primary.tx_txt("SOUR:TRig:INT");
+
+        }
+    }
 
 
     void send_txt(const int& card,std::string full_command) {
@@ -48,6 +60,11 @@ public:
 
 
     }
+    bool get_connectionStatus()const {
+        std::cout << "state: " << rp_primary.get_connectionStatus() && rp_secondary.get_connectionStatus() << '\n';
+        return rp_primary.get_connectionStatus() && rp_secondary.get_connectionStatus();
+    }
+
 
 private:
 
@@ -135,6 +152,8 @@ private:
         printf("SECONDARY Trigger source: %s\n", rp_secondary.txrx_txt("SOUR1:TRIG:SOUR?").c_str());
 
     }
+
+
 
 
 
