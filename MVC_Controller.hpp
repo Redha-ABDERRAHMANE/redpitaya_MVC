@@ -117,8 +117,10 @@ public:
         connect(worker_cameraInput.get(), &CameraInputWorker::ImageReceived, view.get(), &View::get_refresh_imageReceived);
         //model->setup_MVCModel();
         thread_cameraInput->start();
-        view->trigger_initialization();
+
         emit startCameraInput();
+        view->trigger_initialization();
+        
 
 
         
