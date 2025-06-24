@@ -101,3 +101,4 @@ CMakeLists.txt.user*
 /release/redpitaya_GUI.tlog/link.secondary.1.tlog
 /release/redpitaya_GUI.tlog/link.write.1.tlog
 /debug/qt/qt_work.log
+*.tlog
