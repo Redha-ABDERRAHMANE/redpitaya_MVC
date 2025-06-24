@@ -459,8 +459,7 @@ void View:: connectionFailedPopUp() {
 }
 
 void View::get_refresh_imageReceived(const QImage& image) {
-    ImageToDisplay = image;
-    ImageLabelDisplay.setPixmap(QPixmap::fromImage(ImageToDisplay));
+    ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
 
 
 }
