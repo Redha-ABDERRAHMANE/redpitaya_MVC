@@ -6,6 +6,7 @@
 #include "inputworker.h"
 
 #include "applyInputworker.h"
+#include "cameraInputworker.hpp"
 #include "view.h"
 class MVC_Controller : public QObject {
 	Q_OBJECT
@@ -20,6 +21,9 @@ private:
 
     std::unique_ptr<QThread> thread_GUIInput;
     std::unique_ptr<ApplyInputWorker> worker_ApplyInput;
+
+    std::unique_ptr<QThread> thread_cameraInput;
+    std::unique_ptr<CameraInputWorker> worker_cameraInput;
 
     bool isDefaultDirectionButton(const int& button_value){
         return WithInInterval(Buttons::A,button_value,Buttons::B);
@@ -49,6 +53,7 @@ signals:
 
     void controllerInput_Direction(const int& button_value , const int& directionIndex);
     void rpBoards_connectionFailed();
+    void startCameraInput();
 
 public slots:
 
@@ -77,19 +82,27 @@ public:
         model(std::make_unique<MVC_Model>(controller)),
         view(v),
         thread_controllerInput(std::make_unique<QThread>()),
-        thread_GUIInput(std::make_unique<QThread>())
+        thread_GUIInput(std::make_unique<QThread>()),
+        thread_cameraInput(std::make_unique<QThread>())
     {
 
         worker_controllerInput = std::make_unique<InputWorker>(&controller);
         worker_controllerInput->moveToThread(thread_controllerInput.get());
+
         worker_ApplyInput = std::make_unique<ApplyInputWorker>(model.get());
         worker_ApplyInput->moveToThread(thread_GUIInput.get());
 
+        worker_cameraInput = std::make_unique<CameraInputWorker>();
+        worker_cameraInput->moveToThread(thread_cameraInput.get());
+
         connect(thread_controllerInput.get(), &QThread::finished, worker_controllerInput.get(), &QObject::deleteLater);
         connect(this, &MVC_Controller::startCheckInput, worker_controllerInput.get(), &InputWorker::runCheckInput);
+        connect(this, &MVC_Controller::startCheckInput, worker_cameraInput.get(), &CameraInputWorker::getDisplayFrame);
+        connect(this, &MVC_Controller::startCameraInput, worker_cameraInput.get(), &CameraInputWorker::startCamera);
 
 
         connect(this, &MVC_Controller::controllerInput_Direction, view.get(), &View::handleInputReceived);
+
 
 
         connect(worker_controllerInput.get(),&InputWorker::validInputDetected,worker_ApplyInput.get(),&ApplyInputWorker::apply_ControllerInput);
@@ -101,11 +114,19 @@ public:
         connect(view.get(), &View::retryButton_pressed, model.get(), &MVC_Model::retry_connectRpBoards);
         connect(model.get(), & MVC_Model::rpBoards_connectionFailed, view.get(), &View::connectionFailedPopUp);
         connect(model.get(), &MVC_Model::rpBoards_connectionSuccess, view.get(), &View::trigger_initialization);
-        model->setup_MVCModel();
-        //view->trigger_initialization();
+        connect(worker_cameraInput.get(), &CameraInputWorker::ImageReceived, view.get(), &View::get_refresh_imageReceived);
+        //model->setup_MVCModel();
+        thread_cameraInput->start();
+        view->trigger_initialization();
+        emit startCameraInput();
+
+
+        
         thread_controllerInput->start();
         thread_GUIInput->start();
+        
         emit startCheckInput();
+        //TODO: FIX EVERYTHING ABOUT CAMERA
 
         
     }

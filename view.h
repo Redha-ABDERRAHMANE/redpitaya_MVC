@@ -39,9 +39,21 @@ public:
 
     QList<QCameraDevice> cameras;
     QComboBox* comboBox;
+
+    //////////////////
+    QImage ImageToDisplay;
+    QLabel ImageLabelDisplay;
+
+    //////////
     QVideoWidget* videoWidget;
+
+   
     QCamera* currentCam;
+
+
     QMediaCaptureSession* mediaCaptureSession;
+    ////////////////////////
+    
     QLabel* controllerImageLabel;
     QPixmap pixmap;
     QPushButton* testButton;
@@ -68,6 +80,8 @@ public slots:
     void handleInputReceived(const int& button_value , const int& directionIndex);
     void connectionFailedPopUp();
     void trigger_initialization();
+
+    void get_refresh_imageReceived(const QImage& image);
 
 private:
 

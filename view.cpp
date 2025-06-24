@@ -16,11 +16,14 @@ void View::trigger_initialization() {
     setFixedSize(1600, 900);
 
     QHBoxLayout* mainLayout = new QHBoxLayout(ui->centralwidget);
-    mediaCaptureSession = new QMediaCaptureSession();
-    currentCam = new QCamera();
-    comboBox = new QComboBox();
-    videoWidget = new QVideoWidget();
-
+    ////////////////////////////////////////////////////////////
+    //mediaCaptureSession = new QMediaCaptureSession();
+    //currentCam = new QCamera();
+    //comboBox = new QComboBox();
+    //videoWidget = new QVideoWidget();
+    // 
+    ImageLabelDisplay.setPixmap(QPixmap::fromImage(ImageToDisplay));
+    //////////////////////////////////////////////////////////////
     // Main horizontal layout (splits left and right)
     // Left side vertical layout
     QVBoxLayout* leftLayout = new QVBoxLayout();
@@ -28,8 +31,8 @@ void View::trigger_initialization() {
     // Camera group box (top left)
     QGroupBox* cameraGroupBox = new QGroupBox("Camera", this);
     QVBoxLayout* verticalCameraLayout = new QVBoxLayout();
-    verticalCameraLayout->addWidget(videoWidget, 3);
-    verticalCameraLayout->addWidget(comboBox, 1);
+    verticalCameraLayout->addWidget(&ImageLabelDisplay, 3);
+    //verticalCameraLayout->addWidget(comboBox, 1);
     cameraGroupBox->setLayout(verticalCameraLayout);
 
     // Controller group box (bottom left)
@@ -231,8 +234,8 @@ void View::trigger_initialization() {
     mainLayout->addLayout(leftLayout, 2);
     mainLayout->addWidget(infoGroupBox, 1);
 
-    getCameras();
-    connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
+    //getCameras();
+    //connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
     qDebug() << "here view";
 
   
@@ -453,4 +456,11 @@ void View:: connectionFailedPopUp() {
         emit retryButton_pressed(true);
 
     }
+}
+
+void View::get_refresh_imageReceived(const QImage& image) {
+    ImageToDisplay = image;
+    ImageLabelDisplay.setPixmap(QPixmap::fromImage(ImageToDisplay));
+
+
 }
