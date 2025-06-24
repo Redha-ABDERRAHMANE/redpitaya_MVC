@@ -93,3 +93,11 @@ CMakeLists.txt.user*
 /release/redpitaya_GUI.log
 /release/redpitaya_GUI.tlog/link.read.1.tlog
 /release/redpitaya_GUI.tlog/Cl.items.tlog
+/debug/redpitaya_GUI.tlog/CL.command.1.tlog
+/debug/redpitaya_GUI.tlog/Cl.items.tlog
+/debug/redpitaya_GUI.tlog/CL.read.1.tlog
+/debug/redpitaya_GUI.tlog/link.command.1.tlog
+/debug/redpitaya_GUI.tlog/CL.write.1.tlog
+/release/redpitaya_GUI.tlog/link.secondary.1.tlog
+/release/redpitaya_GUI.tlog/link.write.1.tlog
+/debug/qt/qt_work.log
