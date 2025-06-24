@@ -43,7 +43,7 @@ public:
 
             try {
                 // Convert to OpenCV Mat based on pixel format
-                if (pixelFormat == VmbPixelFormatMono8) {
+                if (pixelFormat == VmbPixelFormatMono8) { // CLONE IS IMPORT, VIMBA API DELETES POINTER AT THE END OF CALLBACK, ASSIGNING m_frame the value directly could lead to memory issues.
                     m_frame = Mat(height, width, CV_8UC1, pBuffer).clone();
                     m_frameReady = true;
                 }
@@ -168,10 +168,13 @@ private:
 
         err = camera->GetFeatureByName("PixelFormat", pixelFormatFeature);
         if (err == VmbErrorSuccess) {
+
             err = pixelFormatFeature->SetValue("Mono8");
             if (err != VmbErrorSuccess) {
+
                 std::cout << "Mono8 not supported, trying BGR8..." << std::endl;
                 err = pixelFormatFeature->SetValue("BGR8");
+
                 if (err != VmbErrorSuccess) {
                     std::cout << "BGR8 not supported either, using default format" << std::endl;
                 }
@@ -255,21 +258,33 @@ private:
         return true;
     }
 
+    bool stopAcquisitionAndSysShutdown() {
+        err= camera->EndCapture();
+        if (err == VmbErrorSuccess) {
+            camera->Close();
+            sys.Shutdown();
+            return true;
+        }
+        std::cout << "Failed to stop acquisition" << std::endl;
+        return false;
+
+    }
+
 
 
 public :
     CameraInputWorker() : sys(VmbSystem::GetInstance()),frames(3){}
 
-    void startCamera() {
-        cameraStartup();
-        getCamera();
-        getCameraInfo();
-        setPixelFormat();
-        setFrameDimensions();
-        setFrameObserver();
-        calculateBufferSize();
-        prepareFrame();
-        startAcquisition();
+    bool startCamera() {
+            cameraStartup();
+            getCamera();
+            getCameraInfo();
+            setPixelFormat();
+            setFrameDimensions();
+            setFrameObserver();
+            calculateBufferSize();
+            prepareFrame();
+            startAcquisition();
 
     }
 
