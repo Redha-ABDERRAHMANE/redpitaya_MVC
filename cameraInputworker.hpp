@@ -93,15 +93,25 @@ private:
     CameraPtr camera;
     FeaturePtr pixelFormatFeature;
     FeaturePtr widthFeature, heightFeature;
-    VmbInt64_t width = 640, height = 480;
-    std::shared_ptr<FrameObserver> frameObserver;
-    IFrameObserverPtr observerPtr;
-    VmbInt64_t payloadSize = 0;
     FeaturePtr payloadSizeFeature;
     FeaturePtr acquisitionStartFeature;
+    FeaturePtr saturationFeature;
+    FeaturePtr exposureFeature;
+    FeaturePtr framerateControlEnableFeature;
+    FeaturePtr framerateControlFeature;
+    VmbInt64_t width = 640, height = 480;
+    std::shared_ptr<FrameObserver> frameObserver = nullptr;
+    IFrameObserverPtr observerPtr;
+    VmbInt64_t payloadSize = 0;
+
     FramePtrVector frames;
+
+
     bool running = true;
     VmbErrorType err;
+
+    double exposureTime = 0.0;
+    double saturationValue=1.0;
 
 
 
@@ -298,6 +308,16 @@ public slots:
 
 
    
+
+    void setSaturationValue(const double& value) {
+        saturationFeature->SetValue(value);
+
+    }
+
+    void setExposureTimeValue(const double& value) {
+        exposureFeature->SetValue(value);
+
+    }
 
 
         // Display loop
