@@ -6,7 +6,9 @@ View::View(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::View)
 {
-    
+    static int j = 0;
+    std::cout << "called J: " << ++j << std::endl;
+
 }
 
 void View::trigger_initialization() {
@@ -439,6 +441,8 @@ void View::handleInputReceived(const int& button_value , const int& directionInd
 }
 
 void View:: connectionFailedPopUp() {
+    static int i = 0;
+    std::cout << "called: " <<++i<< std::endl;
     // With custom buttons
     QMessageBox msgBox;
     msgBox.setWindowTitle("Connection Failed");
@@ -447,20 +451,26 @@ void View:: connectionFailedPopUp() {
     msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Retry);
 
-    if (msgBox.exec() == QMessageBox::Retry) {
+    int result = msgBox.exec();
+
+
+    if (result == QMessageBox::Retry) {
+        msgBox.close();
         // Retry connection
         QMessageBox retryBox;
         retryBox.setText("Trying to connect...");
         retryBox.setStandardButtons(QMessageBox::NoButton);
         retryBox.show();
         emit retryButton_pressed(true);
-        QTimer::singleShot(300, this, [&retryBox]() {
+        QTimer::singleShot(1000, this, [&retryBox]() {
             retryBox.close();
             });
 
     }
-    else {
-        exit(0);
+    else if (result == QMessageBox::Cancel){
+        msgBox.close();
+        this->close();
+        emit programShutdown();
     }
 }
 

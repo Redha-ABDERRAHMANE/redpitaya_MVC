@@ -24,7 +24,7 @@ signals:
 public slots:
     void runCheckInput() {
         int button_value ;
-        while (run) {
+        while (run && !QThread::currentThread()->isInterruptionRequested()) {
              button_value = controller->CheckControllerEvent();
             if (button_value != -1) {
                 emit validInputDetected(button_value);

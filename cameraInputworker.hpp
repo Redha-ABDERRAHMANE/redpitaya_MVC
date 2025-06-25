@@ -3,6 +3,7 @@
 #include <VmbCPP/VmbCPP.h>
 #include <QObject>
 #include <QImage>
+#include <QThread>
 using namespace VmbCPP;
 using namespace cv;
 
@@ -284,6 +285,9 @@ private:
 
 public :
     CameraInputWorker() : sys(VmbSystem::GetInstance()),frames(3){}
+    ~CameraInputWorker() {
+        stopAcquisitionAndSysShutdown();
+    }
 
     void startCamera() {
             cameraStartup();
@@ -327,7 +331,7 @@ public slots:
         int frameCount = 0;
         std::cout << "entered camera get frame " << std::endl;
 
-        while (running) {
+        while (running && !QThread::currentThread()->isInterruptionRequested()) {
             if (frameObserver->GetFrame(displayFrame)) {
                 frameCount++;
                 if (frameCount % 30 == 0) {

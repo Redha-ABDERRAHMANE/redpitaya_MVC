@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QObject>
 #include <QThread>
+#include <QApplication>
 #include "MVC_Model.hpp"
 #include "inputworker.h"
 
@@ -62,6 +63,29 @@ public slots:
         model.setup_MVCModel();
     }
 
+    void shutDownProgram() {
+        // Clean shutdown of threads
+        thread_controllerInput.requestInterruption();
+        thread_GUIInput.requestInterruption();
+        thread_cameraInput.requestInterruption();
+
+        if (thread_controllerInput.isRunning()) {
+            thread_controllerInput.quit();
+            thread_controllerInput.wait();
+        }
+
+        if (thread_GUIInput.isRunning()) {
+            thread_GUIInput.quit();
+            thread_GUIInput.wait();
+        }
+
+        if (thread_cameraInput.isRunning()) {
+            thread_cameraInput.quit();
+            thread_cameraInput.wait();
+        }
+        QApplication::quit();
+    }
+
 public:
     MVC_Controller(View* v) :
         controller(),
@@ -96,6 +120,8 @@ public:
         connect(view.get(), &View::phaseChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_PhaseShift);
         connect(view.get(), &View::initialize_MVCModel, this, &MVC_Controller::initialize_MVCModel);
         connect(view.get(), &View::retryButton_pressed, &model, &MVC_Model::retry_connectRpBoards);
+        connect(view.get(), &View::programShutdown, this, &MVC_Controller::shutDownProgram);
+
 
         // Connect model signals
         connect(&model, &MVC_Model::rpBoards_connectionFailed, view.get(), &View::connectionFailedPopUp);
@@ -107,11 +133,11 @@ public:
         // Start camera thread first
         thread_cameraInput.start();
         emit startCameraInput();
-        model.setup_MVCModel();
+        //model.setup_MVCModel();
 
 
         // Initialize view
-        //view->trigger_initialization();
+        view->trigger_initialization();
 
         // Start other threads
         thread_controllerInput.start();
@@ -121,20 +147,6 @@ public:
     }
 
     ~MVC_Controller() {
-        // Clean shutdown of threads
-        if (thread_controllerInput.isRunning()) {
-            thread_controllerInput.quit();
-            thread_controllerInput.wait();
-        }
 
-        if (thread_GUIInput.isRunning()) {
-            thread_GUIInput.quit();
-            thread_GUIInput.wait();
-        }
-
-        if (thread_cameraInput.isRunning()) {
-            thread_cameraInput.quit();
-            thread_cameraInput.wait();
-        }
     }
 };

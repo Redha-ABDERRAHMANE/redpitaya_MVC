@@ -69,6 +69,8 @@ signals:
     void phaseChange_pressed(const int& card,const int& phase_value);
     void initialize_MVCModel(bool state);
     void retryButton_pressed(bool state);
+    void programShutdown();
+
 
 private slots:
     void selectCam();
