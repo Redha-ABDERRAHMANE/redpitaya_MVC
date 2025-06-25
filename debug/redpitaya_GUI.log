@@ -1,7 +1,0 @@
-﻿   Qt/MSBuild: 3.4.0.1
-  Reading Qt configuration (C:/Qt/6.9.1/msvc2022_64/bin/qmake)
-   Qt: 6.9.1
-  Moc'ing MVC_Controller.hpp...
-  main.cpp
-  moc_MVC_Controller.cpp
-  redpitaya_GUI.vcxproj -> C:\Users\Redha\Documents\cnrs\redpitaya_GUI\debug\redpitaya_GUI.exe
