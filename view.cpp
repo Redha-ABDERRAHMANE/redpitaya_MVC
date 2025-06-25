@@ -454,7 +454,13 @@ void View:: connectionFailedPopUp() {
         retryBox.setStandardButtons(QMessageBox::NoButton);
         retryBox.show();
         emit retryButton_pressed(true);
+        QTimer::singleShot(300, this, [&retryBox]() {
+            retryBox.close();
+            });
 
+    }
+    else {
+        exit(0);
     }
 }
 

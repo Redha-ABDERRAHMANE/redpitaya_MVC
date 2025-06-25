@@ -285,7 +285,7 @@ private:
 public :
     CameraInputWorker() : sys(VmbSystem::GetInstance()),frames(3){}
 
-    bool startCamera() {
+    void startCamera() {
             cameraStartup();
             getCamera();
             getCameraInfo();
