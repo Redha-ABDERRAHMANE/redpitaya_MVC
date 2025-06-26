@@ -213,8 +213,92 @@ void View::trigger_initialization() {
     ///////////////////////////////////////////////////////////////////
 
     // Other group box
+
+// Other group box
     QGroupBox* otherGroupBox = new QGroupBox("", this);
     QVBoxLayout* otherLayout = new QVBoxLayout();
+
+    // === EXPOSURE TIME SLIDER ===
+    // Display label for exposure time
+    QLabel* display_ExposureTimeValue = new QLabel("Exposure Time: 5 ms", this);
+
+    // Create exposure time slider 
+    QSlider* exposureTimeSlider = new QSlider(Qt::Horizontal, this);
+    exposureTimeSlider->setRange(1, 200);
+    exposureTimeSlider->setValue(5);
+    exposureTimeSlider->setTickPosition(QSlider::TicksBelow);
+    exposureTimeSlider->setTickInterval(2);
+
+    // Create the button to confirm the new exposure time value 
+    QPushButton* button_exposureTimeConfirmation = new QPushButton("Confirm Exposure", this);
+    connect(button_exposureTimeConfirmation, &QPushButton::clicked, this, [this, exposureTimeSlider]() {
+        std::cout << "yolo 1 " << std::endl;
+        emit exposureTimeChange_pressed(exposureTimeSlider->value()*1000);
+        });
+
+    // Manual snap-to-tick implementation for exposure time
+    connect(exposureTimeSlider, &QSlider::valueChanged, [exposureTimeSlider](int value) {
+        int tickInterval = 2;
+        int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
+        snappedValue = qBound(1, snappedValue, 200);
+        if (snappedValue != value) {
+            exposureTimeSlider->blockSignals(true);
+            exposureTimeSlider->setValue(snappedValue);
+            exposureTimeSlider->blockSignals(false);
+        }
+        });
+
+    // Output the snapped value when user releases the exposure time slider
+    connect(exposureTimeSlider, &QSlider::sliderReleased, [display_ExposureTimeValue, exposureTimeSlider]() {
+        qDebug() << "Exposure Time value:" << exposureTimeSlider->value();
+        QString messageToDisplay = "Exposure Time: " + QString::number(exposureTimeSlider->value()) + " ms";
+        display_ExposureTimeValue->setText(messageToDisplay);
+        });
+
+    // === SATURATION SLIDER ===
+    // Display label for saturation
+    QLabel* display_SaturationValue = new QLabel("Saturation: 100%", this);
+
+    // Create saturation slider (assuming range 0-100%)
+    QSlider* saturationSlider = new QSlider(Qt::Horizontal, this);
+    saturationSlider->setRange(0, 300);
+    saturationSlider->setValue(100);
+    saturationSlider->setTickPosition(QSlider::TicksBelow);
+    saturationSlider->setTickInterval(10);
+
+    // Create the button to confirm the new saturation value 
+    QPushButton* button_saturationConfirmation = new QPushButton("Confirm Saturation", this);
+    connect(button_saturationConfirmation, &QPushButton::clicked, this, [this, saturationSlider]() {
+        emit saturationChange_pressed(saturationSlider->value());
+        });
+
+    // Manual snap-to-tick implementation for saturation
+    connect(saturationSlider, &QSlider::valueChanged, [saturationSlider](int value) {
+        int tickInterval = 10;
+        int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
+        snappedValue = qBound(0, snappedValue, 300);
+        if (snappedValue != value) {
+            saturationSlider->blockSignals(true);
+            saturationSlider->setValue(snappedValue);
+            saturationSlider->blockSignals(false);
+        }
+        });
+
+    // Output the snapped value when user releases the saturation slider
+    connect(saturationSlider, &QSlider::sliderReleased, [display_SaturationValue, saturationSlider]() {
+        qDebug() << "Saturation value:" << saturationSlider->value();
+        QString messageToDisplay = "Saturation: " + QString::number(saturationSlider->value()) + "%";
+        display_SaturationValue->setText(messageToDisplay);
+        });
+
+    // Add all widgets to the layout
+    otherLayout->addWidget(display_ExposureTimeValue);
+    otherLayout->addWidget(exposureTimeSlider);
+    otherLayout->addWidget(button_exposureTimeConfirmation);
+    otherLayout->addWidget(display_SaturationValue);
+    otherLayout->addWidget(saturationSlider);
+    otherLayout->addWidget(button_saturationConfirmation);
+
     otherGroupBox->setLayout(otherLayout);
 
     // Final assembly
@@ -478,4 +562,27 @@ void View::get_refresh_imageReceived(const QImage& image) {
     ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
 
 
+}
+
+
+
+void View::closeEvent(QCloseEvent* event)
+{
+    QMessageBox::StandardButton reply = QMessageBox::question(
+        this,
+        "Exit",
+        "Are you sure you want to exit?",
+        QMessageBox::Yes | QMessageBox::No
+    );
+
+    if (reply == QMessageBox::Yes) {
+        event->accept();
+        this->close();
+        emit programShutdown();
+        QApplication::quit();
+       
+    }
+    else {
+        event->ignore();  // Cancel the close event
+    }
 }

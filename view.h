@@ -20,6 +20,7 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QMessageBox>
+#include <QCloseEvent>
 #include <unordered_map>
 #include <array>
 #include "controller.hpp"
@@ -67,6 +68,8 @@ signals:
     void buttonDirection_pressed( ButtonCombination button_combination);
     void frequencyChange_pressed(const int& frequency_value);
     void phaseChange_pressed(const int& card,const int& phase_value);
+    void saturationChange_pressed(const int saturation_value);
+    void exposureTimeChange_pressed(const int exposureTime_value);
     void initialize_MVCModel(bool state);
     void retryButton_pressed(bool state);
     void programShutdown();
@@ -147,6 +150,9 @@ private:
 
 
     };
+
+    protected:
+        void closeEvent(QCloseEvent* event) override;
 
 
 

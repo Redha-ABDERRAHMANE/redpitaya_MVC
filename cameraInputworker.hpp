@@ -93,7 +93,8 @@ private:
     CameraPtrVector cameras;
     CameraPtr camera;
     FeaturePtr pixelFormatFeature;
-    FeaturePtr widthFeature, heightFeature;
+    FeaturePtr widthFeature;
+    FeaturePtr heightFeature;
     FeaturePtr payloadSizeFeature;
     FeaturePtr acquisitionStartFeature;
     FeaturePtr saturationFeature;
@@ -106,6 +107,7 @@ private:
     VmbInt64_t payloadSize = 0;
 
     FramePtrVector frames;
+    FeaturePtr triggerMode;
 
 
     bool running = true;
@@ -113,6 +115,7 @@ private:
 
     double exposureTime = 0.0;
     double saturationValue=1.0;
+    double framerate = 30;
 
 
 
@@ -171,6 +174,11 @@ private:
         }
         std::cout << "Camera opened successfully" << std::endl;
         return true;
+    }
+
+    void configureSaturationAndExposureTimePtr() {
+        camera->GetFeatureByName("ExposureTime", exposureFeature);
+        camera->GetFeatureByName("Saturation", saturationFeature);
     }
 
     void setPixelFormat() {
@@ -286,7 +294,8 @@ private:
 public :
     CameraInputWorker() : sys(VmbSystem::GetInstance()),frames(3){}
     ~CameraInputWorker() {
-        stopAcquisitionAndSysShutdown();
+        //stopAcquisitionAndSysShutdown();
+        
     }
 
     void startCamera() {
@@ -298,6 +307,28 @@ public :
             setFrameObserver();
             calculateBufferSize();
             prepareFrame();
+            configureSaturationAndExposureTimePtr();
+            
+            camera->GetFeatureByName("TriggerMode", triggerMode);
+            triggerMode->SetValue("Off");
+
+
+
+
+            err = camera->GetFeatureByName("AcquisitionFrameRateEnable", framerateControlEnableFeature);
+            if (err == VmbErrorSuccess) {
+                framerateControlEnableFeature->SetValue(false);
+                std::cout << "Frame rate control enabled" << std::endl;
+            }
+            else {
+                std::cout << "AcquisitionFrameRateEnable not available" << std::endl;
+            }
+            err = camera->GetFeatureByName("AcquisitionFrameRate", framerateControlFeature);
+            framerateControlFeature->SetValue(30.0);
+            framerateControlFeature->GetValue(framerate);
+
+            std::cout << "framerate:::::::" << framerate << '\n';
+
             startAcquisition();
 
     }
@@ -314,12 +345,29 @@ public slots:
    
 
     void setSaturationValue(const double& value) {
-        saturationFeature->SetValue(value);
+        double valueToSend = value / 100.0;
+        std::cout << "value to send : " << valueToSend << '\n';
+
+        saturationFeature->SetValue(valueToSend);
+
+        double receivedValue;
+        saturationFeature->GetValue(receivedValue);
+        std::cout << "received saturaation level:  " << receivedValue << std::endl;
+
 
     }
 
     void setExposureTimeValue(const double& value) {
+        std::cout << "yolo 2 " << std::endl;
         exposureFeature->SetValue(value);
+        std::cout << "yolo 3 " << std::endl;
+        double receivedValue;
+        exposureFeature->GetValue(receivedValue);
+        std::cout << "received  exposure time   :  " << receivedValue << '\n';
+
+        framerateControlFeature->GetValue(framerate);
+
+        std::cout << "framerate:::::::" << framerate << '\n';
 
     }
 
@@ -349,7 +397,7 @@ public slots:
                     }
                 }
             }
-
+            QThread::msleep(10);
         }
 
         std::cout << "Stopping acquisition..." << std::endl;
@@ -357,27 +405,76 @@ public slots:
 
     bool endOfWork() {
 
-        // Proper cleanup sequence
         running = false;
-        FeaturePtr acquisitionStopFeature;
-        err = camera->GetFeatureByName("AcquisitionStop", acquisitionStopFeature);
-        if (err == VmbErrorSuccess) {
-            acquisitionStopFeature->RunCommand();
+
+            std::cout << "=== Starting Vimba cleanup ===" << std::endl;
+        try {
+            // Check if objects are valid before cleanup
+            std::cout << "Camera valid: " << (camera ? "YES" : "NO") << std::endl;
+            std::cout << "Frames count: " << frames.size() << std::endl;
+
+            // Stop acquisition first
+            if (camera) {
+                std::cout << "Stopping acquisition..." << std::endl;
+                camera->StopContinuousImageAcquisition();
+                std::cout << "Ending capture..." << std::endl;
+                camera->EndCapture();
+                std::cout << "Flushing queue..." << std::endl;
+                camera->FlushQueue();
+            }
+
+            // Unregister observers with validation
+            std::cout << "Unregistering observers..." << std::endl;
+            for (size_t i = 0; i < frames.size(); ++i) {
+                std::cout << "Processing frame " << i << std::endl;
+                if (frames[i]) {
+                    std::cout << "Frame " << i << " is valid, unregistering observer" << std::endl;
+                    frames[i]->UnregisterObserver();
+                    std::cout << "Frame " << i << " observer unregistered" << std::endl;
+                }
+                else {
+                    std::cout << "Frame " << i << " is NULL" << std::endl;
+                }
+            }
+
+            // Revoke frames with validation
+            std::cout << "Revoking frames..." << std::endl;
+            for (size_t i = 0; i < frames.size(); ++i) {
+                if (frames[i] && camera) {
+                    std::cout << "Revoking frame " << i << std::endl;
+                    camera->RevokeFrame(frames[i]);
+                    std::cout << "Frame " << i << " revoked" << std::endl;
+                }
+            }
+
+            // Clear frames vector
+            std::cout << "Clearing frames vector..." << std::endl;
+            frames.clear();
+            std::cout << "Frames vector cleared" << std::endl;
+
+            // Close camera
+            if (camera) {
+                std::cout << "Closing camera..." << std::endl;
+                camera->Close();
+                std::cout << "Camera closed" << std::endl;
+
+                std::cout << "Resetting camera pointer..." << std::endl;
+                camera.reset(); // This might be where it crashes
+                std::cout << "Camera pointer reset" << std::endl;
+            }
+
+            std::cout << "Shutting down system..." << std::endl;
+            sys.Shutdown();
+            std::cout << "=== Vimba cleanup complete ===" << std::endl;
+
         }
-
-        camera->EndCapture();
-
-        // Flush the frame queue
-        camera->FlushQueue();
-
-        // Revoke frames
-        for (auto& frame : frames) {
-            camera->RevokeFrame(frame);
+        catch (const std::exception& e) {
+            std::cout << "Exception during cleanup: " << e.what() << std::endl;
         }
-
-        camera->Close();
-        sys.Shutdown();
-
+        catch (...) {
+            std::cout << "Unknown exception during cleanup" << std::endl;
+        }
         return true;
     }
+
 };

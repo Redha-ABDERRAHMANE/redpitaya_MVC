@@ -48,8 +48,22 @@ signals:
     void controllerInput_Direction(const int& button_value, const int& directionIndex);
     void rpBoards_connectionFailed();
     void startCameraInput();
+    void change_exposureTimeValue(int value);
 
 public slots:
+
+
+    void setCameraExposureTime(int value) {
+        worker_cameraInput.setExposureTimeValue(value);
+        
+
+    }
+
+    void setCameraSaturation(int value) {
+        worker_cameraInput.setSaturationValue(value);
+        
+
+    }
     void send_ControllerInput_Direction(const int& button_value) {
         //Send signal to GUI to change the visuals then applying the preset
         //Template : {button_value,directionIndexToSend}
@@ -64,26 +78,43 @@ public slots:
     }
 
     void shutDownProgram() {
-        // Clean shutdown of threads
+
+        std::cout << "=== Starting shutdown ===" << std::endl;
+
+        // Stop workers
+        worker_controllerInput.stopWorker();
+        worker_cameraInput.endOfWork();
+
         thread_controllerInput.requestInterruption();
         thread_GUIInput.requestInterruption();
         thread_cameraInput.requestInterruption();
+
+        std::cout << "yolo 1" << '\n';
 
         if (thread_controllerInput.isRunning()) {
             thread_controllerInput.quit();
             thread_controllerInput.wait();
         }
+        std::cout << "yolo 2" << '\n';
 
         if (thread_GUIInput.isRunning()) {
             thread_GUIInput.quit();
             thread_GUIInput.wait();
         }
+        std::cout << "yolo 3" << '\n';
 
         if (thread_cameraInput.isRunning()) {
             thread_cameraInput.quit();
             thread_cameraInput.wait();
         }
-        QApplication::quit();
+        std::cout << "yolo 4" << '\n';
+
+        if ((thread_cameraInput.isRunning() || thread_GUIInput.isRunning() || thread_controllerInput.isRunning())) {
+            if (thread_cameraInput.isRunning()) { std::cout << " camera still running \n"; }
+            if (thread_GUIInput.isRunning()) { std::cout << "GUI Inputstill running \n"; }
+            if (thread_controllerInput.isRunning()) { std::cout << " controller input still running \n"; }
+        }
+        
     }
 
 public:
@@ -94,13 +125,15 @@ public:
         worker_controllerInput(&controller),
         worker_ApplyInput(&model)
     {
+
+
+        connect(&worker_controllerInput, &InputWorker::finished, &thread_controllerInput, &QThread::quit);
         // Move workers to their respective threads
         worker_controllerInput.moveToThread(&thread_controllerInput);
         worker_ApplyInput.moveToThread(&thread_GUIInput);
         worker_cameraInput.moveToThread(&thread_cameraInput);
 
-        // Connect thread finished signals
-        connect(&thread_controllerInput, &QThread::finished, &worker_controllerInput, &QObject::deleteLater);
+
 
         // Connect controller signals
         connect(this, &MVC_Controller::startCheckInput, &worker_controllerInput, &InputWorker::runCheckInput);
@@ -117,6 +150,15 @@ public:
         // Connect view to workers
         connect(view.get(), &View::buttonDirection_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_GUIInput);
         connect(view.get(), &View::frequencyChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_FrequencyShift);
+
+
+        //connect(view.get(), &View::exposureTimeChange_pressed, &worker_cameraInput, &CameraInputWorker::setExposureTimeValue);
+        connect(view.get(), &View::exposureTimeChange_pressed, this, &MVC_Controller::setCameraExposureTime);
+
+
+
+        connect(view.get(), &View::saturationChange_pressed, this, &MVC_Controller::setCameraSaturation);
+
         connect(view.get(), &View::phaseChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_PhaseShift);
         connect(view.get(), &View::initialize_MVCModel, this, &MVC_Controller::initialize_MVCModel);
         connect(view.get(), &View::retryButton_pressed, &model, &MVC_Model::retry_connectRpBoards);
@@ -132,6 +174,7 @@ public:
 
         // Start camera thread first
         thread_cameraInput.start();
+        
         emit startCameraInput();
         //model.setup_MVCModel();
 
@@ -148,5 +191,6 @@ public:
 
     ~MVC_Controller() {
 
+        
     }
 };
