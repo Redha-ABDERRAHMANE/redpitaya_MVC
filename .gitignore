@@ -110,3 +110,4 @@ CMakeLists.txt.user*
 /debug/redpitaya_GUI.tlog/redpitaya_GUI.write.1u.tlog
 /debug/redpitaya_GUI.tlog/moc.read.1u.tlog
 /debug/redpitaya_GUI.log
+*.log
