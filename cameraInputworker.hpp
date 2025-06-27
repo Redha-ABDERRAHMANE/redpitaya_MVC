@@ -461,13 +461,17 @@ public:
 
             std::cout << "=== Starting Vimba cleanup ===" << std::endl;
         try {
-            // Check if objects are valid before cleanup
+             //Check if objects are valid before cleanup
             std::cout << "Camera valid: " << (camera ? "YES" : "NO") << std::endl;
             std::cout << "Frames count: " << frames.size() << std::endl;
 
-            // Stop acquisition first
+             //Stop acquisition first
             if (camera) {
+                FeaturePtr stopAcquisitionFeature;
+                camera->GetFeatureByName("AcquisitionStop", stopAcquisitionFeature);
+                stopAcquisitionFeature->RunCommand();
                 std::cout << "Stopping acquisition..." << std::endl;
+               
                 camera->StopContinuousImageAcquisition();
                 std::cout << "Ending capture..." << std::endl;
                 camera->EndCapture();
@@ -475,7 +479,7 @@ public:
                 camera->FlushQueue();
             }
 
-            // Unregister observers with validation
+             //Unregister observers with validation
             std::cout << "Unregistering observers..." << std::endl;
             for (size_t i = 0; i < frames.size(); ++i) {
                 std::cout << "Processing frame " << i << std::endl;
@@ -489,7 +493,7 @@ public:
                 }
             }
 
-            // Revoke frames with validation
+             //Revoke frames with validation
             std::cout << "Revoking frames..." << std::endl;
             for (size_t i = 0; i < frames.size(); ++i) {
                 if (frames[i] && camera) {
@@ -499,12 +503,12 @@ public:
                 }
             }
 
-            // Clear frames vector
+             //Clear frames vector
             std::cout << "Clearing frames vector..." << std::endl;
             frames.clear();
             std::cout << "Frames vector cleared" << std::endl;
 
-            // Close camera
+             //Close camera
             if (camera) {
                 std::cout << "Closing camera..." << std::endl;
                 camera->Close();
@@ -526,7 +530,7 @@ public:
         catch (...) {
             std::cout << "Unknown exception during cleanup" << std::endl;
         }
-        return true;
+       return true;
     }
 
 };

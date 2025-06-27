@@ -94,7 +94,7 @@ void View::trigger_initialization() {
     frequencyLayout->setAlignment(Qt::AlignTop);
 
     // Create the slider
-    QSlider* frequencySlider = new QSlider(Qt::Horizontal);
+    frequencySlider = new QSlider(Qt::Horizontal);
     frequencySlider->setRange(0, 50);
     frequencySlider->setTickInterval(5);
     frequencySlider->setSingleStep(5);
@@ -105,7 +105,7 @@ void View::trigger_initialization() {
     frequencySlider->setValue(5);
 
     // Create the label to be overlaid
-    QLabel* display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz", this);
+    display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz", this);
     display_FrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
     display_FrequencyValue->setMargin(0);
     display_FrequencyValue->setAlignment(Qt::AlignHCenter);
@@ -115,9 +115,9 @@ void View::trigger_initialization() {
 
 
     // Create the button to confirm the new frequency value 
-    QPushButton* button_frequencyConfirmation = new QPushButton("Confirm", this);
+    button_frequencyConfirmation = new QPushButton("Confirm", this);
 
-    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this, frequencySlider]() {
+    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this]() {
         emit frequencyChange_pressed(frequencySlider->value());
         });
 
@@ -131,7 +131,7 @@ void View::trigger_initialization() {
     frequencyGroupBox->setLayout(frequencyLayout);
 
     // Manual snap-to-tick implementation
-    connect(frequencySlider, &QSlider::valueChanged, [frequencySlider](int value) {
+    connect(frequencySlider, &QSlider::valueChanged, [this](int value) {
         int tickInterval = 5;
         int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
         snappedValue = qBound(0, snappedValue, 50);
@@ -144,7 +144,7 @@ void View::trigger_initialization() {
         });
 
     // Output the snapped value when user releases the slider
-    connect(frequencySlider, &QSlider::sliderReleased, [display_FrequencyValue, frequencySlider]() {
+    connect(frequencySlider, &QSlider::sliderReleased, [this]() {
         qDebug() << "Frequency value :" << frequencySlider->value();
         QString messageToDisplay = "Frequency slider value : " + QString::number(frequencySlider->value()) + " Hz";
         display_FrequencyValue->setText(messageToDisplay);
@@ -158,32 +158,32 @@ void View::trigger_initialization() {
 
 
     // Create the label to be overlaid
-    QLabel* display_primaryPhaseValue = new QLabel("Primary card phase value :", this);
+    display_primaryPhaseValue = new QLabel("Primary card phase value :", this);
     display_primaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
     display_primaryPhaseValue->setMargin(0);
     display_primaryPhaseValue->setAlignment(Qt::AlignHCenter);
 
-    QLineEdit* textBox_primaryPhaseValue = new QLineEdit("0", this);
+    textBox_primaryPhaseValue = new QLineEdit("0", this);
 
     // Create the button to confirm the new phase value 
-    QPushButton* button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
+    button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
 
-    connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_primaryPhaseValue]() {
+    connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
         emit phaseChange_pressed(1, textBox_primaryPhaseValue->text().toInt());
         });
 
     // Create the label to be overlaid
-    QLabel* display_secondaryPhaseValue = new QLabel("Secondary card phase value :", this);
+    display_secondaryPhaseValue = new QLabel("Secondary card phase value :", this);
     display_secondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
     display_secondaryPhaseValue->setMargin(0);
     display_secondaryPhaseValue->setAlignment(Qt::AlignHCenter);
 
-    QLineEdit* textBox_secondaryPhaseValue = new QLineEdit("0", this);
+    textBox_secondaryPhaseValue = new QLineEdit("0", this);
 
     // Create the button to confirm the new phase value 
-    QPushButton* button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
+    button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
 
-    connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this, textBox_secondaryPhaseValue]() {
+    connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
         emit phaseChange_pressed(2, textBox_secondaryPhaseValue->text().toInt());
         });
 
@@ -220,24 +220,24 @@ void View::trigger_initialization() {
 
     // === EXPOSURE TIME SLIDER ===
     // Display label for exposure time
-    QLabel* display_ExposureTimeValue = new QLabel("Exposure Time: 5 ms", this);
+    display_ExposureTimeValue = new QLabel("Exposure Time: 5 ms", this);
 
     // Create exposure time slider 
-    QSlider* exposureTimeSlider = new QSlider(Qt::Horizontal, this);
+    exposureTimeSlider = new QSlider(Qt::Horizontal, this);
     exposureTimeSlider->setRange(1, 200);
     exposureTimeSlider->setValue(5);
     exposureTimeSlider->setTickPosition(QSlider::TicksBelow);
     exposureTimeSlider->setTickInterval(2);
 
     // Create the button to confirm the new exposure time value 
-    QPushButton* button_exposureTimeConfirmation = new QPushButton("Confirm Exposure", this);
-    connect(button_exposureTimeConfirmation, &QPushButton::clicked, this, [this, exposureTimeSlider]() {
+    button_exposureTimeConfirmation = new QPushButton("Confirm Exposure", this);
+    connect(button_exposureTimeConfirmation, &QPushButton::clicked, this, [this]() {
         std::cout << "yolo 1 " << std::endl;
-        emit exposureTimeChange_pressed(exposureTimeSlider->value()*1000);
+        emit exposureTimeChange_pressed(exposureTimeSlider->value() * 1000);
         });
 
     // Manual snap-to-tick implementation for exposure time
-    connect(exposureTimeSlider, &QSlider::valueChanged, [exposureTimeSlider](int value) {
+    connect(exposureTimeSlider, &QSlider::valueChanged, [this](int value) {
         int tickInterval = 2;
         int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
         snappedValue = qBound(1, snappedValue, 200);
@@ -249,7 +249,7 @@ void View::trigger_initialization() {
         });
 
     // Output the snapped value when user releases the exposure time slider
-    connect(exposureTimeSlider, &QSlider::sliderReleased, [display_ExposureTimeValue, exposureTimeSlider]() {
+    connect(exposureTimeSlider, &QSlider::sliderReleased, [this]() {
         qDebug() << "Exposure Time value:" << exposureTimeSlider->value();
         QString messageToDisplay = "Exposure Time: " + QString::number(exposureTimeSlider->value()) + " ms";
         display_ExposureTimeValue->setText(messageToDisplay);
@@ -257,23 +257,23 @@ void View::trigger_initialization() {
 
     // === SATURATION SLIDER ===
     // Display label for saturation
-    QLabel* display_SaturationValue = new QLabel("Saturation: 100%", this);
+    display_SaturationValue = new QLabel("Saturation: 100%", this);
 
     // Create saturation slider (assuming range 0-100%)
-    QSlider* saturationSlider = new QSlider(Qt::Horizontal, this);
+    saturationSlider = new QSlider(Qt::Horizontal, this);
     saturationSlider->setRange(0, 300);
     saturationSlider->setValue(100);
     saturationSlider->setTickPosition(QSlider::TicksBelow);
     saturationSlider->setTickInterval(10);
 
     // Create the button to confirm the new saturation value 
-    QPushButton* button_saturationConfirmation = new QPushButton("Confirm Saturation", this);
-    connect(button_saturationConfirmation, &QPushButton::clicked, this, [this, saturationSlider]() {
+    button_saturationConfirmation = new QPushButton("Confirm Saturation", this);
+    connect(button_saturationConfirmation, &QPushButton::clicked, this, [this]() {
         emit saturationChange_pressed(saturationSlider->value());
         });
 
     // Manual snap-to-tick implementation for saturation
-    connect(saturationSlider, &QSlider::valueChanged, [saturationSlider](int value) {
+    connect(saturationSlider, &QSlider::valueChanged, [this](int value) {
         int tickInterval = 10;
         int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
         snappedValue = qBound(0, snappedValue, 300);
@@ -285,7 +285,7 @@ void View::trigger_initialization() {
         });
 
     // Output the snapped value when user releases the saturation slider
-    connect(saturationSlider, &QSlider::sliderReleased, [display_SaturationValue, saturationSlider]() {
+    connect(saturationSlider, &QSlider::sliderReleased, [this]() {
         qDebug() << "Saturation value:" << saturationSlider->value();
         QString messageToDisplay = "Saturation: " + QString::number(saturationSlider->value()) + "%";
         display_SaturationValue->setText(messageToDisplay);
@@ -326,15 +326,10 @@ void View::trigger_initialization() {
 
     emit GUIReady();
 
-  
-}
-
-View::~View()
-{
-
-    delete ui;
 
 }
+
+
 
 void View::getCameras(){
     comboBox->addItem("<None>");
@@ -581,10 +576,62 @@ void View::closeEvent(QCloseEvent* event)
         event->accept();
         this->close();
         emit programShutdown();
-        QApplication::quit();
+        //QApplication::quit();
        
     }
     else {
         event->ignore();  // Cancel the close event
+    }
+}
+
+View::~View()
+{
+    if (mediaCaptureSession) {
+        mediaCaptureSession->setCamera(nullptr);
+        delete mediaCaptureSession;
+        mediaCaptureSession = nullptr;
+    }
+
+    if (currentCam) {
+        currentCam->stop();
+        delete currentCam;
+        currentCam = nullptr;
+    }
+
+    // Clean up UI widgets
+    delete comboBox;
+    delete videoWidget;
+    delete controllerImageLabel;
+    delete testButton;
+    delete button_Direction_Primary;
+    delete button_Direction_Secondary;
+
+    // Frequency controls
+    delete frequencySlider;
+    delete display_FrequencyValue;
+    delete button_frequencyConfirmation;
+
+    // Phase controls
+    delete display_primaryPhaseValue;
+    delete textBox_primaryPhaseValue;
+    delete button_primaryPhaseConfirmation;
+    delete display_secondaryPhaseValue;
+    delete textBox_secondaryPhaseValue;
+    delete button_secondaryPhaseConfirmation;
+
+    // Exposure controls
+    delete display_ExposureTimeValue;
+    delete exposureTimeSlider;
+    delete button_exposureTimeConfirmation;
+
+    // Saturation controls
+    delete display_SaturationValue;
+    delete saturationSlider;
+    delete button_saturationConfirmation;
+
+    // Finally delete ui (this should be last)
+    if (ui) {
+        delete ui;
+        ui = nullptr;
     }
 }

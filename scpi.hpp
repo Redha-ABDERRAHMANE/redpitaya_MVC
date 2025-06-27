@@ -63,13 +63,15 @@ public:
 
     ~scpi() {
         //STEP - 7 Close Socket
-
+        std::cout << "entered scpi destructor" << std::endl;
+        shutdown(TCPClientSocket, SD_BOTH);
         iCloseSocket = closesocket(TCPClientSocket);
         if (iCloseSocket == SOCKET_ERROR)
         {
             std::cout << "Closing Failed & Error No->" << WSAGetLastError() << std::endl;
         }
         std::cout << "Closing Socket success" << std::endl;
+        WSACleanup();
     }
 
     void set_connectionToSCPIServer() {

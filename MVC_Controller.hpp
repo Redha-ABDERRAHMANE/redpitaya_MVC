@@ -119,9 +119,14 @@ public slots:
         }
         std::cout << "yolo 3" << '\n';
 
+        std::cout << "Waiting for camera thread cleanup..." << std::endl;
         if (workerThread_cameraInput.isRunning()) {
-            workerThread_cameraInput.quit();
-            workerThread_cameraInput.wait();
+            // Give the camera thread time to complete its cleanup
+            if (!workerThread_cameraInput.wait(5000)) { // 5 second timeout
+                std::cout << "Camera thread cleanup timeout, forcing termination..." << std::endl;
+                workerThread_cameraInput.terminate();
+                workerThread_cameraInput.wait();
+            }
         }
         std::cout << "yolo 4" << '\n';
 
@@ -210,6 +215,8 @@ public:
     }
 
     ~MVC_Controller() {
+        model.~MVC_Model();
+        controller.~Controller();
 
         
     }
