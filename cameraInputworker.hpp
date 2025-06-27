@@ -149,7 +149,7 @@ private:
     FeaturePtr framerateControlEnableFeature;
     FeaturePtr framerateControlFeature;
     VmbInt64_t width = 640, height = 480;
-    std::shared_ptr<FrameObserver> frameObserver = nullptr;
+    FrameObserver* frameObserver = nullptr;
     IFrameObserverPtr observerPtr;
     VmbInt64_t payloadSize = 0;
 
@@ -264,8 +264,8 @@ private:
     }
     // Create frame observer - use shared_ptr for proper memory management
     void setFrameObserver() {
-        frameObserver = std::make_shared<FrameObserver>(camera);
-        observerPtr = IFrameObserverPtr(frameObserver.get());
+        frameObserver = new FrameObserver(camera);
+        observerPtr = IFrameObserverPtr(frameObserver);
     }
 
     // Calculate proper buffer size based on pixel format

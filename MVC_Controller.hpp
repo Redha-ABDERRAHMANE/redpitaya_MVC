@@ -16,7 +16,7 @@ class MVC_Controller : public QObject {
 private:
     Controller controller;
     MVC_Model model;
-    std::unique_ptr<View> view;
+    
     InputThread workerThread_controllerInput;
 
     QThread thread_GUIInput;
@@ -104,6 +104,7 @@ public slots:
 
         emit workerThreads_shutdown();
 
+        disconnect();
 
         std::cout << "yolo 1" << '\n';
 
@@ -139,10 +140,9 @@ public slots:
     }
 
 public:
-    MVC_Controller(View* v) :
+    MVC_Controller(View* view) :
         controller(),
         model(controller),  // Pass controller to model constructor
-        view(v),
         workerThread_controllerInput(&controller),
         worker_ApplyInput(&model)
     {
@@ -161,11 +161,11 @@ public:
 
         connect(this, &MVC_Controller::workerThreads_shutdown, &workerThread_cameraInput, &CameraInputWorkerThread::endOfWork);
 
-        connect(this, &MVC_Controller::startMainGUI, view.get(), &View::trigger_initialization);
+        connect(this, &MVC_Controller::startMainGUI, view, &View::trigger_initialization);
 
-        connect(this, &MVC_Controller::controllerInput_Direction, view.get(), &View::handleInputReceived);
+        connect(this, &MVC_Controller::controllerInput_Direction, view, &View::handleInputReceived);
     
-        connect(&workerThread_cameraInput, &CameraInputWorkerThread::ImageReceived, view.get(), &View::get_refresh_imageReceived);
+        connect(&workerThread_cameraInput, &CameraInputWorkerThread::ImageReceived, view, &View::get_refresh_imageReceived);
 
         connect(&workerThread_cameraInput, &CameraInputWorkerThread::cameraReady, this, &MVC_Controller::SendSignalstartCheckInput);
         
@@ -181,29 +181,29 @@ public:
         
 
         // Connect view to workers
-        connect(view.get(), &View::buttonDirection_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_GUIInput);
+        connect(view, &View::buttonDirection_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_GUIInput);
 
-        connect(view.get(), &View::frequencyChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_FrequencyShift);
+        connect(view, &View::frequencyChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_FrequencyShift);
 
-        connect(view.get(), &View::exposureTimeChange_pressed, this, &MVC_Controller::setCameraExposureTime);
+        connect(view, &View::exposureTimeChange_pressed, this, &MVC_Controller::setCameraExposureTime);
 
-        connect(view.get(), &View::saturationChange_pressed, this, &MVC_Controller::setCameraSaturation);
+        connect(view, &View::saturationChange_pressed, this, &MVC_Controller::setCameraSaturation);
 
-        connect(view.get(), &View::phaseChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_PhaseShift);
+        connect(view, &View::phaseChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_PhaseShift);
 
-        connect(view.get(), &View::initialize_MVCModel, this, &MVC_Controller::initialize_MVCModel);
+        connect(view, &View::initialize_MVCModel, this, &MVC_Controller::initialize_MVCModel);
 
-        connect(view.get(), &View::retryButton_pressed, &model, &MVC_Model::retry_connectRpBoards);
+        connect(view, &View::retryButton_pressed, &model, &MVC_Model::retry_connectRpBoards);
 
-        connect(view.get(), &View::programShutdown, this, &MVC_Controller::shutDownProgram);
+        connect(view, &View::programShutdown, this, &MVC_Controller::shutDownProgram);
 
-        connect(view.get(), &View::GUIReady, this, &MVC_Controller::startWorkerThreads);
+        connect(view, &View::GUIReady, this, &MVC_Controller::startWorkerThreads);
 
 
         // Connect model signals
-        connect(&model, &MVC_Model::rpBoards_connectionFailed, view.get(), &View::connectionFailedPopUp);
+        connect(&model, &MVC_Model::rpBoards_connectionFailed, view, &View::connectionFailedPopUp);
 
-        connect(&model, &MVC_Model::rpBoards_connectionSuccess, view.get(), &View::trigger_initialization);
+        connect(&model, &MVC_Model::rpBoards_connectionSuccess, view, &View::trigger_initialization);
       
         
         //model.setup_MVCModel();
@@ -215,8 +215,6 @@ public:
     }
 
     ~MVC_Controller() {
-        model.~MVC_Model();
-        controller.~Controller();
 
         
     }

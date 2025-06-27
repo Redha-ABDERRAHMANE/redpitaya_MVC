@@ -586,48 +586,6 @@ void View::closeEvent(QCloseEvent* event)
 
 View::~View()
 {
-    if (mediaCaptureSession) {
-        mediaCaptureSession->setCamera(nullptr);
-        delete mediaCaptureSession;
-        mediaCaptureSession = nullptr;
-    }
-
-    if (currentCam) {
-        currentCam->stop();
-        delete currentCam;
-        currentCam = nullptr;
-    }
-
-    // Clean up UI widgets
-    delete comboBox;
-    delete videoWidget;
-    delete controllerImageLabel;
-    delete testButton;
-    delete button_Direction_Primary;
-    delete button_Direction_Secondary;
-
-    // Frequency controls
-    delete frequencySlider;
-    delete display_FrequencyValue;
-    delete button_frequencyConfirmation;
-
-    // Phase controls
-    delete display_primaryPhaseValue;
-    delete textBox_primaryPhaseValue;
-    delete button_primaryPhaseConfirmation;
-    delete display_secondaryPhaseValue;
-    delete textBox_secondaryPhaseValue;
-    delete button_secondaryPhaseConfirmation;
-
-    // Exposure controls
-    delete display_ExposureTimeValue;
-    delete exposureTimeSlider;
-    delete button_exposureTimeConfirmation;
-
-    // Saturation controls
-    delete display_SaturationValue;
-    delete saturationSlider;
-    delete button_saturationConfirmation;
 
     // Finally delete ui (this should be last)
     if (ui) {
