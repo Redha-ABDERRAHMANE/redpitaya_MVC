@@ -595,11 +595,16 @@ void View:: connectionFailedPopUp() {
     }
 }
 
-void View::get_refresh_imageReceived( QImage image) {
-    image = image.scaled(1920, 1080);
-    image = image.transformed(QTransform().rotate(imageRotationAngle));
-    
-    ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
+void View::get_refresh_imageReceived( const QImage& image) {
+
+    if (imageRotationAngle != 0.0) {
+
+        ImageLabelDisplay.setPixmap(QPixmap::fromImage(image.transformed(QTransform().rotate(imageRotationAngle))));
+    }
+    else{
+        ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
+    }
+
     
 
 

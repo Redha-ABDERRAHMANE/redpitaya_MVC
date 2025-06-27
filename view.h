@@ -65,7 +65,7 @@ public slots:
     void connectionFailedPopUp();
     void trigger_initialization();
 
-    void get_refresh_imageReceived(QImage image);
+    void get_refresh_imageReceived(const QImage& image);
 
 private:
 
