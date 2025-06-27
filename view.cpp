@@ -293,14 +293,26 @@ void View::trigger_initialization() {
 
 
     //Image rotation controls
-
+    
     QHBoxLayout* imageRotationLayout = new QHBoxLayout();
     display_rotationValue = new QLabel("Image rotation");
     button_0DegreeRotation = new QRadioButton("0 degrees", this);
     button_90DegreeRotation = new QRadioButton("90 degrees", this);
     button_180DegreeRotation = new QRadioButton("180 degrees",this);
+    button_270DegreeRotation = new QRadioButton("270 degrees",this);
+
+    imageRotationLayout->addWidget(display_rotationValue);
+    imageRotationLayout->addWidget(button_0DegreeRotation);
+    imageRotationLayout->addWidget(button_90DegreeRotation);
+    imageRotationLayout->addWidget(button_180DegreeRotation);
+    imageRotationLayout->addWidget(button_270DegreeRotation);
 
     button_0DegreeRotation->setChecked(true);
+
+    connect(button_0DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 0.0;});
+    connect(button_90DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 90.0;});
+    connect(button_180DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 180.0;});
+    connect(button_270DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 270.0;});
 
     
     
@@ -325,6 +337,7 @@ void View::trigger_initialization() {
     otherLayout->addWidget(display_SaturationValue);
     otherLayout->addWidget(saturationSlider);
     otherLayout->addWidget(button_saturationConfirmation);
+    otherLayout->addLayout(imageRotationLayout);
 
     otherGroupBox->setLayout(otherLayout);
 
@@ -582,8 +595,12 @@ void View:: connectionFailedPopUp() {
     }
 }
 
-void View::get_refresh_imageReceived(const QImage& image) {
+void View::get_refresh_imageReceived( QImage image) {
+    image = image.scaled(1920, 1080);
+    image = image.transformed(QTransform().rotate(imageRotationAngle));
+    
     ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
+    
 
 
 }

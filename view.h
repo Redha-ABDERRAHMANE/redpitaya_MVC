@@ -39,6 +39,39 @@ public:
     View(QWidget* parent = nullptr);
     ~View();
 
+
+
+
+signals:
+    void buttonDirection_pressed(ButtonCombination button_combination);
+    void frequencyChange_pressed(const int& frequency_value);
+    void phaseChange_pressed(const int& card, const int& phase_value);
+    void saturationChange_pressed(const int saturation_value);
+    void exposureTimeChange_pressed(const int exposureTime_value);
+    void initialize_MVCModel(bool state);
+    void retryButton_pressed(bool state);
+    void programShutdown();
+    void GUIReady();
+
+
+private slots:
+    void selectCam();
+
+
+
+public slots:
+    void load_ControllerImage(const int& button_value);
+    void handleInputReceived(const int& button_value, const int& directionIndex);
+    void connectionFailedPopUp();
+    void trigger_initialization();
+
+    void get_refresh_imageReceived(QImage image);
+
+private:
+
+    Ui::View* ui;
+    int8_t last_DirectionIndexUsed = -1;
+    double imageRotationAngle = 0.0;
     QList<QCameraDevice> cameras;
     QComboBox* comboBox;
 
@@ -86,52 +119,14 @@ public:
     QPushButton* button_saturationConfirmation;
 
     // Image rotation controls
+
     QLabel* display_rotationValue;
+    
+    QRadioButton* button_270DegreeRotation;
     QRadioButton* button_180DegreeRotation;
     QRadioButton* button_90DegreeRotation;
     QRadioButton* button_0DegreeRotation;
 
-
-signals:
-    void buttonDirection_pressed(ButtonCombination button_combination);
-    void frequencyChange_pressed(const int& frequency_value);
-    void phaseChange_pressed(const int& card, const int& phase_value);
-    void saturationChange_pressed(const int saturation_value);
-    void exposureTimeChange_pressed(const int exposureTime_value);
-    void initialize_MVCModel(bool state);
-    void retryButton_pressed(bool state);
-    void programShutdown();
-    void GUIReady();
-
-
-private slots:
-    void selectCam();
-
-
-
-public slots:
-    void load_ControllerImage(const int& button_value);
-    void handleInputReceived(const int& button_value, const int& directionIndex);
-    void connectionFailedPopUp();
-    void trigger_initialization();
-
-    void get_refresh_imageReceived(const QImage& image);
-
-private:
-
-    Ui::View* ui;
-    int8_t last_DirectionIndexUsed = -1;
-
-
-
-    void getCameras();
-    void update_DirectionButton_clicked(const int& directionIndex);
-    void update_lastDirectionButtonUsed(const int& newDirectionIndex);
-
-    void set_Direction_buttons(QGridLayout*& directionGridLayout);
-    void set_Axis_Direction_buttons(QVBoxLayout*& movementInfoVerticalLayout, QHBoxLayout*& axisInfoHorizontalLayout, QHBoxLayout*& directionIndicatorHorizontalLayout);
-
-    void update_directionIndicators(const int& newDirectionIndex);
 
 
     //Template for array_directionButtons = {up-left, up-right,down-left, down-right, right-up , right-down, left-up  , left-down}
@@ -179,6 +174,21 @@ private:
 
 
     };
+
+
+
+private:
+
+    void getCameras();
+    void update_DirectionButton_clicked(const int& directionIndex);
+    void update_lastDirectionButtonUsed(const int& newDirectionIndex);
+
+    void set_Direction_buttons(QGridLayout*& directionGridLayout);
+    void set_Axis_Direction_buttons(QVBoxLayout*& movementInfoVerticalLayout, QHBoxLayout*& axisInfoHorizontalLayout, QHBoxLayout*& directionIndicatorHorizontalLayout);
+
+    void update_directionIndicators(const int& newDirectionIndex);
+
+
 
 protected:
     void closeEvent(QCloseEvent* event) override;
