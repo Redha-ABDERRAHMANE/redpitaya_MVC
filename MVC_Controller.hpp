@@ -17,14 +17,13 @@ private:
     Controller controller;
     MVC_Model model;
     std::unique_ptr<View> view;
-    QThread thread_controllerInput;
-    InputWorker worker_controllerInput;
+    InputThread workerThread_controllerInput;
 
     QThread thread_GUIInput;
     ApplyInputWorker worker_ApplyInput;
 
-    QThread thread_cameraInput;
-    CameraInputWorker worker_cameraInput;
+   
+    CameraInputWorkerThread workerThread_cameraInput;
 
     bool isDefaultDirectionButton(const int& button_value) {
         return WithInInterval(Buttons::A, button_value, Buttons::B);
@@ -45,22 +44,36 @@ private:
 
 signals:
     void startCheckInput();
+    void startMainGUI();
     void controllerInput_Direction(const int& button_value, const int& directionIndex);
     void rpBoards_connectionFailed();
     void startCameraInput();
     void change_exposureTimeValue(int value);
+    void workerThreads_shutdown();
 
 public slots:
 
+    void SendSignalstartCheckInput() {
+        std::cout << "received signal\n";
+        emit startCheckInput();
+    }
+
+    void startWorkerThreads() {
+        workerThread_cameraInput.start();
+        workerThread_controllerInput.start();
+        thread_GUIInput.start();
+       /* emit startCheckInput();*/
+    }
+
 
     void setCameraExposureTime(int value) {
-        worker_cameraInput.setExposureTimeValue(value);
+        workerThread_cameraInput.setExposureTimeValue(value);
         
 
     }
 
     void setCameraSaturation(int value) {
-        worker_cameraInput.setSaturationValue(value);
+        workerThread_cameraInput.setSaturationValue(value);
         
 
     }
@@ -82,18 +95,21 @@ public slots:
         std::cout << "=== Starting shutdown ===" << std::endl;
 
         // Stop workers
-        worker_controllerInput.stopWorker();
-        worker_cameraInput.endOfWork();
+        
+        
 
-        thread_controllerInput.requestInterruption();
+        workerThread_controllerInput.requestInterruption();
         thread_GUIInput.requestInterruption();
-        thread_cameraInput.requestInterruption();
+        workerThread_cameraInput.requestInterruption();
+
+        emit workerThreads_shutdown();
+
 
         std::cout << "yolo 1" << '\n';
 
-        if (thread_controllerInput.isRunning()) {
-            thread_controllerInput.quit();
-            thread_controllerInput.wait();
+        if (workerThread_controllerInput.isRunning()) {
+            workerThread_controllerInput.quit();
+            workerThread_controllerInput.wait();
         }
         std::cout << "yolo 2" << '\n';
 
@@ -103,18 +119,18 @@ public slots:
         }
         std::cout << "yolo 3" << '\n';
 
-        if (thread_cameraInput.isRunning()) {
-            thread_cameraInput.quit();
-            thread_cameraInput.wait();
+        if (workerThread_cameraInput.isRunning()) {
+            workerThread_cameraInput.quit();
+            workerThread_cameraInput.wait();
         }
         std::cout << "yolo 4" << '\n';
 
-        if ((thread_cameraInput.isRunning() || thread_GUIInput.isRunning() || thread_controllerInput.isRunning())) {
-            if (thread_cameraInput.isRunning()) { std::cout << " camera still running \n"; }
+        if ((workerThread_cameraInput.isRunning() || thread_GUIInput.isRunning() || workerThread_controllerInput.isRunning())) {
+            if (workerThread_cameraInput.isRunning()) { std::cout << " camera still running \n"; }
             if (thread_GUIInput.isRunning()) { std::cout << "GUI Inputstill running \n"; }
-            if (thread_controllerInput.isRunning()) { std::cout << " controller input still running \n"; }
+            if (workerThread_controllerInput.isRunning()) { std::cout << " controller input still running \n"; }
         }
-        
+        std::cout << "done" << std::endl;
     }
 
 public:
@@ -122,71 +138,75 @@ public:
         controller(),
         model(controller),  // Pass controller to model constructor
         view(v),
-        worker_controllerInput(&controller),
+        workerThread_controllerInput(&controller),
         worker_ApplyInput(&model)
     {
 
 
-        connect(&worker_controllerInput, &InputWorker::finished, &thread_controllerInput, &QThread::quit);
+     
         // Move workers to their respective threads
-        worker_controllerInput.moveToThread(&thread_controllerInput);
         worker_ApplyInput.moveToThread(&thread_GUIInput);
-        worker_cameraInput.moveToThread(&thread_cameraInput);
+        
 
 
 
         // Connect controller signals
-        connect(this, &MVC_Controller::startCheckInput, &worker_controllerInput, &InputWorker::runCheckInput);
-        connect(this, &MVC_Controller::startCheckInput, &worker_cameraInput, &CameraInputWorker::getDisplayFrame);
-        connect(this, &MVC_Controller::startCameraInput, &worker_cameraInput, &CameraInputWorker::startCamera);
+       
+        //connect(this, &MVC_Controller::startCheckInput, &workerThread_cameraInput, &CameraInputWorkerThread::getDisplayFrame);
+
+        connect(this, &MVC_Controller::workerThreads_shutdown, &workerThread_cameraInput, &CameraInputWorkerThread::endOfWork);
+
+        connect(this, &MVC_Controller::startMainGUI, view.get(), &View::trigger_initialization);
+
+        connect(this, &MVC_Controller::controllerInput_Direction, view.get(), &View::handleInputReceived);
+    
+        connect(&workerThread_cameraInput, &CameraInputWorkerThread::ImageReceived, view.get(), &View::get_refresh_imageReceived);
+
+        connect(&workerThread_cameraInput, &CameraInputWorkerThread::cameraReady, this, &MVC_Controller::SendSignalstartCheckInput);
+        
+
 
         // Connect view signals
-        connect(this, &MVC_Controller::controllerInput_Direction, view.get(), &View::handleInputReceived);
+        
 
         // Connect worker signals
-        connect(&worker_controllerInput, &InputWorker::validInputDetected, &worker_ApplyInput, &ApplyInputWorker::apply_ControllerInput);
-        connect(&worker_controllerInput, &InputWorker::validInputDetected, this, &MVC_Controller::send_ControllerInput_Direction);
+        connect(&workerThread_controllerInput, &InputThread::validInputDetected, &worker_ApplyInput, &ApplyInputWorker::apply_ControllerInput);
+
+        connect(&workerThread_controllerInput, &InputThread::validInputDetected, this, &MVC_Controller::send_ControllerInput_Direction);
+        
 
         // Connect view to workers
         connect(view.get(), &View::buttonDirection_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_GUIInput);
+
         connect(view.get(), &View::frequencyChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_FrequencyShift);
 
-
-        //connect(view.get(), &View::exposureTimeChange_pressed, &worker_cameraInput, &CameraInputWorker::setExposureTimeValue);
         connect(view.get(), &View::exposureTimeChange_pressed, this, &MVC_Controller::setCameraExposureTime);
-
-
 
         connect(view.get(), &View::saturationChange_pressed, this, &MVC_Controller::setCameraSaturation);
 
         connect(view.get(), &View::phaseChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_PhaseShift);
+
         connect(view.get(), &View::initialize_MVCModel, this, &MVC_Controller::initialize_MVCModel);
+
         connect(view.get(), &View::retryButton_pressed, &model, &MVC_Model::retry_connectRpBoards);
+
         connect(view.get(), &View::programShutdown, this, &MVC_Controller::shutDownProgram);
+
+        connect(view.get(), &View::GUIReady, this, &MVC_Controller::startWorkerThreads);
 
 
         // Connect model signals
         connect(&model, &MVC_Model::rpBoards_connectionFailed, view.get(), &View::connectionFailedPopUp);
+
         connect(&model, &MVC_Model::rpBoards_connectionSuccess, view.get(), &View::trigger_initialization);
-
-        // Connect camera worker
-        connect(&worker_cameraInput, &CameraInputWorker::ImageReceived, view.get(), &View::get_refresh_imageReceived);
-
-        // Start camera thread first
-        thread_cameraInput.start();
+      
         
-        emit startCameraInput();
         //model.setup_MVCModel();
 
 
-        // Initialize view
-        view->trigger_initialization();
-
-        // Start other threads
-        thread_controllerInput.start();
-        thread_GUIInput.start();
-
-        emit startCheckInput();
+        emit startMainGUI();
+        
+        
     }
 
     ~MVC_Controller() {

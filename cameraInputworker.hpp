@@ -17,22 +17,47 @@ private:
     CameraPtr m_pCamera;
     Mat m_frame;
     bool m_frameReady;
+    bool m_shutdown;  // Add shutdown flag
     std::mutex m_frameMutex;
 
 public:
-    FrameObserver(CameraPtr pCamera) : IFrameObserver(pCamera), m_pCamera(pCamera), m_frameReady(false) {}
+    FrameObserver(CameraPtr pCamera)
+        : IFrameObserver(pCamera), m_pCamera(pCamera), m_frameReady(false), m_shutdown(false) {
+    }
+
+    // Add shutdown method to be called before destruction
+    void Shutdown() {
+        std::lock_guard<std::mutex> lock(m_frameMutex);
+        m_shutdown = true;
+        m_frameReady = false;
+        m_frame.release();  // Release OpenCV Mat resources
+    }
 
     void FrameReceived(const FramePtr pFrame) override {
-        if (!pFrame) return;
+        // Early exit if shutting down
+        {
+            std::lock_guard<std::mutex> lock(m_frameMutex);
+            if (m_shutdown) {
+                // Still need to re-queue the frame even during shutdown
+                if (m_pCamera && pFrame) {
+                    m_pCamera->QueueFrame(pFrame);
+                }
+                return;
+            }
+        }
+
+        if (!pFrame || !m_pCamera) {
+            return;
+        }
 
         VmbUchar_t* pBuffer;
         VmbUint32_t bufferSize;
-
         if (pFrame->GetBuffer(pBuffer) == VmbErrorSuccess &&
             pFrame->GetBufferSize(bufferSize) == VmbErrorSuccess) {
 
             VmbUint32_t width, height;
-            if (pFrame->GetWidth(width) != VmbErrorSuccess || pFrame->GetHeight(height) != VmbErrorSuccess) {
+            if (pFrame->GetWidth(width) != VmbErrorSuccess ||
+                pFrame->GetHeight(height) != VmbErrorSuccess) {
                 m_pCamera->QueueFrame(pFrame);
                 return;
             }
@@ -42,9 +67,15 @@ public:
 
             std::lock_guard<std::mutex> lock(m_frameMutex);
 
+            // Double-check shutdown status after acquiring lock
+            if (m_shutdown) {
+                m_pCamera->QueueFrame(pFrame);
+                return;
+            }
+
             try {
                 // Convert to OpenCV Mat based on pixel format
-                if (pixelFormat == VmbPixelFormatMono8) { // CLONE IS IMPORT, VIMBA API DELETES POINTER AT THE END OF CALLBACK, ASSIGNING m_frame the value directly could lead to memory issues.
+                if (pixelFormat == VmbPixelFormatMono8) {
                     m_frame = Mat(height, width, CV_8UC1, pBuffer).clone();
                     m_frameReady = true;
                 }
@@ -67,14 +98,24 @@ public:
                 std::cerr << "OpenCV error in frame processing: " << e.what() << std::endl;
                 m_frameReady = false;
             }
+            catch (const std::exception& e) {
+                std::cerr << "Error in frame processing: " << e.what() << std::endl;
+                m_frameReady = false;
+            }
         }
 
-        // Re-queue the frame
-        m_pCamera->QueueFrame(pFrame);
+        // Re-queue the frame - check if camera is still valid
+        if (m_pCamera && pFrame) {
+            m_pCamera->QueueFrame(pFrame);
+        }
     }
 
     bool GetFrame(Mat& frame) {
         std::lock_guard<std::mutex> lock(m_frameMutex);
+        if (m_shutdown) {
+            return false;  // Don't provide frames during shutdown
+        }
+
         if (m_frameReady && !m_frame.empty()) {
             frame = m_frame.clone();
             m_frameReady = false;
@@ -82,10 +123,16 @@ public:
         }
         return false;
     }
+
+    // Destructor to ensure cleanup
+    ~FrameObserver() {
+        Shutdown();
+        std::cout << "shutdown called \n";
+    }
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-class CameraInputWorker : public QObject {
+class CameraInputWorkerThread : public QThread {
     Q_OBJECT
 
 private:
@@ -292,13 +339,15 @@ private:
 
 
 public :
-    CameraInputWorker() : sys(VmbSystem::GetInstance()),frames(3){}
-    ~CameraInputWorker() {
+    CameraInputWorkerThread(QObject* parent = nullptr) : sys(VmbSystem::GetInstance()),frames(3){}
+
+    ~CameraInputWorkerThread() {
         //stopAcquisitionAndSysShutdown();
         
     }
+protected :
 
-    void startCamera() {
+    void run() override  {
             cameraStartup();
             getCamera();
             getCameraInfo();
@@ -330,6 +379,9 @@ public :
             std::cout << "framerate:::::::" << framerate << '\n';
 
             startAcquisition();
+            getDisplayFrame();
+
+            emit cameraReady();
 
     }
 
@@ -337,8 +389,9 @@ public :
 signals:
 
     void ImageReceived(const QImage& image);
+    void cameraReady();
 
-public slots:
+public:
     
 
 
@@ -371,15 +424,15 @@ public slots:
 
     }
 
-
+    public slots:
         // Display loop
     void getDisplayFrame() {
-
+        std::cout << "displaying frames \n";
         Mat displayFrame;
         int frameCount = 0;
         std::cout << "entered camera get frame " << std::endl;
 
-        while (running && !QThread::currentThread()->isInterruptionRequested()) {
+        while (!isInterruptionRequested()) {
             if (frameObserver->GetFrame(displayFrame)) {
                 frameCount++;
                 if (frameCount % 30 == 0) {
@@ -405,7 +458,6 @@ public slots:
 
     bool endOfWork() {
 
-        running = false;
 
             std::cout << "=== Starting Vimba cleanup ===" << std::endl;
         try {

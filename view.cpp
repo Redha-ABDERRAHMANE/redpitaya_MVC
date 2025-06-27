@@ -322,7 +322,9 @@ void View::trigger_initialization() {
 
     //getCameras();
     //connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
-    qDebug() << "here view";
+    qDebug() << " view ready";
+
+    emit GUIReady();
 
   
 }

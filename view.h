@@ -73,6 +73,7 @@ signals:
     void initialize_MVCModel(bool state);
     void retryButton_pressed(bool state);
     void programShutdown();
+    void GUIReady();
 
 
 private slots:
