@@ -21,6 +21,7 @@
 #include <QTextEdit>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QRadioButton>
 #include <unordered_map>
 #include <array>
 #include "controller.hpp"
@@ -83,6 +84,13 @@ public:
     QLabel* display_SaturationValue;
     QSlider* saturationSlider;
     QPushButton* button_saturationConfirmation;
+
+    // Image rotation controls
+    QLabel* display_rotationValue;
+    QRadioButton* button_180DegreeRotation;
+    QRadioButton* button_90DegreeRotation;
+    QRadioButton* button_0DegreeRotation;
+
 
 signals:
     void buttonDirection_pressed(ButtonCombination button_combination);

@@ -291,6 +291,33 @@ void View::trigger_initialization() {
         display_SaturationValue->setText(messageToDisplay);
         });
 
+
+    //Image rotation controls
+
+    QHBoxLayout* imageRotationLayout = new QHBoxLayout();
+    display_rotationValue = new QLabel("Image rotation");
+    button_0DegreeRotation = new QRadioButton("0 degrees", this);
+    button_90DegreeRotation = new QRadioButton("90 degrees", this);
+    button_180DegreeRotation = new QRadioButton("180 degrees",this);
+
+    button_0DegreeRotation->setChecked(true);
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Add all widgets to the layout
     otherLayout->addWidget(display_ExposureTimeValue);
     otherLayout->addWidget(exposureTimeSlider);
