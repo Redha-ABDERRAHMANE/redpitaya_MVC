@@ -12,7 +12,7 @@ class ScpiClient: public QObject
 	Q_OBJECT
 
 public:
-	ScpiClient(const char* address,int port=5000 ): hostAddress(address),hostPort(port){}
+	ScpiClient(const char* address,int port=5000 ): clientSocket(new QTcpSocket(this)),hostAddress(address),hostPort(port){}
 	~ScpiClient();
 
     bool connectToServer();
@@ -24,7 +24,7 @@ public:
 
 	
 private:
-	QTcpSocket clientSocket;
+	QTcpSocket* clientSocket;
 	QString hostAddress;
 	int hostPort;
     bool connectionSuccess = false;

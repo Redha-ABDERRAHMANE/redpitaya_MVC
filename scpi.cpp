@@ -7,17 +7,17 @@ ScpiClient::~ScpiClient()
 
 
 bool ScpiClient::tx_txt(const std::string& message) {
-
+    std::cout << "tx called \n";
     QByteArray byteArray(message.c_str(), message.length());
 
-    qint64 writeState = clientSocket.write(byteArray);
+    qint64 writeState = clientSocket->write(byteArray);
     return writeState != -1 ? true : false;
 
 }
 std::string ScpiClient::rx_txt() {
     char buffer[1024];
 
-    qint64 readState = clientSocket.readLine(buffer, sizeof(buffer));
+    qint64 readState = clientSocket->readLine(buffer, sizeof(buffer));
     if (readState != -1) {
         return std::string(buffer);
     }
@@ -43,13 +43,13 @@ bool ScpiClient::get_connectionStatus() const {
 
 
 bool ScpiClient::connectToServer() {
-    clientSocket.connectToHost(hostAddress, hostPort);
-    if (clientSocket.waitForConnected(5000)) {
+    clientSocket->connectToHost(hostAddress, hostPort);
+    if (clientSocket->waitForConnected(5000)) {
         connectionSuccess = true;
         std::cout << "Connected successfully!" << std::endl;
         return true;
     }
-    switch (clientSocket.error()) {
+    switch (clientSocket->error()) {
     case QAbstractSocket::ConnectionRefusedError:
         std::cout << "The connection was refused by the peer (or timed out)." << std::endl;
         break;
