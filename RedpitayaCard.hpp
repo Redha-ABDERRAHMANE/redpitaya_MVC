@@ -6,8 +6,8 @@ class RedpitayaCards
 {
 private:
     
-    scpi rp_primary;
-    scpi rp_secondary;
+    ScpiClient rp_primary;
+    ScpiClient rp_secondary;
 
 
 
@@ -28,8 +28,8 @@ public:
 
 
     bool connect_configure_rpBoards(const int& frequency=5) {
-        rp_primary.set_connectionToSCPIServer();
-        rp_secondary.set_connectionToSCPIServer();
+        rp_primary.connectToServer();
+        rp_secondary.connectToServer();
         if (rp_primary.get_connectionStatus() && rp_secondary.get_connectionStatus()) {
             reset_generators();
             set_DaisyChain_SourceTrigger_MasterBoard();
@@ -50,14 +50,14 @@ public:
 
 
     void send_txt(const int& card,std::string full_command) {
-        scpi& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
+        ScpiClient& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
         rp_board.tx_txt(full_command.c_str());
 
 
     }
 
     std::string send_txrxt(const int& card,std::string full_command) {
-        scpi& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
+        ScpiClient& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
         return rp_board.txrx_txt(full_command.c_str());
 
 
@@ -113,7 +113,7 @@ private:
 
     // Amplitude , frequency and phase are fixed at the start of the code.No need to put them as parameters
     void set_InitialSource_sineWave_parameters(const int card, const int frequency, const float amplitude = AMPLITUDE_0, const int phase = PHASE_0) {
-        scpi& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
+        ScpiClient& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
         for (int source = 1; source <= 2; source++) {
             rp_board.tx_txt("SOUR" + std::to_string(source) + ":FUNC SINE");
             rp_board.tx_txt("SOUR" + std::to_string(source) + ":FREQ:FIX " + std::to_string(frequency));
@@ -122,7 +122,7 @@ private:
         }
     }
 
-    void enable_SingleBoard_outputs(scpi& board) {
+    void enable_SingleBoard_outputs(ScpiClient& board) {
         board.tx_txt("OUTPUT1:STATE ON");
         board.tx_txt("OUTPUT2:STATE ON");
     }
@@ -133,13 +133,13 @@ private:
     }
 
     // Make the slave board sources wait for the external trigger
-    void set_arm_trigger_slave_board(scpi& rp_board) {
+    void set_arm_trigger_slave_board(ScpiClient& rp_board) {
         (void)(rp_board);
         rp_secondary.tx_txt("SOUR1:TRIG:ARM");
         rp_secondary.tx_txt("SOUR2:TRIG:ARM");
     }
 
-    void disable_daisy_chain_configuration(scpi& rp_board) {
+    void disable_daisy_chain_configuration(ScpiClient& rp_board) {
         rp_board.tx_txt("DAISY:SYNC:TRig OFF");
         rp_board.tx_txt("DAISY:SYNC:CLK OFF");
     }
