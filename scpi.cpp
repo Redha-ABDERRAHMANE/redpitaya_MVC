@@ -8,9 +8,14 @@ ScpiClient::~ScpiClient()
 
 bool ScpiClient::tx_txt(const std::string& message) {
     std::cout << "tx called \n";
-    QByteArray byteArray(message.c_str(), message.length());
+    std::string temp = message + "\r\n";
+    QByteArray byteArray(temp.c_str(), temp.length());
+    
 
     qint64 writeState = clientSocket->write(byteArray);
+    if (writeState == -1) {
+        std::cout << "tx_____________________ error\n";
+    }
     return writeState != -1 ? true : false;
 
 }
@@ -19,7 +24,9 @@ std::string ScpiClient::rx_txt() {
 
     qint64 readState = clientSocket->readLine(buffer, sizeof(buffer));
     if (readState != -1) {
+        std::cout << "BUFFER"<<buffer << std::endl;
         return std::string(buffer);
+       
     }
     return "rx failed";
 

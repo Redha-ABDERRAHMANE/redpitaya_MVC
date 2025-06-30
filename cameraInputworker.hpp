@@ -181,6 +181,7 @@ private:
         else {
             return QImage(); // Unsupported format
         }
+
     }
     bool cameraStartup() {
         err = sys.Startup();
