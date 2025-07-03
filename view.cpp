@@ -15,7 +15,13 @@ void View::trigger_initialization() {
     ui->setupUi(this);
 
     std::cout << "entered" << std::endl;
-    setFixedSize(1600, 900);
+    //setFixedSize(1600, 900);
+
+
+
+
+
+
 
     QHBoxLayout* mainLayout = new QHBoxLayout(ui->centralwidget);
     ////////////////////////////////////////////////////////////
@@ -25,13 +31,14 @@ void View::trigger_initialization() {
     //videoWidget = new QVideoWidget();
     // 
     ImageLabelDisplay.setPixmap(QPixmap::fromImage(ImageToDisplay));
+    ImageLabelDisplay.installEventFilter(this);
     //////////////////////////////////////////////////////////////
     // Main horizontal layout (splits left and right)
     // Left side vertical layout
-    QVBoxLayout* leftLayout = new QVBoxLayout();
+    leftLayout = new QVBoxLayout();
 
     // Camera group box (top left)
-    QGroupBox* cameraGroupBox = new QGroupBox("Camera", this);
+    cameraGroupBox = new QGroupBox("Camera", this);
     QVBoxLayout* verticalCameraLayout = new QVBoxLayout();
     verticalCameraLayout->addWidget(&ImageLabelDisplay, 3);
     //verticalCameraLayout->addWidget(comboBox, 1);
@@ -81,271 +88,7 @@ void View::trigger_initialization() {
     controllerGroupBox->setLayout(horizontalControllerLayout);
 
 
-    // Info group box (right side)
-    QGroupBox* infoGroupBox = new QGroupBox("Info", this);
-    QVBoxLayout* infoLayout = new QVBoxLayout();
-    infoLayout->setSpacing(0);
-
-    // Frequency group box with no margins
-    QGroupBox* frequencyGroupBox = new QGroupBox("", this);
-    QVBoxLayout* frequencyLayout = new QVBoxLayout();
-
-    frequencyLayout->setSpacing(50);
-    frequencyLayout->setAlignment(Qt::AlignTop);
-
-    // Create the slider
-    frequencySlider = new QSlider(Qt::Horizontal);
-    frequencySlider->setRange(0, 50);
-    frequencySlider->setTickInterval(5);
-    frequencySlider->setSingleStep(5);
-    frequencySlider->setPageStep(5);
-    frequencySlider->setTickPosition(QSlider::TicksBothSides);
-    frequencySlider->setFixedHeight(50);
-    frequencySlider->setContentsMargins(5, 5, 5, 5);
-    frequencySlider->setValue(5);
-
-    // Create the label to be overlaid
-    display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz", this);
-    display_FrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    display_FrequencyValue->setMargin(0);
-    display_FrequencyValue->setAlignment(Qt::AlignHCenter);
-
-
-
-
-
-    // Create the button to confirm the new frequency value 
-    button_frequencyConfirmation = new QPushButton("Confirm", this);
-
-    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this]() {
-        emit frequencyChange_pressed(frequencySlider->value());
-        });
-
-
-    // Add both widgets to the same cell to stack them
-    frequencyLayout->addWidget(display_FrequencyValue);
-    frequencyLayout->addWidget(frequencySlider);
-    frequencyLayout->addWidget(button_frequencyConfirmation);
-
-
-    frequencyGroupBox->setLayout(frequencyLayout);
-
-    // Manual snap-to-tick implementation
-    connect(frequencySlider, &QSlider::valueChanged, [this](int value) {
-        int tickInterval = 5;
-        int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
-        snappedValue = qBound(0, snappedValue, 50);
-
-        if (snappedValue != value) {
-            frequencySlider->blockSignals(true);
-            frequencySlider->setValue(snappedValue);
-            frequencySlider->blockSignals(false);
-        }
-        });
-
-    // Output the snapped value when user releases the slider
-    connect(frequencySlider, &QSlider::sliderReleased, [this]() {
-        qDebug() << "Frequency value :" << frequencySlider->value();
-        QString messageToDisplay = "Frequency slider value : " + QString::number(frequencySlider->value()) + " Hz";
-        display_FrequencyValue->setText(messageToDisplay);
-        });
-    ///////////////////////////////////////////////////////////////////
-    // PHASE SLIDER
-        // phase group box with no margins
-    QGroupBox* phaseGroupBox = new QGroupBox("", this);
-    QVBoxLayout* phaseLayout = new QVBoxLayout();
-
-
-
-    // Create the label to be overlaid
-    display_primaryPhaseValue = new QLabel("Primary card phase value :", this);
-    display_primaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    display_primaryPhaseValue->setMargin(0);
-    display_primaryPhaseValue->setAlignment(Qt::AlignHCenter);
-
-    textBox_primaryPhaseValue = new QLineEdit("0", this);
-
-    // Create the button to confirm the new phase value 
-    button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
-
-    connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-        emit phaseChange_pressed(1, textBox_primaryPhaseValue->text().toInt());
-        });
-
-    // Create the label to be overlaid
-    display_secondaryPhaseValue = new QLabel("Secondary card phase value :", this);
-    display_secondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    display_secondaryPhaseValue->setMargin(0);
-    display_secondaryPhaseValue->setAlignment(Qt::AlignHCenter);
-
-    textBox_secondaryPhaseValue = new QLineEdit("0", this);
-
-    // Create the button to confirm the new phase value 
-    button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
-
-    connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-        emit phaseChange_pressed(2, textBox_secondaryPhaseValue->text().toInt());
-        });
-
-
-
-    // Add both widgets to the same cell to stack them
-    phaseLayout->addWidget(display_primaryPhaseValue);
-    phaseLayout->addWidget(textBox_primaryPhaseValue);
-    phaseLayout->addWidget(button_primaryPhaseConfirmation);
-
-    phaseLayout->addWidget(display_secondaryPhaseValue);
-    phaseLayout->addWidget(textBox_secondaryPhaseValue);
-    phaseLayout->addWidget(button_secondaryPhaseConfirmation);
-
-
-
-    phaseGroupBox->setLayout(phaseLayout);
-
-
-
-
-
-
-
-
-
-    ///////////////////////////////////////////////////////////////////
-
-    // Other group box
-
-// Other group box
-    QGroupBox* otherGroupBox = new QGroupBox("", this);
-    QVBoxLayout* otherLayout = new QVBoxLayout();
-
-    // === EXPOSURE TIME SLIDER ===
-    // Display label for exposure time
-    display_ExposureTimeValue = new QLabel("Exposure Time: 5 ms", this);
-
-    // Create exposure time slider 
-    exposureTimeSlider = new QSlider(Qt::Horizontal, this);
-    exposureTimeSlider->setRange(1, 200);
-    exposureTimeSlider->setValue(5);
-    exposureTimeSlider->setTickPosition(QSlider::TicksBelow);
-    exposureTimeSlider->setTickInterval(2);
-
-    // Create the button to confirm the new exposure time value 
-    button_exposureTimeConfirmation = new QPushButton("Confirm Exposure", this);
-    connect(button_exposureTimeConfirmation, &QPushButton::clicked, this, [this]() {
-        std::cout << "yolo 1 " << std::endl;
-        emit exposureTimeChange_pressed(exposureTimeSlider->value() * 1000);
-        });
-
-    // Manual snap-to-tick implementation for exposure time
-    connect(exposureTimeSlider, &QSlider::valueChanged, [this](int value) {
-        int tickInterval = 2;
-        int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
-        snappedValue = qBound(1, snappedValue, 200);
-        if (snappedValue != value) {
-            exposureTimeSlider->blockSignals(true);
-            exposureTimeSlider->setValue(snappedValue);
-            exposureTimeSlider->blockSignals(false);
-        }
-        });
-
-    // Output the snapped value when user releases the exposure time slider
-    connect(exposureTimeSlider, &QSlider::sliderReleased, [this]() {
-        qDebug() << "Exposure Time value:" << exposureTimeSlider->value();
-        QString messageToDisplay = "Exposure Time: " + QString::number(exposureTimeSlider->value()) + " ms";
-        display_ExposureTimeValue->setText(messageToDisplay);
-        });
-
-    // === SATURATION SLIDER ===
-    // Display label for saturation
-    display_SaturationValue = new QLabel("Saturation: 100%", this);
-
-    // Create saturation slider (assuming range 0-100%)
-    saturationSlider = new QSlider(Qt::Horizontal, this);
-    saturationSlider->setRange(0, 300);
-    saturationSlider->setValue(100);
-    saturationSlider->setTickPosition(QSlider::TicksBelow);
-    saturationSlider->setTickInterval(10);
-
-    // Create the button to confirm the new saturation value 
-    button_saturationConfirmation = new QPushButton("Confirm Saturation", this);
-    connect(button_saturationConfirmation, &QPushButton::clicked, this, [this]() {
-        emit saturationChange_pressed(saturationSlider->value());
-        });
-
-    // Manual snap-to-tick implementation for saturation
-    connect(saturationSlider, &QSlider::valueChanged, [this](int value) {
-        int tickInterval = 10;
-        int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
-        snappedValue = qBound(0, snappedValue, 300);
-        if (snappedValue != value) {
-            saturationSlider->blockSignals(true);
-            saturationSlider->setValue(snappedValue);
-            saturationSlider->blockSignals(false);
-        }
-        });
-
-    // Output the snapped value when user releases the saturation slider
-    connect(saturationSlider, &QSlider::sliderReleased, [this]() {
-        qDebug() << "Saturation value:" << saturationSlider->value();
-        QString messageToDisplay = "Saturation: " + QString::number(saturationSlider->value()) + "%";
-        display_SaturationValue->setText(messageToDisplay);
-        });
-
-
-    //Image rotation controls
-    
-    QHBoxLayout* imageRotationLayout = new QHBoxLayout();
-    display_rotationValue = new QLabel("Image rotation");
-    button_0DegreeRotation = new QRadioButton("0 degrees", this);
-    button_90DegreeRotation = new QRadioButton("90 degrees", this);
-    button_180DegreeRotation = new QRadioButton("180 degrees",this);
-    button_270DegreeRotation = new QRadioButton("270 degrees",this);
-
-    imageRotationLayout->addWidget(display_rotationValue);
-    imageRotationLayout->addWidget(button_0DegreeRotation);
-    imageRotationLayout->addWidget(button_90DegreeRotation);
-    imageRotationLayout->addWidget(button_180DegreeRotation);
-    imageRotationLayout->addWidget(button_270DegreeRotation);
-
-    button_0DegreeRotation->setChecked(true);
-
-    connect(button_0DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 0.0;});
-    connect(button_90DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 90.0;});
-    connect(button_180DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 180.0;});
-    connect(button_270DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 270.0;});
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Add all widgets to the layout
-    otherLayout->addWidget(display_ExposureTimeValue);
-    otherLayout->addWidget(exposureTimeSlider);
-    otherLayout->addWidget(button_exposureTimeConfirmation);
-    otherLayout->addWidget(display_SaturationValue);
-    otherLayout->addWidget(saturationSlider);
-    otherLayout->addWidget(button_saturationConfirmation);
-    otherLayout->addLayout(imageRotationLayout);
-
-    otherGroupBox->setLayout(otherLayout);
-
-    // Final assembly
-    infoLayout->addWidget(frequencyGroupBox);
-    infoLayout->addWidget(otherGroupBox);
-    infoLayout->addWidget(phaseGroupBox);
-    infoGroupBox->setLayout(infoLayout);
+   
 
 
 
@@ -358,11 +101,13 @@ void View::trigger_initialization() {
 
     // Add left side and right side to main layout
     mainLayout->addLayout(leftLayout, 2);
-    mainLayout->addWidget(infoGroupBox, 1);
+    //mainLayout->addWidget(infoGroupBox, 1);
 
     //getCameras();
     //connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
     qDebug() << " view ready";
+
+    configureInfoWindow();
 
     emit GUIReady();
 
@@ -610,6 +355,247 @@ void View::get_refresh_imageReceived( const QImage& image) {
 
 }
 
+void View::configureInfoWindow() {
+    infoWindow = new QWidget();
+    infoWindow->setWindowTitle("Info window");
+    //infoWindow->resize(400, 300);
+
+    // Info group box (right side)
+    QGroupBox* infoGroupBox = new QGroupBox("Info", infoWindow);
+    QVBoxLayout* infoLayout = new QVBoxLayout();
+    infoLayout->setSpacing(0);
+
+    // Frequency group box with no margins
+    QGroupBox* frequencyGroupBox = new QGroupBox("", infoWindow);
+    QVBoxLayout* frequencyLayout = new QVBoxLayout();
+
+    frequencyLayout->setSpacing(50);
+    frequencyLayout->setAlignment(Qt::AlignTop);
+
+    // Create the slider
+    frequencySlider = new QSlider(Qt::Horizontal, infoWindow);
+    frequencySlider->setRange(0, 50);
+    frequencySlider->setTickInterval(5);
+    frequencySlider->setSingleStep(5);
+    frequencySlider->setPageStep(5);
+    frequencySlider->setTickPosition(QSlider::TicksBothSides);
+    frequencySlider->setFixedHeight(50);
+    frequencySlider->setContentsMargins(5, 5, 5, 5);
+    frequencySlider->setValue(5);
+
+    // Create the label to be overlaid
+    display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz", infoWindow);
+    display_FrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_FrequencyValue->setMargin(0);
+    display_FrequencyValue->setAlignment(Qt::AlignHCenter);
+
+    // Create the button to confirm the new frequency value 
+    button_frequencyConfirmation = new QPushButton("Confirm", infoWindow);
+
+    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this]() {
+        emit frequencyChange_pressed(frequencySlider->value());
+        });
+
+    // Add both widgets to the same cell to stack them
+    frequencyLayout->addWidget(display_FrequencyValue);
+    frequencyLayout->addWidget(frequencySlider);
+    frequencyLayout->addWidget(button_frequencyConfirmation);
+
+    frequencyGroupBox->setLayout(frequencyLayout);
+
+    // Manual snap-to-tick implementation
+    connect(frequencySlider, &QSlider::valueChanged, [this](int value) {
+        int tickInterval = 5;
+        int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
+        snappedValue = qBound(0, snappedValue, 50);
+
+        if (snappedValue != value) {
+            frequencySlider->blockSignals(true);
+            frequencySlider->setValue(snappedValue);
+            frequencySlider->blockSignals(false);
+        }
+        });
+
+    // Output the snapped value when user releases the slider
+    connect(frequencySlider, &QSlider::sliderReleased, [this]() {
+        qDebug() << "Frequency value :" << frequencySlider->value();
+        QString messageToDisplay = "Frequency slider value : " + QString::number(frequencySlider->value()) + " Hz";
+        display_FrequencyValue->setText(messageToDisplay);
+        });
+
+    ///////////////////////////////////////////////////////////////////
+    // PHASE SLIDER
+    // phase group box with no margins
+    QGroupBox* phaseGroupBox = new QGroupBox("", infoWindow);
+    QVBoxLayout* phaseLayout = new QVBoxLayout();
+
+    // Create the label to be overlaid
+    display_primaryPhaseValue = new QLabel("Primary card phase value :", infoWindow);
+    display_primaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_primaryPhaseValue->setMargin(0);
+    display_primaryPhaseValue->setAlignment(Qt::AlignHCenter);
+
+    textBox_primaryPhaseValue = new QLineEdit("0", infoWindow);
+
+    // Create the button to confirm the new phase value 
+    button_primaryPhaseConfirmation = new QPushButton("Confirm", infoWindow);
+
+    connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
+        emit phaseChange_pressed(1, textBox_primaryPhaseValue->text().toInt());
+        });
+
+    // Create the label to be overlaid
+    display_secondaryPhaseValue = new QLabel("Secondary card phase value :", infoWindow);
+    display_secondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    display_secondaryPhaseValue->setMargin(0);
+    display_secondaryPhaseValue->setAlignment(Qt::AlignHCenter);
+
+    textBox_secondaryPhaseValue = new QLineEdit("0", infoWindow);
+
+    // Create the button to confirm the new phase value 
+    button_secondaryPhaseConfirmation = new QPushButton("Confirm", infoWindow);
+
+    connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
+        emit phaseChange_pressed(2, textBox_secondaryPhaseValue->text().toInt());
+        });
+
+    // Add both widgets to the same cell to stack them
+    phaseLayout->addWidget(display_primaryPhaseValue);
+    phaseLayout->addWidget(textBox_primaryPhaseValue);
+    phaseLayout->addWidget(button_primaryPhaseConfirmation);
+
+    phaseLayout->addWidget(display_secondaryPhaseValue);
+    phaseLayout->addWidget(textBox_secondaryPhaseValue);
+    phaseLayout->addWidget(button_secondaryPhaseConfirmation);
+
+    phaseGroupBox->setLayout(phaseLayout);
+
+    ///////////////////////////////////////////////////////////////////
+
+    // Other group box
+    QGroupBox* otherGroupBox = new QGroupBox("", infoWindow);
+    QVBoxLayout* otherLayout = new QVBoxLayout();
+
+    // === EXPOSURE TIME SLIDER ===
+    // Display label for exposure time
+    display_ExposureTimeValue = new QLabel("Exposure Time: 5 ms", infoWindow);
+
+    // Create exposure time slider 
+    exposureTimeSlider = new QSlider(Qt::Horizontal, infoWindow);
+    exposureTimeSlider->setRange(1, 200);
+    exposureTimeSlider->setValue(5);
+    exposureTimeSlider->setTickPosition(QSlider::TicksBelow);
+    exposureTimeSlider->setTickInterval(2);
+
+    // Create the button to confirm the new exposure time value 
+    button_exposureTimeConfirmation = new QPushButton("Confirm Exposure", infoWindow);
+    connect(button_exposureTimeConfirmation, &QPushButton::clicked, this, [this]() {
+        std::cout << "yolo 1 " << std::endl;
+        emit exposureTimeChange_pressed(exposureTimeSlider->value() * 1000);
+        });
+
+    // Manual snap-to-tick implementation for exposure time
+    connect(exposureTimeSlider, &QSlider::valueChanged, [this](int value) {
+        int tickInterval = 2;
+        int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
+        snappedValue = qBound(1, snappedValue, 200);
+        if (snappedValue != value) {
+            exposureTimeSlider->blockSignals(true);
+            exposureTimeSlider->setValue(snappedValue);
+            exposureTimeSlider->blockSignals(false);
+        }
+        });
+
+    // Output the snapped value when user releases the exposure time slider
+    connect(exposureTimeSlider, &QSlider::sliderReleased, [this]() {
+        qDebug() << "Exposure Time value:" << exposureTimeSlider->value();
+        QString messageToDisplay = "Exposure Time: " + QString::number(exposureTimeSlider->value()) + " ms";
+        display_ExposureTimeValue->setText(messageToDisplay);
+        });
+
+    // === SATURATION SLIDER ===
+    // Display label for saturation
+    display_SaturationValue = new QLabel("Saturation: 100%", infoWindow);
+
+    // Create saturation slider (assuming range 0-100%)
+    saturationSlider = new QSlider(Qt::Horizontal, infoWindow);
+    saturationSlider->setRange(0, 300);
+    saturationSlider->setValue(100);
+    saturationSlider->setTickPosition(QSlider::TicksBelow);
+    saturationSlider->setTickInterval(10);
+
+    // Create the button to confirm the new saturation value 
+    button_saturationConfirmation = new QPushButton("Confirm Saturation", infoWindow);
+    connect(button_saturationConfirmation, &QPushButton::clicked, this, [this]() {
+        emit saturationChange_pressed(saturationSlider->value());
+        });
+
+    // Manual snap-to-tick implementation for saturation
+    connect(saturationSlider, &QSlider::valueChanged, [this](int value) {
+        int tickInterval = 10;
+        int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
+        snappedValue = qBound(0, snappedValue, 300);
+        if (snappedValue != value) {
+            saturationSlider->blockSignals(true);
+            saturationSlider->setValue(snappedValue);
+            saturationSlider->blockSignals(false);
+        }
+        });
+
+    // Output the snapped value when user releases the saturation slider
+    connect(saturationSlider, &QSlider::sliderReleased, [this]() {
+        qDebug() << "Saturation value:" << saturationSlider->value();
+        QString messageToDisplay = "Saturation: " + QString::number(saturationSlider->value()) + "%";
+        display_SaturationValue->setText(messageToDisplay);
+        });
+
+    //Image rotation controls
+    QHBoxLayout* imageRotationLayout = new QHBoxLayout();
+    display_rotationValue = new QLabel("Image rotation", infoWindow);
+    button_0DegreeRotation = new QRadioButton("0 degrees", infoWindow);
+    button_90DegreeRotation = new QRadioButton("90 degrees", infoWindow);
+    button_180DegreeRotation = new QRadioButton("180 degrees", infoWindow);
+    button_270DegreeRotation = new QRadioButton("270 degrees", infoWindow);
+
+    imageRotationLayout->addWidget(display_rotationValue);
+    imageRotationLayout->addWidget(button_0DegreeRotation);
+    imageRotationLayout->addWidget(button_90DegreeRotation);
+    imageRotationLayout->addWidget(button_180DegreeRotation);
+    imageRotationLayout->addWidget(button_270DegreeRotation);
+
+    button_0DegreeRotation->setChecked(true);
+
+    connect(button_0DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 0.0;});
+    connect(button_90DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 90.0;});
+    connect(button_180DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 180.0;});
+    connect(button_270DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 270.0;});
+
+    // Add all widgets to the layout
+    otherLayout->addWidget(display_ExposureTimeValue);
+    otherLayout->addWidget(exposureTimeSlider);
+    otherLayout->addWidget(button_exposureTimeConfirmation);
+    otherLayout->addWidget(display_SaturationValue);
+    otherLayout->addWidget(saturationSlider);
+    otherLayout->addWidget(button_saturationConfirmation);
+    otherLayout->addLayout(imageRotationLayout);
+
+    otherGroupBox->setLayout(otherLayout);
+
+    // Final assembly
+    infoLayout->addWidget(frequencyGroupBox);
+    infoLayout->addWidget(otherGroupBox);
+    infoLayout->addWidget(phaseGroupBox);
+    infoGroupBox->setLayout(infoLayout);
+
+    // Set the main layout for the info window
+    QVBoxLayout* mainLayout = new QVBoxLayout();
+    mainLayout->addWidget(infoGroupBox);
+    infoWindow->setLayout(mainLayout);
+
+    infoWindow->setAttribute(Qt::WA_DeleteOnClose);
+    infoWindow->show();
+}
+
 
 
 void View::closeEvent(QCloseEvent* event)
@@ -633,6 +619,39 @@ void View::closeEvent(QCloseEvent* event)
     }
 }
 
+
+bool View::eventFilter(QObject* obj, QEvent* event){
+    if (obj == &ImageLabelDisplay && event->type() == QEvent::MouseButtonDblClick) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        if (mouseEvent->button() == Qt::LeftButton) {
+            // Create secondary window
+            QWidget* popupWindow = new QWidget();
+            popupWindow->setWindowTitle("Label Popup");
+            //popupWindow->resize(400, 300);
+
+            // Create new label with same content
+            QLabel* popupLabel = new QLabel(ImageLabelDisplay.text());
+            popupLabel->setPixmap(ImageLabelDisplay.pixmap()); // If it has an image
+            popupLabel->setAlignment(Qt::AlignCenter);
+
+            // Set layout
+            QVBoxLayout* layout = new QVBoxLayout(popupWindow);
+            layout->addWidget(popupLabel);
+
+            // Show popup window
+            popupWindow->show();
+            popupWindow->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
+
+            leftLayout->removeWidget(cameraGroupBox);
+            cameraGroupBox->hide(); // Hide the widget
+            leftLayout->update(); // Update the layout
+            leftLayout->activate(); // Activate layout changes
+
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, event);
+}
 View::~View()
 {
 

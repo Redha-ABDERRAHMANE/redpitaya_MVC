@@ -89,11 +89,16 @@ private:
     QMediaCaptureSession* mediaCaptureSession;
     ////////////////////////
 
+    QGroupBox* cameraGroupBox;
+    QVBoxLayout* leftLayout;
     QLabel* controllerImageLabel;
     QPixmap pixmap;
     QPushButton* testButton;
     QPushButton* button_Direction_Primary;
     QPushButton* button_Direction_Secondary;
+    QPushButton* button_displaySecondWindow;
+
+    //Second window widgets
 
     // Frequency controls
     QSlider* frequencySlider;
@@ -126,6 +131,10 @@ private:
     QRadioButton* button_180DegreeRotation;
     QRadioButton* button_90DegreeRotation;
     QRadioButton* button_0DegreeRotation;
+
+    //Second window
+
+    QWidget* infoWindow;
 
 
 
@@ -188,10 +197,13 @@ private:
 
     void update_directionIndicators(const int& newDirectionIndex);
 
+    void configureInfoWindow();
+
 
 
 protected:
     void closeEvent(QCloseEvent* event) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
 
 
