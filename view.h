@@ -22,6 +22,8 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QRadioButton>
+#include <QGraphicsView>
+#include <QGraphicsPixmapItem>
 #include <unordered_map>
 #include <array>
 #include "controller.hpp"
@@ -76,8 +78,9 @@ private:
     QComboBox* comboBox;
 
     //////////////////
-    QImage ImageToDisplay;
-    QLabel ImageLabelDisplay;
+    QGraphicsView* imageView;
+    QGraphicsPixmapItem* pixmapItem;
+    QGraphicsScene* scene;
 
     //////////
     QVideoWidget* videoWidget;

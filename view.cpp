@@ -33,9 +33,14 @@ void View::trigger_initialization() {
     //comboBox = new QComboBox();
     //videoWidget = new QVideoWidget();
     // 
-    ImageLabelDisplay.setPixmap(QPixmap::fromImage(ImageToDisplay));
+    
     //ImageLabelDisplay.setScaledContents(true);
-    ImageLabelDisplay.installEventFilter(this);
+    imageView = new QGraphicsView(this);
+    scene = new QGraphicsScene(this);
+    pixmapItem = new QGraphicsPixmapItem();
+    imageView->installEventFilter(this);
+    scene->addItem(pixmapItem);
+    imageView->setScene(scene);
     //////////////////////////////////////////////////////////////
     // Main horizontal layout (splits left and right)
     // Left side vertical layout
@@ -44,7 +49,7 @@ void View::trigger_initialization() {
     // Camera group box (top left)
     cameraGroupBox = new QGroupBox("Camera", this);
     verticalCameraLayout = new QVBoxLayout();
-    verticalCameraLayout->addWidget(&ImageLabelDisplay, 3);
+    verticalCameraLayout->addWidget(imageView, 3);
     cameraGroupBox->setLayout(verticalCameraLayout);
 
     // Controller group box (bottom left)
@@ -111,14 +116,14 @@ void View::trigger_initialization() {
     //connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
     qDebug() << " view ready";
 
-    std::cout << "image label res: <<" << ImageLabelDisplay.width() << " and " << ImageLabelDisplay.height() << '\n';
+   
     ///////////////////////////////////////////////////////////////////////////
     QImage image("C:/Users/Redha/Downloads/nature.jfif");
     //QImage imagescaled= image.scaled(1920, 1080, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     //std::cout << "image width" << imagescaled.width() << '\n';
  
     
-    ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
+    
     /////////////////////////////////////////////////////////////////////////////////////////
     
     emit GUIReady();
@@ -353,17 +358,11 @@ void View:: connectionFailedPopUp() {
 }
 
 void View::get_refresh_imageReceived( const QImage& image) {
-    static QTransform transform;
-
-    if (!qFuzzyIsNull(imageRotationAngle)) {
-        transform.reset();
-
-        ImageLabelDisplay.setPixmap(QPixmap::fromImage(image.transformed(transform.rotate(imageRotationAngle))));
-    }
-    else{
-        ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
-    }
-
+    QSize imageSize = popup_running ? window_popup->size() : cameraGroupBox->size();
+    imageView->setFixedSize(imageSize);
+    pixmapItem->setPixmap(QPixmap::fromImage(image).scaled(imageSize));
+    pixmapItem->setRotation(imageRotationAngle);
+    
     
 
 
@@ -630,7 +629,7 @@ void View::closeEvent(QCloseEvent* event)
 
 
 bool View::eventFilter(QObject* obj, QEvent* event) {
-    if (obj == &ImageLabelDisplay && event->type() == QEvent::MouseButtonDblClick) {
+    if (obj == imageView && event->type() == QEvent::MouseButtonDblClick) {
         std::cout << "clicked\n";
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
@@ -648,8 +647,8 @@ bool View::eventFilter(QObject* obj, QEvent* event) {
             else if (popup_running) {
                 std::cout << "entered pop up running\n";
                 window_popup->hide();
-                window_popupLayout->removeWidget(&ImageLabelDisplay);
-                verticalCameraLayout->addWidget(&ImageLabelDisplay);
+                window_popupLayout->removeWidget(imageView);
+                verticalCameraLayout->addWidget(imageView);
                 cameraGroupBox->show();
                 leftLayout->update(); // Update the layout
                 leftLayout->activate(); // Activate layout changes
@@ -660,8 +659,8 @@ bool View::eventFilter(QObject* obj, QEvent* event) {
             }
 
                 cameraGroupBox->hide(); // Hide the widget
-                verticalCameraLayout->removeWidget(&ImageLabelDisplay);
-                window_popupLayout->addWidget(&ImageLabelDisplay);
+                verticalCameraLayout->removeWidget(imageView);
+                window_popupLayout->addWidget(imageView);
                 leftLayout->update(); // Update the layout
                 leftLayout->activate(); // Activate layout changes
 
