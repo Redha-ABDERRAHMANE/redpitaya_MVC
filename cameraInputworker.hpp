@@ -8,6 +8,10 @@ using namespace VmbCPP;
 using namespace cv;
 
 
+#define ANGLE_180 180
+#define ANGLE_NULL 0
+
+
 
 
 
@@ -148,6 +152,8 @@ private:
     FeaturePtr exposureFeature;
     FeaturePtr framerateControlEnableFeature;
     FeaturePtr framerateControlFeature;
+    FeaturePtr imageReverseXFeature;
+    FeaturePtr imageReverseYFeature;
     VmbInt64_t width = 640, height = 480;
     FrameObserver* frameObserver = nullptr;
     IFrameObserverPtr observerPtr;
@@ -358,8 +364,13 @@ protected :
             calculateBufferSize();
             prepareFrame();
             configureSaturationAndExposureTimePtr();
+
+            camera->GetFeatureByName("ReverseX", imageReverseXFeature);
+            camera->GetFeatureByName("ReverseY", imageReverseYFeature);
+
             
             camera->GetFeatureByName("TriggerMode", triggerMode);
+            
             triggerMode->SetValue("Off");
 
 
@@ -408,7 +419,25 @@ public:
         saturationFeature->GetValue(receivedValue);
         std::cout << "received saturaation level:  " << receivedValue << std::endl;
 
+    }
+    //Used for 0 and 180 degrees only 
+    //90 and 270 degrees need to be done using software rotation
+    void setImageRotation(const int& value) {
+        switch (value) {
+        case ANGLE_180:
+            imageReverseXFeature->SetValue(true);
+            imageReverseYFeature->SetValue(true);
+            break;
 
+
+        case ANGLE_NULL:
+            imageReverseXFeature->SetValue(false);
+            imageReverseYFeature->SetValue(false);
+            break;
+
+
+
+        }
     }
 
     void setExposureTimeValue(const double& value) {
