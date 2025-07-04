@@ -356,8 +356,9 @@ void View::get_refresh_imageReceived( const QImage& image) {
     static QTransform transform;
 
     if (!qFuzzyIsNull(imageRotationAngle)) {
+        transform.reset();
 
-        ImageLabelDisplay.setPixmap(QPixmap::fromImage(image.transformed(QTransform().rotate(imageRotationAngle))));
+        ImageLabelDisplay.setPixmap(QPixmap::fromImage(image.transformed(transform.rotate(imageRotationAngle))));
     }
     else{
         ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
