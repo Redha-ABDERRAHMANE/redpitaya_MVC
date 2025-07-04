@@ -15,7 +15,10 @@ void View::trigger_initialization() {
     ui->setupUi(this);
 
     std::cout << "entered" << std::endl;
-    //setFixedSize(1600, 900);
+    QScreen* screen = QApplication::primaryScreen();
+    QRect availableGeometry = screen->availableGeometry();
+    setFixedSize(availableGeometry.size());
+    move(availableGeometry.topLeft());
 
 
 
@@ -31,6 +34,7 @@ void View::trigger_initialization() {
     //videoWidget = new QVideoWidget();
     // 
     ImageLabelDisplay.setPixmap(QPixmap::fromImage(ImageToDisplay));
+    //ImageLabelDisplay.setScaledContents(true);
     ImageLabelDisplay.installEventFilter(this);
     //////////////////////////////////////////////////////////////
     // Main horizontal layout (splits left and right)
@@ -39,9 +43,8 @@ void View::trigger_initialization() {
 
     // Camera group box (top left)
     cameraGroupBox = new QGroupBox("Camera", this);
-    QVBoxLayout* verticalCameraLayout = new QVBoxLayout();
+    verticalCameraLayout = new QVBoxLayout();
     verticalCameraLayout->addWidget(&ImageLabelDisplay, 3);
-    //verticalCameraLayout->addWidget(comboBox, 1);
     cameraGroupBox->setLayout(verticalCameraLayout);
 
     // Controller group box (bottom left)
@@ -88,6 +91,7 @@ void View::trigger_initialization() {
     controllerGroupBox->setLayout(horizontalControllerLayout);
 
 
+    configureInfoLayout();
    
 
 
@@ -100,15 +104,23 @@ void View::trigger_initialization() {
     leftLayout->addWidget(controllerGroupBox, 1);
 
     // Add left side and right side to main layout
-    mainLayout->addLayout(leftLayout, 2);
-    //mainLayout->addWidget(infoGroupBox, 1);
+    mainLayout->addLayout(leftLayout, 3);
+    mainLayout->addWidget(infoGroupBox, 1);
 
     //getCameras();
     //connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
     qDebug() << " view ready";
 
-    configureInfoWindow();
-
+    std::cout << "image label res: <<" << ImageLabelDisplay.width() << " and " << ImageLabelDisplay.height() << '\n';
+    ///////////////////////////////////////////////////////////////////////////
+    QImage image("C:/Users/Redha/Downloads/nature.jfif");
+    //QImage imagescaled= image.scaled(1920, 1080, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    //std::cout << "image width" << imagescaled.width() << '\n';
+ 
+    
+    ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
+    /////////////////////////////////////////////////////////////////////////////////////////
+    
     emit GUIReady();
 
 
@@ -341,13 +353,16 @@ void View:: connectionFailedPopUp() {
 }
 
 void View::get_refresh_imageReceived( const QImage& image) {
+    static QTransform transform;
 
-    if (imageRotationAngle != 0.0) {
-
-        ImageLabelDisplay.setPixmap(QPixmap::fromImage(image.transformed(QTransform().rotate(imageRotationAngle))));
-    }
-    else{
         ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
+        if(!qFuzzyIsNull(imageRotationAngle)){
+            transform.rotate(imageRotationAngle);
+            
+            QPixmap rotatedPixmap = pixmap.transformed(transform, Qt::FastTransformation);
+
+            ImageLabelDisplay.setPixmap(rotatedPixmap);
+
     }
 
     
@@ -355,25 +370,22 @@ void View::get_refresh_imageReceived( const QImage& image) {
 
 }
 
-void View::configureInfoWindow() {
-    infoWindow = new QWidget();
-    infoWindow->setWindowTitle("Info window");
-    //infoWindow->resize(400, 300);
+void View::configureInfoLayout() {
 
     // Info group box (right side)
-    QGroupBox* infoGroupBox = new QGroupBox("Info", infoWindow);
-    QVBoxLayout* infoLayout = new QVBoxLayout();
+    infoGroupBox = new QGroupBox("Info", this);
+    infoLayout = new QVBoxLayout();
     infoLayout->setSpacing(0);
 
     // Frequency group box with no margins
-    QGroupBox* frequencyGroupBox = new QGroupBox("", infoWindow);
+    QGroupBox* frequencyGroupBox = new QGroupBox("", this);
     QVBoxLayout* frequencyLayout = new QVBoxLayout();
 
     frequencyLayout->setSpacing(50);
     frequencyLayout->setAlignment(Qt::AlignTop);
 
     // Create the slider
-    frequencySlider = new QSlider(Qt::Horizontal, infoWindow);
+    frequencySlider = new QSlider(Qt::Horizontal, this);
     frequencySlider->setRange(0, 50);
     frequencySlider->setTickInterval(5);
     frequencySlider->setSingleStep(5);
@@ -384,13 +396,13 @@ void View::configureInfoWindow() {
     frequencySlider->setValue(5);
 
     // Create the label to be overlaid
-    display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz", infoWindow);
+    display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz", this);
     display_FrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
     display_FrequencyValue->setMargin(0);
     display_FrequencyValue->setAlignment(Qt::AlignHCenter);
 
     // Create the button to confirm the new frequency value 
-    button_frequencyConfirmation = new QPushButton("Confirm", infoWindow);
+    button_frequencyConfirmation = new QPushButton("Confirm", this);
 
     connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this]() {
         emit frequencyChange_pressed(frequencySlider->value());
@@ -426,34 +438,34 @@ void View::configureInfoWindow() {
     ///////////////////////////////////////////////////////////////////
     // PHASE SLIDER
     // phase group box with no margins
-    QGroupBox* phaseGroupBox = new QGroupBox("", infoWindow);
+    QGroupBox* phaseGroupBox = new QGroupBox("", this);
     QVBoxLayout* phaseLayout = new QVBoxLayout();
 
     // Create the label to be overlaid
-    display_primaryPhaseValue = new QLabel("Primary card phase value :", infoWindow);
+    display_primaryPhaseValue = new QLabel("Primary card phase value :", this);
     display_primaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
     display_primaryPhaseValue->setMargin(0);
     display_primaryPhaseValue->setAlignment(Qt::AlignHCenter);
 
-    textBox_primaryPhaseValue = new QLineEdit("0", infoWindow);
+    textBox_primaryPhaseValue = new QLineEdit("0", this);
 
     // Create the button to confirm the new phase value 
-    button_primaryPhaseConfirmation = new QPushButton("Confirm", infoWindow);
+    button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
 
     connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
         emit phaseChange_pressed(1, textBox_primaryPhaseValue->text().toInt());
         });
 
     // Create the label to be overlaid
-    display_secondaryPhaseValue = new QLabel("Secondary card phase value :", infoWindow);
+    display_secondaryPhaseValue = new QLabel("Secondary card phase value :", this);
     display_secondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
     display_secondaryPhaseValue->setMargin(0);
     display_secondaryPhaseValue->setAlignment(Qt::AlignHCenter);
 
-    textBox_secondaryPhaseValue = new QLineEdit("0", infoWindow);
+    textBox_secondaryPhaseValue = new QLineEdit("0", this);
 
     // Create the button to confirm the new phase value 
-    button_secondaryPhaseConfirmation = new QPushButton("Confirm", infoWindow);
+    button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
 
     connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
         emit phaseChange_pressed(2, textBox_secondaryPhaseValue->text().toInt());
@@ -473,22 +485,22 @@ void View::configureInfoWindow() {
     ///////////////////////////////////////////////////////////////////
 
     // Other group box
-    QGroupBox* otherGroupBox = new QGroupBox("", infoWindow);
+    QGroupBox* otherGroupBox = new QGroupBox("", this);
     QVBoxLayout* otherLayout = new QVBoxLayout();
 
     // === EXPOSURE TIME SLIDER ===
     // Display label for exposure time
-    display_ExposureTimeValue = new QLabel("Exposure Time: 5 ms", infoWindow);
+    display_ExposureTimeValue = new QLabel("Exposure Time: 5 ms", this);
 
     // Create exposure time slider 
-    exposureTimeSlider = new QSlider(Qt::Horizontal, infoWindow);
+    exposureTimeSlider = new QSlider(Qt::Horizontal, this);
     exposureTimeSlider->setRange(1, 200);
     exposureTimeSlider->setValue(5);
     exposureTimeSlider->setTickPosition(QSlider::TicksBelow);
     exposureTimeSlider->setTickInterval(2);
 
     // Create the button to confirm the new exposure time value 
-    button_exposureTimeConfirmation = new QPushButton("Confirm Exposure", infoWindow);
+    button_exposureTimeConfirmation = new QPushButton("Confirm Exposure", this);
     connect(button_exposureTimeConfirmation, &QPushButton::clicked, this, [this]() {
         std::cout << "yolo 1 " << std::endl;
         emit exposureTimeChange_pressed(exposureTimeSlider->value() * 1000);
@@ -515,17 +527,17 @@ void View::configureInfoWindow() {
 
     // === SATURATION SLIDER ===
     // Display label for saturation
-    display_SaturationValue = new QLabel("Saturation: 100%", infoWindow);
+    display_SaturationValue = new QLabel("Saturation: 100%", this);
 
     // Create saturation slider (assuming range 0-100%)
-    saturationSlider = new QSlider(Qt::Horizontal, infoWindow);
+    saturationSlider = new QSlider(Qt::Horizontal, this);
     saturationSlider->setRange(0, 300);
     saturationSlider->setValue(100);
     saturationSlider->setTickPosition(QSlider::TicksBelow);
     saturationSlider->setTickInterval(10);
 
     // Create the button to confirm the new saturation value 
-    button_saturationConfirmation = new QPushButton("Confirm Saturation", infoWindow);
+    button_saturationConfirmation = new QPushButton("Confirm Saturation", this);
     connect(button_saturationConfirmation, &QPushButton::clicked, this, [this]() {
         emit saturationChange_pressed(saturationSlider->value());
         });
@@ -550,19 +562,22 @@ void View::configureInfoWindow() {
         });
 
     //Image rotation controls
-    QHBoxLayout* imageRotationLayout = new QHBoxLayout();
-    display_rotationValue = new QLabel("Image rotation", infoWindow);
-    button_0DegreeRotation = new QRadioButton("0 degrees", infoWindow);
-    button_90DegreeRotation = new QRadioButton("90 degrees", infoWindow);
-    button_180DegreeRotation = new QRadioButton("180 degrees", infoWindow);
-    button_270DegreeRotation = new QRadioButton("270 degrees", infoWindow);
+    QVBoxLayout* imageRotationLayout = new QVBoxLayout();
+    QHBoxLayout* imageButtonRotationLayout = new QHBoxLayout();
+    display_rotationValue = new QLabel("Image rotation: ", this);
+    button_0DegreeRotation = new QRadioButton("0 degrees", this);
+    button_90DegreeRotation = new QRadioButton("90 degrees", this);
+    button_180DegreeRotation = new QRadioButton("180 degrees", this);
+    button_270DegreeRotation = new QRadioButton("270 degrees", this);
 
     imageRotationLayout->addWidget(display_rotationValue);
-    imageRotationLayout->addWidget(button_0DegreeRotation);
-    imageRotationLayout->addWidget(button_90DegreeRotation);
-    imageRotationLayout->addWidget(button_180DegreeRotation);
-    imageRotationLayout->addWidget(button_270DegreeRotation);
 
+    imageButtonRotationLayout->addWidget(button_0DegreeRotation);
+    imageButtonRotationLayout->addWidget(button_90DegreeRotation);
+    imageButtonRotationLayout->addWidget(button_180DegreeRotation);
+    imageButtonRotationLayout->addWidget(button_270DegreeRotation);
+
+    imageRotationLayout->addLayout(imageButtonRotationLayout);
     button_0DegreeRotation->setChecked(true);
 
     connect(button_0DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 0.0;});
@@ -587,13 +602,8 @@ void View::configureInfoWindow() {
     infoLayout->addWidget(phaseGroupBox);
     infoGroupBox->setLayout(infoLayout);
 
-    // Set the main layout for the info window
-    QVBoxLayout* mainLayout = new QVBoxLayout();
-    mainLayout->addWidget(infoGroupBox);
-    infoWindow->setLayout(mainLayout);
 
-    infoWindow->setAttribute(Qt::WA_DeleteOnClose);
-    infoWindow->show();
+
 }
 
 
@@ -620,35 +630,48 @@ void View::closeEvent(QCloseEvent* event)
 }
 
 
-bool View::eventFilter(QObject* obj, QEvent* event){
+bool View::eventFilter(QObject* obj, QEvent* event) {
     if (obj == &ImageLabelDisplay && event->type() == QEvent::MouseButtonDblClick) {
+        std::cout << "clicked\n";
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
-            // Create secondary window
-            QWidget* popupWindow = new QWidget();
-            popupWindow->setWindowTitle("Label Popup");
-            //popupWindow->resize(400, 300);
+            if (popup_firstOpening) {
+                std::cout << "entered first popup\n";
+                window_popup = new QWidget();
+                window_popupLayout = new QVBoxLayout(window_popup);
+                window_popup->setWindowTitle("Label Popup");
+                window_popup->setMinimumSize(200, 150);  // Set reasonable minimum
+                popup_firstOpening = false;
+                
 
-            // Create new label with same content
-            QLabel* popupLabel = new QLabel(ImageLabelDisplay.text());
-            popupLabel->setPixmap(ImageLabelDisplay.pixmap()); // If it has an image
-            popupLabel->setAlignment(Qt::AlignCenter);
 
-            // Set layout
-            QVBoxLayout* layout = new QVBoxLayout(popupWindow);
-            layout->addWidget(popupLabel);
+            }
+            else if (popup_running) {
+                std::cout << "entered pop up running\n";
+                window_popup->hide();
+                window_popupLayout->removeWidget(&ImageLabelDisplay);
+                verticalCameraLayout->addWidget(&ImageLabelDisplay);
+                cameraGroupBox->show();
+                leftLayout->update(); // Update the layout
+                leftLayout->activate(); // Activate layout changes
+                popup_running = false;
 
-            // Show popup window
-            popupWindow->show();
-            popupWindow->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
+                return true;
 
-            leftLayout->removeWidget(cameraGroupBox);
-            cameraGroupBox->hide(); // Hide the widget
-            leftLayout->update(); // Update the layout
-            leftLayout->activate(); // Activate layout changes
+            }
 
-            return true;
+                cameraGroupBox->hide(); // Hide the widget
+                verticalCameraLayout->removeWidget(&ImageLabelDisplay);
+                window_popupLayout->addWidget(&ImageLabelDisplay);
+                leftLayout->update(); // Update the layout
+                leftLayout->activate(); // Activate layout changes
+
+                window_popup->show(); // show popup window
+                popup_running = true;
+
+            
         }
+        return true;
     }
     return QObject::eventFilter(obj, event);
 }

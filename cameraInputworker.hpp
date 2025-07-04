@@ -259,6 +259,7 @@ private:
         if (camera->GetFeatureByName("Height", heightFeature) == VmbErrorSuccess) {
             heightFeature->GetValue(height);
         }
+        widthFeature->GetValue(width);
 
         std::cout << "Frame size: " << width << "x" << height << std::endl;
     }

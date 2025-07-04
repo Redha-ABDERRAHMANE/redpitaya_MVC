@@ -90,6 +90,9 @@ private:
     ////////////////////////
 
     QGroupBox* cameraGroupBox;
+    QGroupBox* infoGroupBox;
+    QVBoxLayout* verticalCameraLayout;
+    QVBoxLayout* infoLayout;
     QVBoxLayout* leftLayout;
     QLabel* controllerImageLabel;
     QPixmap pixmap;
@@ -134,7 +137,11 @@ private:
 
     //Second window
 
-    QWidget* infoWindow;
+    QWidget* window_popup;
+    QVBoxLayout* window_popupLayout;
+
+    bool popup_running = false;
+    bool popup_firstOpening = true;
 
 
 
@@ -197,7 +204,7 @@ private:
 
     void update_directionIndicators(const int& newDirectionIndex);
 
-    void configureInfoWindow();
+    void configureInfoLayout();
 
 
 
