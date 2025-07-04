@@ -148,6 +148,7 @@ private:
     FeaturePtr heightFeature;
     FeaturePtr payloadSizeFeature;
     FeaturePtr acquisitionStartFeature;
+    FeaturePtr acquisitionStopFeature;
     FeaturePtr saturationFeature;
     FeaturePtr exposureFeature;
     FeaturePtr framerateControlEnableFeature;
@@ -316,8 +317,9 @@ private:
 
     bool startAcquisition() {
         // Start acquisition
-
+        err = camera->GetFeatureByName("AcquisitionStop", acquisitionStopFeature);
         err = camera->GetFeatureByName("AcquisitionStart", acquisitionStartFeature);
+        
         if (err == VmbErrorSuccess) {
             err = acquisitionStartFeature->RunCommand();
             if (err != VmbErrorSuccess) {
