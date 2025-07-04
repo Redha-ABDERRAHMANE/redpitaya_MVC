@@ -355,14 +355,12 @@ void View:: connectionFailedPopUp() {
 void View::get_refresh_imageReceived( const QImage& image) {
     static QTransform transform;
 
+    if (!qFuzzyIsNull(imageRotationAngle)) {
+
+        ImageLabelDisplay.setPixmap(QPixmap::fromImage(image.transformed(QTransform().rotate(imageRotationAngle))));
+    }
+    else{
         ImageLabelDisplay.setPixmap(QPixmap::fromImage(image));
-        if(!qFuzzyIsNull(imageRotationAngle)){
-            transform.rotate(imageRotationAngle);
-            
-            QPixmap rotatedPixmap = pixmap.transformed(transform, Qt::FastTransformation);
-
-            ImageLabelDisplay.setPixmap(rotatedPixmap);
-
     }
 
     
