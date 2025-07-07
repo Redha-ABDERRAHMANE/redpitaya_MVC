@@ -19,7 +19,7 @@ using namespace cv;
 class FrameObserver : public IFrameObserver {
 private:
     CameraPtr m_pCamera;
-    Mat m_frame;
+    QImage m_frame;
     bool m_frameReady;
     bool m_shutdown;  // Add shutdown flag
     std::mutex m_frameMutex;
@@ -34,7 +34,7 @@ public:
         std::lock_guard<std::mutex> lock(m_frameMutex);
         m_shutdown = true;
         m_frameReady = false;
-        m_frame.release();  // Release OpenCV Mat resources
+        //m_frame.release();  // Release OpenCV Mat resources
     }
 
     void FrameReceived(const FramePtr pFrame) override {
@@ -80,21 +80,22 @@ public:
             try {
                 // Convert to OpenCV Mat based on pixel format
                 if (pixelFormat == VmbPixelFormatMono8) {
-                    m_frame = Mat(height, width, CV_8UC1, pBuffer).clone();
+                    m_frame = QImage((uchar*)pBuffer, (int)width, (int)height, QImage::Format_Grayscale8);
                     m_frameReady = true;
+                       
                 }
                 else if (pixelFormat == VmbPixelFormatBgr8) {
-                    m_frame = Mat(height, width, CV_8UC3, pBuffer).clone();
+                    m_frame = QImage((uchar*)pBuffer, (int)width, (int)height, QImage::Format_BGR888);
                     m_frameReady = true;
                 }
                 else if (pixelFormat == VmbPixelFormatRgb8) {
-                    Mat temp = Mat(height, width, CV_8UC3, pBuffer);
-                    cvtColor(temp, m_frame, COLOR_RGB2BGR);
+                    m_frame = QImage((uchar*)pBuffer, (int)width, (int)height, QImage::Format_RGB888);
+                    
                     m_frameReady = true;
                 }
                 else {
                     // For other formats, try to convert to mono8
-                    m_frame = Mat(height, width, CV_8UC1, pBuffer).clone();
+                    m_frame = QImage((uchar*)pBuffer, (int)width, (int)height, QImage::Format_Grayscale8);
                     m_frameReady = true;
                 }
             }
@@ -114,14 +115,14 @@ public:
         }
     }
 
-    bool GetFrame(Mat& frame) {
+    bool GetFrame(QImage& frame) {
         std::lock_guard<std::mutex> lock(m_frameMutex);
         if (m_shutdown) {
             return false;  // Don't provide frames during shutdown
         }
 
-        if (m_frameReady && !m_frame.empty()) {
-            frame = m_frame.clone();
+        if (m_frameReady && !m_frame.isNull()) {
+            frame = m_frame;
             m_frameReady = false;
             return true;
         }
@@ -176,18 +177,19 @@ private:
 
 
 private:
-    QImage MatToQImage(const cv::Mat& mat) {
-        if (mat.type() == CV_8UC1) {
-            return QImage(mat.data, mat.cols, mat.rows, static_cast<int>(mat.step), QImage::Format_Grayscale8).copy();
-        }
-        else if (mat.type() == CV_8UC3) {
-            cv::Mat rgb;
-            cv::cvtColor(mat, rgb, cv::COLOR_BGR2RGB);
-            return QImage(rgb.data, rgb.cols, rgb.rows, static_cast<int>(rgb.step), QImage::Format_RGB888).copy();
-        }
-        else {
-            return QImage(); // Unsupported format
-        }
+    QImage MatToQImage(const QImage& mat) {
+        //if (mat.type() == CV_8UC1) {
+        //    return QImage(mat.data, mat.cols, mat.rows, static_cast<int>(mat.step), QImage::Format_Grayscale8).copy();
+        //}
+        //else if (mat.type() == CV_8UC3) {
+        //    cv::Mat rgb;
+        //    cv::cvtColor(mat, rgb, cv::COLOR_BGR2RGB);
+        //    return QImage(rgb.data, rgb.cols, rgb.rows, static_cast<int>(rgb.step), QImage::Format_RGB888).copy();
+        //}
+        //else {
+        //    return QImage(); // Unsupported format
+        //}
+        return mat;
     }
     bool cameraStartup() {
         err = sys.Startup();
@@ -460,7 +462,7 @@ public:
         // Display loop
     void getDisplayFrame() {
         std::cout << "displaying frames \n";
-        Mat displayFrame;
+        QImage displayFrame;
         int frameCount = 0;
         std::cout << "entered camera get frame " << std::endl;
 
@@ -471,7 +473,7 @@ public:
                     std::cout << "Received " << frameCount << " frames" << std::endl;
                 }
 
-                if (!displayFrame.empty()) {
+                if (!displayFrame.isNull()) {
                     try {
 
                         emit ImageReceived(MatToQImage(displayFrame));
