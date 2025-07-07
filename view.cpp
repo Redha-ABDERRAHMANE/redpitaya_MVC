@@ -358,6 +358,8 @@ void View:: connectionFailedPopUp() {
 }
 
 void View::get_refresh_imageReceived( const QImage& image) {
+
+    if ((popup_running && window_popup->isMinimized()) || (!popup_running && this->isMinimized())) { return; }
     QSize imageSize = popup_running ? window_popup->size() : cameraGroupBox->size();
     QSize temp = QSize(imageSize.width(), imageSize.height() / 2);
     std::cout << "QImage size : " << imageSize.height()<<"x "<<imageSize.width() << '\n';
