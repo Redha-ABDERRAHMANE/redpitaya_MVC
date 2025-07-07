@@ -644,6 +644,9 @@ bool View::eventFilter(QObject* obj, QEvent* event) {
                 window_popup->setWindowTitle("Label Popup");
                 window_popup->setMinimumSize(200, 150);  // Set reasonable minimum
                 popup_firstOpening = false;
+
+                window_popup->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowTitleHint);
+
                 
 
 
