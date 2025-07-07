@@ -1,11 +1,10 @@
 #include <iostream>
-#include <opencv2/imgproc.hpp>
 #include <VmbCPP/VmbCPP.h>
 #include <QObject>
 #include <QImage>
 #include <QThread>
 using namespace VmbCPP;
-using namespace cv;
+
 
 
 #define ANGLE_180 180
@@ -21,7 +20,7 @@ private:
     CameraPtr m_pCamera;
     QImage m_frame;
     bool m_frameReady;
-    bool m_shutdown;  // Add shutdown flag
+    std::atomic<bool> m_shutdown;  // Add shutdown flag
     std::mutex m_frameMutex;
 
 public:
@@ -34,6 +33,8 @@ public:
         std::lock_guard<std::mutex> lock(m_frameMutex);
         m_shutdown = true;
         m_frameReady = false;
+ 
+        m_frame = QImage();
         //m_frame.release();  // Release OpenCV Mat resources
     }
 
@@ -99,14 +100,11 @@ public:
                     m_frameReady = true;
                 }
             }
-            catch (const cv::Exception& e) {
-                std::cerr << "OpenCV error in frame processing: " << e.what() << std::endl;
+            catch (...) {
+                std::cerr << " error in frame processing " << std::endl;
                 m_frameReady = false;
             }
-            catch (const std::exception& e) {
-                std::cerr << "Error in frame processing: " << e.what() << std::endl;
-                m_frameReady = false;
-            }
+
         }
 
         // Re-queue the frame - check if camera is still valid
@@ -189,7 +187,7 @@ private:
         //else {
         //    return QImage(); // Unsupported format
         //}
-        return mat;
+        return mat.copy();
     }
     bool cameraStartup() {
         err = sys.Startup();
@@ -465,6 +463,7 @@ public:
         QImage displayFrame;
         int frameCount = 0;
         std::cout << "entered camera get frame " << std::endl;
+        
 
         while (!isInterruptionRequested()) {
             if (frameObserver->GetFrame(displayFrame)) {
@@ -476,11 +475,11 @@ public:
                 if (!displayFrame.isNull()) {
                     try {
 
-                        emit ImageReceived(MatToQImage(displayFrame));
+                        emit ImageReceived(displayFrame.copy());
                         
                     }
-                    catch (const cv::Exception& e) {
-                        std::cerr << "Error displaying frame: " << e.what() << std::endl;
+                    catch (...) {
+                        std::cerr << "Error displaying frame" << std::endl;
                     }
                 }
             }
