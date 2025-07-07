@@ -460,9 +460,11 @@ public:
         // Display loop
     void getDisplayFrame() {
         std::cout << "displaying frames \n";
-        QImage displayFrame;
+        static QImage displayFrame;
         int frameCount = 0;
         std::cout << "entered camera get frame " << std::endl;
+
+        displayFrame.fill(Qt::black);
         
 
         while (!isInterruptionRequested()) {
