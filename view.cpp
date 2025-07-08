@@ -623,6 +623,9 @@ void View::closeEvent(QCloseEvent* event)
 
     if (reply == QMessageBox::Yes) {
         event->accept();
+        if (popup_running) {
+            window_popup->close();
+        }
         this->close();
         emit programShutdown();
         //QApplication::quit();
