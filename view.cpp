@@ -359,15 +359,19 @@ void View:: connectionFailedPopUp() {
 
 void View::get_refresh_imageReceived( const QImage& image) {
 
-    if ((popup_running && window_popup->isMinimized()) || (!popup_running && this->isMinimized())) { return; }
+    if ((popup_running &&( window_popup->isMinimized())) ||( !popup_running && !this->isActiveWindow())) { return; }
     QSize imageSize = popup_running ? window_popup->size() : cameraGroupBox->size();
-    QSize temp = QSize(imageSize.width(), imageSize.height() / 2);
+    QSize temp = QSize(imageSize.width()-50, imageSize.height()-50 );
+
     std::cout << "QImage size : " << imageSize.height()<<"x "<<imageSize.width() << '\n';
+    
     imageView->setFixedSize(imageSize);
     pixmapItem->setPixmap(QPixmap::fromImage(image).scaled(temp));
     pixmapItem->setRotation(imageRotationAngle);
 
     imageView->centerOn(pixmapItem);
+
+    
     
     
 

@@ -25,7 +25,7 @@ private:
 
     std::map<int, preset_array_t> dictionary_bumperHatPreset{
 	{ Buttons::BUMPER_LEFT,  { AMPLITUDE_0,	AMPLITUDE_0	,   PHASE_0,	AMPLITUDE_0	,   AMPLITUDE_0,   PHASE_0   } },
-	{ Buttons::BUMPER_RIGHT, { 0.11f,			0.11f	,	PHASE_0,	0.15f		,         0.15f,          PHASE_0 } },
+	{ Buttons::BUMPER_RIGHT, { 0.11f,			0.11f	,	85,	0.15f		,         0.15f,          PHASE_0 } }, //{ 0.11f,			0.11f	,	PHASE_0,	0.15f		,         0.15f,          PHASE_0 }
 	{ Buttons::HAT_UP,       { 0.11f,			0.11f	,          85,   0.285f,          AMPLITUDE_0,   PHASE_0} },
 	{ Buttons::HAT_DOWN,     { 0.11f,			0.11f	,         85	, AMPLITUDE_0,          0.32f,   PHASE_0 } },
 	{ Buttons::HAT_RIGHT,    { 0.22f,		AMPLITUDE_0	,			85,   0.15f,         0.15f,          175 } },
