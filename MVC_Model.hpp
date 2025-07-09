@@ -133,7 +133,7 @@ public slots:
     }
 
     void apply_PhaseValue(const int& board,const int& phaseValue) {
-        int phaseIndex = board == PRIMARY_BOARD ? PRIMARY_BOARD_COMMON_PHASE : SECONDARY_BOARD_COMMON_PHASE;
+        int phaseIndex = board == PRIMARY_BOARD ? PRIMARY_BOARD_COMMON_PHASE_INDEX : SECONDARY_BOARD_COMMON_PHASE_INDEX;
         int currentPhase = GnPresets.get_currentPreset()[phaseIndex];
         SignalGn.apply_phase_values(board,phaseValue,currentPhase);
         preset_array_t newPreset = GnPresets.get_currentPreset();
