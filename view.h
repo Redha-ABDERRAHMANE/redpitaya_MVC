@@ -138,6 +138,10 @@ private:
     QRadioButton* button_90DegreeRotation;
     QRadioButton* button_0DegreeRotation;
 
+    // Capture Video button
+
+    QPushButton* button_captureVideo;
+
     //Second window
 
     QWidget* window_popup;

@@ -19,8 +19,7 @@
 //STRUCT TO USE FOR apply_preset_value method
 struct TaskConfig {
     const int board;
-    const int nextPresetIndex;
-    const int currentPresetIndex;
+    const int PresetValueIndex;
     const int source;
     const char* param;
 };
@@ -37,14 +36,14 @@ private:
 	RedpitayaCards rp_boards;
     int currentFrequency=5;
     const std::array<TaskConfig, 8> taskConfigs = {{
-        {PRIMARY_BOARD,   2, 2, SOURCE_1, "PHAS"},
-        {PRIMARY_BOARD,   2, 2, SOURCE_2, "PHAS"},
-        {SECONDARY_BOARD, 5, 5, SOURCE_1, "PHAS"},
-        {SECONDARY_BOARD, 5, 5, SOURCE_2, "PHAS"},
-        {PRIMARY_BOARD,   0, 0, SOURCE_1, "VOLT"},
-        {PRIMARY_BOARD,   1, 1, SOURCE_2, "VOLT"},
-        {SECONDARY_BOARD, 3, 3, SOURCE_1, "VOLT"},
-        {SECONDARY_BOARD, 4, 4, SOURCE_2, "VOLT"}
+        {PRIMARY_BOARD,   PRIMARY_BOARD_COMMON_PHASE    ,  SOURCE_1, "PHAS"},
+        {PRIMARY_BOARD,   PRIMARY_BOARD_COMMON_PHASE    ,  SOURCE_2, "PHAS"},
+        {SECONDARY_BOARD, SECONDARY_BOARD_COMMON_PHASE  ,  SOURCE_1, "PHAS"},
+        {SECONDARY_BOARD, SECONDARY_BOARD_COMMON_PHASE  ,  SOURCE_2, "PHAS"},
+        {PRIMARY_BOARD,   PRIMARY_BOARD_FIRST_AMP       ,  SOURCE_1, "VOLT"},
+        {PRIMARY_BOARD,   PRIMARY_BOARD_SECOND_AMP      ,  SOURCE_2, "VOLT"},
+        {SECONDARY_BOARD, SECONDARY_BOARD_FIRST_AMP     ,  SOURCE_1, "VOLT"},
+        {SECONDARY_BOARD, SECONDARY_BOARD_SECOND_AMP    ,  SOURCE_2, "VOLT"}
     }};
 
 
@@ -52,7 +51,7 @@ private:
 public:
 	
 	RpSignalGn(const char* primaryBoardIP, const char* secondaryBoardIP) :
-        rp_boards(primaryBoardIP, secondaryBoardIP, 5),currentFrequency(5){
+        rp_boards(primaryBoardIP, secondaryBoardIP, DEFAULT_FREQUENCY),currentFrequency(DEFAULT_FREQUENCY){
         
 
 
@@ -108,8 +107,8 @@ public:
                 std::launch::async,
                 &RpSignalGn::detect_ramp_up_or_down, this,
                 config.board,
-                nextPreset[config.nextPresetIndex],
-                currentPreset[config.currentPresetIndex],
+                nextPreset[config.PresetValueIndex],
+                currentPreset[config.PresetValueIndex],
                 config.source,
                 config.param
                 );

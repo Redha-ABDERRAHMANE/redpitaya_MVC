@@ -488,6 +488,13 @@ void View::configureInfoLayout() {
     phaseLayout->addWidget(textBox_secondaryPhaseValue);
     phaseLayout->addWidget(button_secondaryPhaseConfirmation);
 
+
+    //////////////////////////////////////////////////////////////////TEST CAPTURE VIDEO
+    button_captureVideo = new QPushButton("capture Video",this);
+
+    phaseLayout->addWidget(button_captureVideo);
+ 
+    //////////////////////////////////////////////////////////////////END TEST CAPTURE VIDEO
     phaseGroupBox->setLayout(phaseLayout);
 
     ///////////////////////////////////////////////////////////////////

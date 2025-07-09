@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QDebug>
+#include <commonValues.h>
 typedef std::array<float, 6> preset_array_t ;
 class MVC_Model: public QObject
 {
@@ -131,10 +132,10 @@ public slots:
         SignalGn.apply_frequency_values(frequencyValue);
     }
 
-    void apply_PhaseValue(const int& card,const int& phaseValue) {
-        int phaseIndex = card == 1 ? 2 : 5;
+    void apply_PhaseValue(const int& board,const int& phaseValue) {
+        int phaseIndex = board == PRIMARY_BOARD ? PRIMARY_BOARD_COMMON_PHASE : SECONDARY_BOARD_COMMON_PHASE;
         int currentPhase = GnPresets.get_currentPreset()[phaseIndex];
-        SignalGn.apply_phase_values(card,phaseValue,currentPhase);
+        SignalGn.apply_phase_values(board,phaseValue,currentPhase);
         preset_array_t newPreset = GnPresets.get_currentPreset();
         newPreset[phaseIndex] = phaseValue;
         GnPresets.set_currentPreset(newPreset);
