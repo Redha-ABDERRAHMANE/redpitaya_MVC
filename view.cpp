@@ -81,7 +81,8 @@ void View::trigger_initialization() {
     imageView->installEventFilter(this);
     scene->addItem(pixmapItem);
     imageView->setScene(scene);
-    //////////////////////////////////////////////////////////////
+    //pixmapItem->setTransformOriginPoint(pixmapItem->boundingRect().center());
+ 
     // Main horizontal layout (splits left and right)
     // Left side vertical layout
     leftLayout = new QVBoxLayout();
@@ -89,6 +90,7 @@ void View::trigger_initialization() {
     // Camera group box (top left)
     cameraGroupBox = new QGroupBox("Camera", this);
     verticalCameraLayout = new QVBoxLayout();
+   
     verticalCameraLayout->addWidget(imageView, 3);
     cameraGroupBox->setLayout(verticalCameraLayout);
 
@@ -403,13 +405,15 @@ void View::get_refresh_imageReceived( const QImage& image) {
     QSize imageSize = popup_running ? window_popup->size() : cameraGroupBox->size();
     QSize temp = QSize(imageSize.width()-50, imageSize.height()-50 );
 
-    std::cout << "QImage size : " << imageSize.height()<<"x "<<imageSize.width() << '\n';
+    //std::cout << "QImage size : " << imageSize.height()<<"x "<<imageSize.width() << '\n';
     
     imageView->setFixedSize(imageSize);
     pixmapItem->setPixmap(QPixmap::fromImage(image).scaled(temp));
     pixmapItem->setRotation(imageRotationAngle);
 
     imageView->centerOn(pixmapItem);
+
+
 
     
     
@@ -529,12 +533,7 @@ void View::configureInfoLayout() {
     phaseLayout->addWidget(button_secondaryPhaseConfirmation);
 
 
-    //////////////////////////////////////////////////////////////////TEST CAPTURE VIDEO
-    button_captureVideo = new QPushButton("capture Video",this);
 
-    phaseLayout->addWidget(button_captureVideo);
- 
-    //////////////////////////////////////////////////////////////////END TEST CAPTURE VIDEO
     phaseGroupBox->setLayout(phaseLayout);
 
     ///////////////////////////////////////////////////////////////////
@@ -640,6 +639,28 @@ void View::configureInfoLayout() {
     connect(button_180DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 180.0;});
     connect(button_270DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 270.0;});
 
+
+
+    //////////////////////////////////////////////////////////////////TEST CAPTURE VIDEO
+    button_captureVideo = new QPushButton("Record camera feed", this);
+
+    
+
+    connect(button_captureVideo, &QPushButton::clicked, this, [this]() {
+        if (!recording) {
+            button_captureVideo->setText("stop recording");
+            recording = true;
+            emit startVideoRecord();
+        }
+        else {
+            recording = false;
+            emit stopVideoRecord();
+            button_captureVideo->setText("video capture");
+        }
+    });
+
+ 
+
     // Add all widgets to the layout
     otherLayout->addWidget(display_ExposureTimeValue);
     otherLayout->addWidget(exposureTimeSlider);
@@ -648,6 +669,7 @@ void View::configureInfoLayout() {
     otherLayout->addWidget(saturationSlider);
     otherLayout->addWidget(button_saturationConfirmation);
     otherLayout->addLayout(imageRotationLayout);
+    otherLayout->addWidget(button_captureVideo);
 
     otherGroupBox->setLayout(otherLayout);
 

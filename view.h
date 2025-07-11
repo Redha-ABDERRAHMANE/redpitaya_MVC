@@ -54,6 +54,8 @@ signals:
     void retryButton_pressed(bool state);
     void programShutdown();
     void GUIReady();
+    void startVideoRecord();
+    void stopVideoRecord();
 
 
 private slots:
@@ -141,9 +143,9 @@ private:
     // Capture Video button
 
     QPushButton* button_captureVideo;
+    bool recording = false;
 
     //Second window
-
     QWidget* window_popup;
     QVBoxLayout* window_popupLayout;
 
@@ -213,7 +215,7 @@ private:
 
     void configureInfoLayout();
 
-
+   
 
 protected:
     void closeEvent(QCloseEvent* event) override;

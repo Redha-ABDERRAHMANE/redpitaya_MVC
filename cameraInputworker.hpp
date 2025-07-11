@@ -100,8 +100,8 @@ public:
                     m_frameReady = true;
                 }
             }
-            catch (...) {
-                std::cerr << " error in frame processing " << std::endl;
+            catch (std::exception e) {
+                std::cerr << " error in frame processing : " << e.what()<< std::endl;
                 m_frameReady = false;
             }
 
@@ -154,6 +154,7 @@ private:
     FeaturePtr framerateControlFeature;
     FeaturePtr imageReverseXFeature;
     FeaturePtr imageReverseYFeature;
+    FeaturePtr balanceWhiteAutoFeature;
     VmbInt64_t width = 640, height = 480;
     FrameObserver* frameObserver = nullptr;
     IFrameObserverPtr observerPtr;
@@ -164,12 +165,14 @@ private:
 
 
     bool running = true;
+
+    bool recordingVideo = false;
+    std::mutex m_recordingMutex;
     VmbErrorType err;
 
     double exposureTime = 0.0;
     double saturationValue=1.0;
     double framerate = 30;
-
 
 
 
@@ -242,7 +245,7 @@ private:
         err = camera->GetFeatureByName("PixelFormat", pixelFormatFeature);
         if (err == VmbErrorSuccess) {
 
-            err = pixelFormatFeature->SetValue("Mono8");
+            err = pixelFormatFeature->SetValue("RGB8");
             if (err != VmbErrorSuccess) {
 
                 std::cout << "Mono8 not supported, trying BGR8..." << std::endl;
@@ -266,9 +269,25 @@ private:
         if (camera->GetFeatureByName("Height", heightFeature) == VmbErrorSuccess) {
             heightFeature->GetValue(height);
         }
+        widthFeature->SetValue(2592);
+        heightFeature->SetValue(1944);
         widthFeature->GetValue(width);
+        heightFeature->GetValue(height);
 
         std::cout << "Frame size: " << width << "x" << height << std::endl;
+
+    }
+
+
+    void setWhiteBalanceOnce() {
+        err = camera->GetFeatureByName("BalanceWhiteAuto", balanceWhiteAutoFeature);
+        if (err == VmbErrorSuccess) {
+            balanceWhiteAutoFeature->SetValue("Once");
+
+        }
+        else {
+            std::cout << "error balancing white" << std::endl;
+        }
     }
     // Create frame observer - use shared_ptr for proper memory management
     void setFrameObserver() {
@@ -315,6 +334,13 @@ private:
         return true;
     }
 
+    void getFrameRateFeatureToPtr() {
+        err = camera->GetFeatureByName("AcquisitionFrameRate", framerateControlFeature);
+        if(err!= VmbErrorSuccess){
+            std::cout << "error getting framerate control feature" << std::endl;
+        }
+    }
+
     bool startAcquisition() {
         // Start acquisition
         err = camera->GetFeatureByName("AcquisitionStop", acquisitionStopFeature);
@@ -345,6 +371,11 @@ private:
 
     }
 
+    bool getRecordingVideoState()  {
+        std::lock_guard<std::mutex> lock(m_recordingMutex);
+        return recordingVideo;
+    }
+
 
 
 public :
@@ -362,6 +393,7 @@ protected :
             getCameraInfo();
             setPixelFormat();
             setFrameDimensions();
+            setWhiteBalanceOnce();
             setFrameObserver();
             calculateBufferSize();
             prepareFrame();
@@ -376,18 +408,8 @@ protected :
             triggerMode->SetValue("Off");
 
 
-
-
-            err = camera->GetFeatureByName("AcquisitionFrameRateEnable", framerateControlEnableFeature);
-            if (err == VmbErrorSuccess) {
-                framerateControlEnableFeature->SetValue(false);
-                std::cout << "Frame rate control enabled" << std::endl;
-            }
-            else {
-                std::cout << "AcquisitionFrameRateEnable not available" << std::endl;
-            }
-            err = camera->GetFeatureByName("AcquisitionFrameRate", framerateControlFeature);
-            framerateControlFeature->SetValue(30.0);
+            getFrameRateFeatureToPtr();
+            
             framerateControlFeature->GetValue(framerate);
 
             std::cout << "framerate:::::::" << framerate << '\n';
@@ -404,6 +426,7 @@ signals:
 
     void ImageReceived(const QImage& image);
     void cameraReady();
+    void sendImageToCapture(const QImage& image);
 
 public:
     
@@ -457,6 +480,20 @@ public:
     }
 
     public slots:
+
+        void startRecording() {
+            std::lock_guard<std::mutex> lock(m_recordingMutex);
+            recordingVideo = true;
+            std::cout << "Recording started" << std::endl;
+        }
+
+        void stopRecording() {
+            std::lock_guard<std::mutex> lock(m_recordingMutex);
+            recordingVideo = false;
+            std::cout << "Recording stopped" << std::endl;
+        }
+
+
         // Display loop
     void getDisplayFrame() {
         std::cout << "displaying frames \n";
@@ -471,13 +508,19 @@ public:
             if (frameObserver->GetFrame(displayFrame)) {
                 frameCount++;
                 if (frameCount % 30 == 0) {
-                    std::cout << "Received " << frameCount << " frames" << std::endl;
+                    //std::cout << "Received " << frameCount << " frames" << std::endl;
                 }
 
                 if (!displayFrame.isNull()) {
                     try {
-
-                        emit ImageReceived(displayFrame.copy());
+                        
+                        emit ImageReceived(displayFrame);
+                        
+                        if (getRecordingVideoState()) {
+                           
+                            emit sendImageToCapture(displayFrame);
+                        
+                        }
                         
                     }
                     catch (...) {

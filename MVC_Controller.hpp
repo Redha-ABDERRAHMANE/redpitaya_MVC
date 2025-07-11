@@ -8,6 +8,7 @@
 
 #include "applyInputworker.h"
 #include "cameraInputworker.hpp"
+#include "videoRecorderWorker.hpp"
 #include "view.h"
 
 class MVC_Controller : public QObject {
@@ -24,6 +25,8 @@ private:
 
    
     CameraInputWorkerThread workerThread_cameraInput;
+    QThread  workerThread_videoRecorder;
+    VideoRecorderThread worker_videoRecorder;
 
     bool isDefaultDirectionButton(const int& button_value) {
         return WithInInterval(Buttons::A, button_value, Buttons::B);
@@ -144,13 +147,15 @@ public:
         controller(),
         model(controller),  // Pass controller to model constructor
         workerThread_controllerInput(&controller),
-        worker_ApplyInput(&model)
+        worker_ApplyInput(&model),
+        workerThread_videoRecorder()
     {
 
 
      
         // Move workers to their respective threads
         worker_ApplyInput.moveToThread(&thread_GUIInput);
+        worker_videoRecorder.moveToThread(&workerThread_videoRecorder);
         
 
 
@@ -204,6 +209,22 @@ public:
         connect(&model, &MVC_Model::rpBoards_connectionFailed, view, &View::connectionFailedPopUp);
 
         connect(&model, &MVC_Model::rpBoards_connectionSuccess, view, &View::trigger_initialization);
+
+
+        
+
+        /////////////////////DEBUG//
+        workerThread_videoRecorder.start();
+
+        connect(view, &View::startVideoRecord, &worker_videoRecorder, &VideoRecorderThread::startRecording, Qt::QueuedConnection);
+        connect(view, &View::stopVideoRecord, &worker_videoRecorder, &VideoRecorderThread::stopRecording, Qt::QueuedConnection);
+
+        connect(view, &View::startVideoRecord, &workerThread_cameraInput, &CameraInputWorkerThread::startRecording);
+        connect(view, &View::stopVideoRecord, &workerThread_cameraInput, &CameraInputWorkerThread::stopRecording);
+        connect(&workerThread_cameraInput, &CameraInputWorkerThread::sendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture, Qt::QueuedConnection);
+        
+        /////////////////////
+
       
         
         //model.setup_MVCModel();
