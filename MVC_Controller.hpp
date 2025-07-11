@@ -104,6 +104,7 @@ public slots:
         workerThread_controllerInput.requestInterruption();
         thread_GUIInput.requestInterruption();
         workerThread_cameraInput.requestInterruption();
+        workerThread_videoRecorder.requestInterruption();
 
         emit workerThreads_shutdown();
 
@@ -121,6 +122,11 @@ public slots:
             thread_GUIInput.quit();
             thread_GUIInput.wait();
         }
+        if (workerThread_videoRecorder.isRunning()) {
+            workerThread_videoRecorder.quit();
+            workerThread_videoRecorder.wait();
+        }
+           
         std::cout << "yolo 3" << '\n';
 
         std::cout << "Waiting for camera thread cleanup..." << std::endl;

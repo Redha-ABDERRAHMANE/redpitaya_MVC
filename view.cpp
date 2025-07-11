@@ -684,25 +684,37 @@ void View::configureInfoLayout() {
 
 void View::closeEvent(QCloseEvent* event)
 {
-    QMessageBox::StandardButton reply = QMessageBox::question(
-        this,
-        "Exit",
-        "Are you sure you want to exit?",
-        QMessageBox::Yes | QMessageBox::No
-    );
+    if (recording) {
 
-    if (reply == QMessageBox::Yes) {
-        event->accept();
-        if (popup_running) {
-            window_popup->close();
-        }
-        this->close();
-        emit programShutdown();
-        //QApplication::quit();
-       
+        QMessageBox::StandardButton ok_reply = QMessageBox::information(
+            this,
+            "Exit",
+            "Please stop video capture before closing the program",
+            QMessageBox::Ok
+        );
+        event->ignore();
     }
     else {
-        event->ignore();  // Cancel the close event
+        QMessageBox::StandardButton reply = QMessageBox::question(
+            this,
+            "Exit",
+            "Are you sure you want to exit?",
+            QMessageBox::Yes | QMessageBox::No
+        );
+
+        if (reply == QMessageBox::Yes) {
+            event->accept();
+            if (popup_running) {
+                window_popup->close();
+            }
+            this->close();
+            emit programShutdown();
+            //QApplication::quit();
+
+        }
+        else {
+            event->ignore();  // Cancel the close event
+        }
     }
 }
 
