@@ -164,8 +164,8 @@ private:
 
 
 
-    const QString arrowImagePath = "C:/Users/Redha/Documents/cnrs/redpitaya_GUI/Images/arrows_images/arrow";
-    const QString controllerImagePath = "C:/Users/Redha/Documents/cnrs/redpitaya_GUI/Images/controller_images/controller";
+    const QString arrowImagePath = "Images/arrows_images/arrow";
+    const QString controllerImagePath = "Images/controller_images/controller";
     std::array<ButtonCombination, 10> array_button_combination = { {
         {Buttons::HAT_UP, -1}, {Buttons::X,Buttons::HAT_UP},
         {Buttons::HAT_DOWN, -1},{Buttons::X,Buttons::HAT_DOWN},

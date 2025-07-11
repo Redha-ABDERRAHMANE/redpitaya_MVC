@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QProcess>
 #include <QStringList>
+
 #include <QImage>
 #include <QByteArray>
 #include <QBuffer>
@@ -25,8 +26,7 @@ public slots:
         static int i = 0;
         std::cout << "Image received to capture\n";
 
-        // Convert to RGB24 format (what FFmpeg expects)
-        //static QImage rgbImage = image.convertToFormat(QImage::Format_RGB888);
+ 
 
         // Write raw RGB data directly
         const uchar* data = image.constBits();
@@ -36,6 +36,7 @@ public slots:
     }
 
     void startRecording() {
+        static int i = 0;
         std::cout << "start record\n";
         if (ffmpegProcess == nullptr) {
             ffmpegProcess = new QProcess(this);
@@ -48,16 +49,17 @@ public slots:
         
 
         args << "-f" << "rawvideo"
-            << "-pix_fmt" << "rgb24"
+            << "-pix_fmt" << "gray"
             << "-s" << QString("%1x%2").arg(width).arg(height)
             << "-r" << "25"
             << "-i" << "-"
             << "-vcodec" << "libx264"
-            << "-pix_fmt" << "yuv420p"  // Common output format
+            << "-pix_fmt" << "yuv420p"
             << "-y"
-            << "C:/Users/Redha/Pictures/testcapture/output.mp4";
+            << QString("C:/Users/Redha/Pictures/testcapture/output_%1.mp4").arg(i);
 
         ffmpegProcess->start("ffmpeg", args);
+        i++;
         if (!ffmpegProcess->waitForStarted(5000)) {
             std::cerr << "Failed to start FFmpeg process" << std::endl;
             return;

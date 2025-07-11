@@ -81,7 +81,11 @@ void View::trigger_initialization() {
     imageView->installEventFilter(this);
     scene->addItem(pixmapItem);
     imageView->setScene(scene);
-    //pixmapItem->setTransformOriginPoint(pixmapItem->boundingRect().center());
+
+    imageView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
+    imageView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    imageView->setDragMode(QGraphicsView::NoDrag);
+    
  
     // Main horizontal layout (splits left and right)
     // Left side vertical layout
@@ -158,15 +162,7 @@ void View::trigger_initialization() {
     //connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
     qDebug() << " view ready";
 
-   
-    ///////////////////////////////////////////////////////////////////////////
-    QImage image("C:/Users/Redha/Downloads/nature.jfif");
-    //QImage imagescaled= image.scaled(1920, 1080, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    //std::cout << "image width" << imagescaled.width() << '\n';
  
-    
-    
-    /////////////////////////////////////////////////////////////////////////////////////////
     
     emit GUIReady();
 
@@ -410,6 +406,7 @@ void View::get_refresh_imageReceived( const QImage& image) {
     imageView->setFixedSize(imageSize);
     pixmapItem->setPixmap(QPixmap::fromImage(image).scaled(temp));
     pixmapItem->setRotation(imageRotationAngle);
+    imageView->fitInView(pixmapItem, Qt::KeepAspectRatio);
 
     imageView->centerOn(pixmapItem);
 

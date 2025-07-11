@@ -245,7 +245,7 @@ private:
         err = camera->GetFeatureByName("PixelFormat", pixelFormatFeature);
         if (err == VmbErrorSuccess) {
 
-            err = pixelFormatFeature->SetValue("RGB8");
+            err = pixelFormatFeature->SetValue("Mono8"); //RGB8
             if (err != VmbErrorSuccess) {
 
                 std::cout << "Mono8 not supported, trying BGR8..." << std::endl;
@@ -516,7 +516,7 @@ public:
                         
                         emit ImageReceived(displayFrame);
                         
-                        if (getRecordingVideoState()) {
+                        if (getRecordingVideoState() && frameCount % 2 == 0) {
                            
                             emit sendImageToCapture(displayFrame);
                         
