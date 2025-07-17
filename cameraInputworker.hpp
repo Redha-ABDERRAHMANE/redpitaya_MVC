@@ -220,6 +220,7 @@ private:
 
         // Get camera info
         std::string cameraID;
+        if (camera == nullptr) { return false; }
         camera->GetID(cameraID);
         std::cout << "Using camera: " << cameraID << std::endl;
 
@@ -334,6 +335,29 @@ private:
         return true;
     }
 
+    void getReverseFeatureToPtr() {
+
+        err=camera->GetFeatureByName("ReverseX", imageReverseXFeature);
+        if (err != VmbErrorSuccess) {
+            std::cout << "Failed to get ReverseX Feature\n";
+            return;
+        }
+        err= camera->GetFeatureByName("ReverseY", imageReverseYFeature);
+        if (err != VmbErrorSuccess) {
+            std::cout << "Failed to get ReverseY Feature\n";
+            return;
+        }
+    }
+
+    void setTriggerOff() {
+        err= camera->GetFeatureByName("TriggerMode", triggerMode);
+        if (err != VmbErrorSuccess) {
+            std::cout << "Failed to get trigger mode Feature\n";
+            return;
+        }
+
+        triggerMode->SetValue("Off");
+    }
     void getFrameRateFeatureToPtr() {
         err = camera->GetFeatureByName("AcquisitionFrameRate", framerateControlFeature);
         if(err!= VmbErrorSuccess){
@@ -379,7 +403,9 @@ private:
 
 
 public :
-    CameraInputWorkerThread(QObject* parent = nullptr) : sys(VmbSystem::GetInstance()),frames(3){}
+    CameraInputWorkerThread(QObject* parent = nullptr) : sys(VmbSystem::GetInstance()),frames(3){
+
+    }
 
     ~CameraInputWorkerThread() {
         //stopAcquisitionAndSysShutdown();
@@ -389,8 +415,13 @@ protected :
 
     void run() override  {
             cameraStartup();
-            getCamera();
-            getCameraInfo();
+            
+            if (!getCamera() && !getCameraInfo()) { 
+                //ADD CAMERA NOT CONNECTED SIGNAL
+                
+
+                
+                return; }
             setPixelFormat();
             setFrameDimensions();
             setWhiteBalanceOnce();
@@ -399,13 +430,10 @@ protected :
             prepareFrame();
             configureSaturationAndExposureTimePtr();
 
-            camera->GetFeatureByName("ReverseX", imageReverseXFeature);
-            camera->GetFeatureByName("ReverseY", imageReverseYFeature);
+            getReverseFeatureToPtr();
 
             
-            camera->GetFeatureByName("TriggerMode", triggerMode);
-            
-            triggerMode->SetValue("Off");
+            setTriggerOff();
 
 
             getFrameRateFeatureToPtr();
@@ -523,8 +551,8 @@ public:
                         }
                         
                     }
-                    catch (...) {
-                        std::cerr << "Error displaying frame" << std::endl;
+                    catch (const std::exception& e) {
+                        std::cerr << "Error displaying frame" <<e.what() << std::endl;
                     }
                 }
             }
