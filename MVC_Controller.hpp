@@ -50,7 +50,7 @@ signals:
     void startMainGUI();
     void controllerInput_Direction(const int& button_value, const int& directionIndex);
     void rpBoards_connectionFailed();
-    void startCameraInput();
+    void StartCamera();
     void change_exposureTimeValue(int value);
     void workerThreads_shutdown();
 
@@ -65,18 +65,20 @@ public slots:
         workerThread_cameraInput.start();
         workerThread_controllerInput.start();
         thread_GUIInput.start();
+
+        emit StartCamera();
        /* emit startCheckInput();*/
     }
 
 
     void setCameraExposureTime(int value) {
-        workerThread_cameraInput.setExposureTimeValue(value);
+        workerThread_cameraInput.SetExposureTimeValue(value);
         
 
     }
 
     void setCameraSaturation(int value) {
-        workerThread_cameraInput.setSaturationValue(value);
+        workerThread_cameraInput.SetSaturationValue(value);
         
 
     }
@@ -170,15 +172,17 @@ public:
        
         //connect(this, &MVC_Controller::startCheckInput, &workerThread_cameraInput, &CameraInputWorkerThread::getDisplayFrame);
 
-        connect(this, &MVC_Controller::workerThreads_shutdown, &workerThread_cameraInput, &CameraInputWorkerThread::endOfWork);
+        connect(this, &MVC_Controller::StartCamera, &workerThread_cameraInput, &CameraInputWorkerThread::StartCamera);
+        connect(this, &MVC_Controller::workerThreads_shutdown, &workerThread_cameraInput, &CameraInputWorkerThread::CleanUpCameraRessources);
 
         connect(this, &MVC_Controller::startMainGUI, view, &View::trigger_initialization);
 
         connect(this, &MVC_Controller::controllerInput_Direction, view, &View::handleInputReceived);
     
+        connect(&workerThread_cameraInput, &CameraInputWorkerThread::CameraNotFound, view, &View::CameraFailedPopUp);
         connect(&workerThread_cameraInput, &CameraInputWorkerThread::ImageReceived, view, &View::get_refresh_imageReceived);
 
-        connect(&workerThread_cameraInput, &CameraInputWorkerThread::cameraReady, this, &MVC_Controller::SendSignalstartCheckInput);
+        connect(&workerThread_cameraInput, &CameraInputWorkerThread::CameraReady, this, &MVC_Controller::SendSignalstartCheckInput);
         
 
 
@@ -222,12 +226,13 @@ public:
         /////////////////////DEBUG//
         workerThread_videoRecorder.start();
 
+
         connect(view, &View::startVideoRecord, &worker_videoRecorder, &VideoRecorderThread::startRecording, Qt::QueuedConnection);
         connect(view, &View::stopVideoRecord, &worker_videoRecorder, &VideoRecorderThread::stopRecording, Qt::QueuedConnection);
 
-        connect(view, &View::startVideoRecord, &workerThread_cameraInput, &CameraInputWorkerThread::startRecording);
-        connect(view, &View::stopVideoRecord, &workerThread_cameraInput, &CameraInputWorkerThread::stopRecording);
-        connect(&workerThread_cameraInput, &CameraInputWorkerThread::sendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture, Qt::QueuedConnection);
+        connect(view, &View::startVideoRecord, &workerThread_cameraInput, &CameraInputWorkerThread::StartRecording);
+        connect(view, &View::stopVideoRecord, &workerThread_cameraInput, &CameraInputWorkerThread::StopRecording);
+        connect(&workerThread_cameraInput, &CameraInputWorkerThread::SendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture, Qt::QueuedConnection);
         
         /////////////////////
 

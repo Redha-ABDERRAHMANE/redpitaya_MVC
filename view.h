@@ -67,6 +67,7 @@ public slots:
     void load_ControllerImage(const int& button_value);
     void handleInputReceived(const int& button_value, const int& directionIndex);
     void connectionFailedPopUp();
+    void CameraFailedPopUp();
     void trigger_initialization();
 
     void get_refresh_imageReceived(const QImage& image);

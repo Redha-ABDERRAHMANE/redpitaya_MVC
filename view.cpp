@@ -394,6 +394,38 @@ void View:: connectionFailedPopUp() {
         emit programShutdown();
     }
 }
+void View:: CameraFailedPopUp() {
+    static int i = 0;
+    std::cout << "called: " <<++i<< std::endl;
+    // With custom buttons
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Camera connection failed");
+    msgBox.setText("Could not connect to camera. Check if the camera is connected to PC");
+    msgBox.setInformativeText("Would you like to retry?");
+    msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Retry);
+
+    int result = msgBox.exec();
+
+
+    if (result == QMessageBox::Retry) {
+        msgBox.close();
+        //// Retry connection
+        //QMessageBox retryBox;
+        //retryBox.setText("Trying to connect...");
+        //retryBox.setStandardButtons(QMessageBox::NoButton);
+        //retryBox.show();
+        //emit retryButton_pressed(true);
+        //QTimer::singleShot(1000, this, [&retryBox]() {
+        //    retryBox.close();
+        //    });
+
+    }
+    else if (result == QMessageBox::Cancel){
+        msgBox.close();
+        this->close();
+    }
+}
 
 void View::get_refresh_imageReceived( const QImage& image) {
 

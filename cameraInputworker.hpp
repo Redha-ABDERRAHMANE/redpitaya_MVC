@@ -155,7 +155,7 @@ private:
     FeaturePtr imageReverseXFeature;
     FeaturePtr imageReverseYFeature;
     FeaturePtr balanceWhiteAutoFeature;
-    VmbInt64_t width = 640, height = 480;
+    VmbInt64_t width = 2592, height = 1944;
     FrameObserver* frameObserver = nullptr;
     IFrameObserverPtr observerPtr;
     VmbInt64_t payloadSize = 0;
@@ -192,7 +192,7 @@ private:
         //}
         return mat.copy();
     }
-    bool cameraStartup() {
+    bool CameraStartup() {
         err = sys.Startup();
         if (err != VmbErrorSuccess) {
             std::cout << "Failed to start Vimba: " << err << std::endl;
@@ -202,7 +202,7 @@ private:
         return true;
     }
 
-    bool getCamera() {
+    bool GetCamera() {
         err = sys.GetCameras(cameras);
 
         if (cameras.empty()) {
@@ -216,7 +216,7 @@ private:
 
     }
 
-    bool getCameraInfo() {
+    bool GetCameraInfo() {
 
         // Get camera info
         std::string cameraID;
@@ -234,12 +234,13 @@ private:
         return true;
     }
 
-    void configureSaturationAndExposureTimePtr() {
-        camera->GetFeatureByName("ExposureTime", exposureFeature);
-        camera->GetFeatureByName("Saturation", saturationFeature);
+    bool GetSaturationAndExposureTimeFeaturePtr() {
+        if (camera->GetFeatureByName("ExposureTime", exposureFeature) != VmbErrorSuccess) return false;
+        if (camera->GetFeatureByName("Saturation", saturationFeature) != VmbErrorSuccess) return false;
+        return true;
     }
 
-    void setPixelFormat() {
+    bool SetPixelFormat() {
 
         // Set pixel format (try Mono8 first, then BGR8)
 
@@ -256,58 +257,62 @@ private:
                     std::cout << "BGR8 not supported either, using default format" << std::endl;
                 }
             }
+            return true;
         }
+        return false;
     }
 
 
     // Get frame dimensions
 
-    void setFrameDimensions() {
+    bool SetFrameDimensions() {
 
-        if (camera->GetFeatureByName("Width", widthFeature) == VmbErrorSuccess) {
-            widthFeature->GetValue(width);
+        if (camera->GetFeatureByName("Width", widthFeature) != VmbErrorSuccess) {
+            return false;
+            
         }
-        if (camera->GetFeatureByName("Height", heightFeature) == VmbErrorSuccess) {
-            heightFeature->GetValue(height);
+        if (camera->GetFeatureByName("Height", heightFeature) != VmbErrorSuccess) {
+            return false;
         }
-        widthFeature->SetValue(2592);
-        heightFeature->SetValue(1944);
+        widthFeature->SetValue(width);
+        heightFeature->SetValue(height);
         widthFeature->GetValue(width);
         heightFeature->GetValue(height);
 
         std::cout << "Frame size: " << width << "x" << height << std::endl;
+        return true;
 
     }
 
 
-    void setWhiteBalanceOnce() {
+    bool SetWhiteBalanceAutoOnce() {
         err = camera->GetFeatureByName("BalanceWhiteAuto", balanceWhiteAutoFeature);
         if (err == VmbErrorSuccess) {
             balanceWhiteAutoFeature->SetValue("Once");
+            return true;
 
         }
-        else {
-            std::cout << "error balancing white" << std::endl;
-        }
+        return false;
     }
-    // Create frame observer - use shared_ptr for proper memory management
-    void setFrameObserver() {
+   
+    void SetFrameObserver() {
         frameObserver = new FrameObserver(camera);
         observerPtr = IFrameObserverPtr(frameObserver);
     }
 
     // Calculate proper buffer size based on pixel format
-    void calculateBufferSize() {
+    bool CalculateBufferSize() {
         if (camera->GetFeatureByName("PayloadSize", payloadSizeFeature) == VmbErrorSuccess) {
             payloadSizeFeature->GetValue(payloadSize);
             std::cout << "Payload size: " << payloadSize << " bytes" << std::endl;
+            return true;
         }
-        else {
-            payloadSize = width * height * 3; // Default assumption
-        }
+        
+        payloadSize = width * height * 3; // Default assumption
+        return false;
     }
 
-    bool prepareFrame() {
+    bool PrepareFrame() {
         // Prepare frames for acquisition
          // Use 3 frames for buffering
         for (auto& frame : frames) {
@@ -335,37 +340,41 @@ private:
         return true;
     }
 
-    void getReverseFeatureToPtr() {
+    bool GetReverseFeatureToPtr() {
 
         err=camera->GetFeatureByName("ReverseX", imageReverseXFeature);
         if (err != VmbErrorSuccess) {
             std::cout << "Failed to get ReverseX Feature\n";
-            return;
+            return false;
         }
         err= camera->GetFeatureByName("ReverseY", imageReverseYFeature);
         if (err != VmbErrorSuccess) {
             std::cout << "Failed to get ReverseY Feature\n";
-            return;
+            return false;
         }
+        return true;
     }
 
-    void setTriggerOff() {
+    bool SetTriggerOff() {
         err= camera->GetFeatureByName("TriggerMode", triggerMode);
         if (err != VmbErrorSuccess) {
             std::cout << "Failed to get trigger mode Feature\n";
-            return;
+            return false;
         }
 
-        triggerMode->SetValue("Off");
+        return triggerMode->SetValue("Off")==VmbErrorSuccess;
+        
     }
-    void getFrameRateFeatureToPtr() {
+    bool GetFrameRateFeatureToPtr() {
         err = camera->GetFeatureByName("AcquisitionFrameRate", framerateControlFeature);
         if(err!= VmbErrorSuccess){
             std::cout << "error getting framerate control feature" << std::endl;
+            return false;
         }
+        return true;
     }
 
-    bool startAcquisition() {
+    bool StartAcquisition() {
         // Start acquisition
         err = camera->GetFeatureByName("AcquisitionStop", acquisitionStopFeature);
         err = camera->GetFeatureByName("AcquisitionStart", acquisitionStartFeature);
@@ -383,7 +392,7 @@ private:
         return true;
     }
 
-    bool stopAcquisitionAndSysShutdown() {
+    bool StopAcquisitionAndSysShutdown() {
         err= camera->EndCapture();
         if (err == VmbErrorSuccess) {
             camera->Close();
@@ -395,9 +404,31 @@ private:
 
     }
 
-    bool getRecordingVideoState()  {
+    bool IsRecordingVideoActive()  {
         std::lock_guard<std::mutex> lock(m_recordingMutex);
         return recordingVideo;
+    }
+
+    bool InitializeCamera() {
+        if (!GetCamera() && !GetCameraInfo()) {
+            emit CameraNotFound();
+            return false;
+        }
+
+        if (!SetPixelFormat()) return false;
+        if (!SetFrameDimensions()) return false;
+        if (!SetWhiteBalanceAutoOnce()) return false;
+
+        SetFrameObserver();
+
+        if (!CalculateBufferSize()) return false;
+        if (!PrepareFrame()) return false;
+        if (!GetSaturationAndExposureTimeFeaturePtr()) return false;
+        if (!GetReverseFeatureToPtr()) return false;
+        if (!SetTriggerOff()) return false;
+        if (!GetFrameRateFeatureToPtr()) return false;
+
+        return true;
     }
 
 
@@ -411,41 +442,18 @@ public :
         //stopAcquisitionAndSysShutdown();
         
     }
-protected :
-
-    void run() override  {
-            cameraStartup();
-            
-            if (!getCamera() && !getCameraInfo()) { 
-                //ADD CAMERA NOT CONNECTED SIGNAL
-                
-
-                
-                return; }
-            setPixelFormat();
-            setFrameDimensions();
-            setWhiteBalanceOnce();
-            setFrameObserver();
-            calculateBufferSize();
-            prepareFrame();
-            configureSaturationAndExposureTimePtr();
-
-            getReverseFeatureToPtr();
-
-            
-            setTriggerOff();
 
 
-            getFrameRateFeatureToPtr();
-            
-            framerateControlFeature->GetValue(framerate);
 
-            std::cout << "framerate:::::::" << framerate << '\n';
+public slots:
+    void StartCamera() {
+        if (!InitializeCamera()) return;
 
-            startAcquisition();
-            getDisplayFrame();
+        if (!StartAcquisition()) return;
 
-            emit cameraReady();
+        GetDisplayFrame();
+
+        emit CameraReady();
 
     }
 
@@ -453,8 +461,9 @@ protected :
 signals:
 
     void ImageReceived(const QImage& image);
-    void cameraReady();
-    void sendImageToCapture(const QImage& image);
+    void CameraNotFound();
+    void CameraReady();
+    void SendImageToCapture(const QImage& image);
 
 public:
     
@@ -462,7 +471,7 @@ public:
 
    
 
-    void setSaturationValue(const double& value) {
+    void SetSaturationValue(const double& value) {
         double valueToSend = value / 100.0;
         std::cout << "value to send : " << valueToSend << '\n';
 
@@ -493,7 +502,7 @@ public:
         }
     }
 
-    void setExposureTimeValue(const double& value) {
+    void SetExposureTimeValue(const double& value) {
         std::cout << "yolo 2 " << std::endl;
         exposureFeature->SetValue(value);
         std::cout << "yolo 3 " << std::endl;
@@ -509,13 +518,13 @@ public:
 
     public slots:
 
-        void startRecording() {
+        void StartRecording() {
             std::lock_guard<std::mutex> lock(m_recordingMutex);
             recordingVideo = true;
             std::cout << "Recording started" << std::endl;
         }
 
-        void stopRecording() {
+        void StopRecording() {
             std::lock_guard<std::mutex> lock(m_recordingMutex);
             recordingVideo = false;
             std::cout << "Recording stopped" << std::endl;
@@ -523,7 +532,7 @@ public:
 
 
         // Display loop
-    void getDisplayFrame() {
+    void GetDisplayFrame() {
         std::cout << "displaying frames \n";
         static QImage displayFrame;
         int frameCount = 0;
@@ -544,9 +553,9 @@ public:
                         
                         emit ImageReceived(displayFrame);
                         
-                        if (getRecordingVideoState() && frameCount % 2 == 0) {
+                        if (IsRecordingVideoActive() && frameCount % 2 == 0) {
                            
-                            emit sendImageToCapture(displayFrame);
+                            emit SendImageToCapture(displayFrame);
                         
                         }
                         
@@ -562,7 +571,8 @@ public:
         std::cout << "Stopping acquisition..." << std::endl;
     }
 
-    bool endOfWork() {
+    bool CleanUpCameraRessources() {
+        if (camera == nullptr) return false;
 
 
             std::cout << "=== Starting Vimba cleanup ===" << std::endl;
