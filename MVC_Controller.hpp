@@ -173,6 +173,7 @@ public:
         //connect(this, &MVC_Controller::startCheckInput, &workerThread_cameraInput, &CameraInputWorkerThread::getDisplayFrame);
 
         connect(this, &MVC_Controller::StartCamera, &workerThread_cameraInput, &CameraInputWorkerThread::StartCamera);
+        connect(view, &View::CameraRetryButtonPressed, &workerThread_cameraInput, &CameraInputWorkerThread::StartCamera);
         connect(this, &MVC_Controller::workerThreads_shutdown, &workerThread_cameraInput, &CameraInputWorkerThread::CleanUpCameraRessources);
 
         connect(this, &MVC_Controller::startMainGUI, view, &View::trigger_initialization);

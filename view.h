@@ -52,6 +52,7 @@ signals:
     void exposureTimeChange_pressed(const int exposureTime_value);
     void initialize_MVCModel(bool state);
     void retryButton_pressed(bool state);
+    void CameraRetryButtonPressed();
     void programShutdown();
     void GUIReady();
     void startVideoRecord();
@@ -68,6 +69,7 @@ public slots:
     void handleInputReceived(const int& button_value, const int& directionIndex);
     void connectionFailedPopUp();
     void CameraFailedPopUp();
+
     void trigger_initialization();
 
     void get_refresh_imageReceived(const QImage& image);

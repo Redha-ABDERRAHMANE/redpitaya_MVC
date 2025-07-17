@@ -377,53 +377,41 @@ void View:: connectionFailedPopUp() {
 
     if (result == QMessageBox::Retry) {
         msgBox.close();
-        // Retry connection
-        QMessageBox retryBox;
-        retryBox.setText("Trying to connect...");
-        retryBox.setStandardButtons(QMessageBox::NoButton);
-        retryBox.show();
         emit retryButton_pressed(true);
-        QTimer::singleShot(1000, this, [&retryBox]() {
-            retryBox.close();
-            });
+
 
     }
     else if (result == QMessageBox::Cancel){
         msgBox.close();
-        this->close();
         emit programShutdown();
+        this->close();
+        
     }
 }
 void View:: CameraFailedPopUp() {
     static int i = 0;
     std::cout << "called: " <<++i<< std::endl;
     // With custom buttons
-    QMessageBox msgBox;
+     QMessageBox msgBox;
     msgBox.setWindowTitle("Camera connection failed");
     msgBox.setText("Could not connect to camera. Check if the camera is connected to PC");
     msgBox.setInformativeText("Would you like to retry?");
     msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Retry);
+    msgBox.show();
 
     int result = msgBox.exec();
 
 
     if (result == QMessageBox::Retry) {
         msgBox.close();
-        //// Retry connection
-        //QMessageBox retryBox;
-        //retryBox.setText("Trying to connect...");
-        //retryBox.setStandardButtons(QMessageBox::NoButton);
-        //retryBox.show();
-        //emit retryButton_pressed(true);
-        //QTimer::singleShot(1000, this, [&retryBox]() {
-        //    retryBox.close();
-        //    });
+        emit CameraRetryButtonPressed();
+
 
     }
     else if (result == QMessageBox::Cancel){
         msgBox.close();
-        this->close();
+        
     }
 }
 
