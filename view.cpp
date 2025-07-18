@@ -673,6 +673,8 @@ void View::closeEvent(QCloseEvent* event)
             QMessageBox::Ok
         );
         event->ignore();
+
+        (void)ok_reply; // ADDED TO REMOVE NOT REFERENCED WARNING
     }
     else {
         QMessageBox::StandardButton reply = QMessageBox::question(
