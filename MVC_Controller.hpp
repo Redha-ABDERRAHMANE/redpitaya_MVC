@@ -92,7 +92,7 @@ public slots:
 
     void initialize_MVCModel() {
         qDebug() << "here initialize";
-        model.setup_MVCModel();
+        model.SetupMVCModel();
     }
 
     void shutDownProgram() {
@@ -191,9 +191,9 @@ public:
         
 
         // Connect worker signals
-        connect(&workerThread_controllerInput, &InputThread::validInputDetected, &worker_ApplyInput, &ApplyInputWorker::apply_ControllerInput);
+        connect(&workerThread_controllerInput, &InputThread::ValidInputDetected, &worker_ApplyInput, &ApplyInputWorker::apply_ControllerInput);
 
-        connect(&workerThread_controllerInput, &InputThread::validInputDetected, this, &MVC_Controller::send_ControllerInput_Direction);
+        connect(&workerThread_controllerInput, &InputThread::ValidInputDetected, this, &MVC_Controller::send_ControllerInput_Direction);
         
 
         // Connect view to workers
@@ -209,7 +209,7 @@ public:
 
         connect(view, &View::InitializeMVCModel, this, &MVC_Controller::initialize_MVCModel);
 
-        connect(view, &View::PressedRetryButton, &model, &MVC_Model::retry_connectRpBoards);
+        connect(view, &View::PressedRetryButton, &model, &MVC_Model::RpReconnect);
 
         connect(view, &View::ProgramShutdown, this, &MVC_Controller::shutDownProgram);
 
@@ -217,9 +217,9 @@ public:
 
 
         // Connect model signals
-        connect(&model, &MVC_Model::rpBoards_connectionFailed, view, &View::ConnectionToBoardsFailedPopUp);
+        connect(&model, &MVC_Model::RpConnectionFailed, view, &View::ConnectionToBoardsFailedPopUp);
 
-        connect(&model, &MVC_Model::rpBoards_connectionSuccess, view, &View::StartGUIComponentsInitialization);
+        connect(&model, &MVC_Model::RpConnectionSuccess, view, &View::StartGUIComponentsInitialization);
 
 
         

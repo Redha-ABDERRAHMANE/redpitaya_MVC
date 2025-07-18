@@ -18,22 +18,22 @@ public:
 
 signals:
     void finished();
-    void validInputDetected(int button_value);
+    void ValidInputDetected(int button_value);
 
 public slots:
     void apply_GUIInput(ButtonCombination button_combination) {
-        model->get_and_applyPreset_MVC( button_combination.nextButton, button_combination.currentHat);
+        model->GetAndApplyPresetMVC( button_combination.nextButton, button_combination.currentHat);
     }
     void apply_ControllerInput(const int& button_value){
-        model->get_and_applyPreset(button_value);
+        model->GetAndApplyPreset(button_value);
     }
 
     void apply_FrequencyShift(const int& frequencyValue) {
-        model->apply_FrequencyValue(frequencyValue);
+        model->ApplyFrequencyValue(frequencyValue);
     }
 
     void apply_PhaseShift(const int& card,const int& phaseValue) {
-        model->apply_PhaseValue( card, phaseValue);
+        model->ApplyPhaseValue( card, phaseValue);
     }
 
 

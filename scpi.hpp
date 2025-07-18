@@ -29,15 +29,15 @@
 
 
 
-class scpi {
+class ScpiServer {
 private:
 
     std::string delimiter = "\r\n";
-    const char* host_address;
-    int port_number;
+    const char* hostAddress;
+    int portNumber;
     bool connectionSuccess ;
 
-    WSADATA Winsockdata;
+    WSADATA winSockData;
     int iWsaStartup;
     //int iWsaCleanup;
 
@@ -55,13 +55,13 @@ private:
 
     //Step-1 WSAStartup Fun------------------------------------
 public:
-    scpi(const char* host, const int& port = 5000):iCloseSocket(),iConnect(),RecvBuffer() {
-        host_address = host;
-        port_number = port;
+    ScpiServer(const char* host, const int& port = 5000):iCloseSocket(),iConnect(),RecvBuffer() {
+        hostAddress = host;
+        portNumber = port;
         
     }
 
-    ~scpi() {
+    ~ScpiServer() {
         //STEP - 7 Close Socket
         std::cout << "entered scpi destructor" << std::endl;
         shutdown(TCPClientSocket, SD_BOTH);
@@ -74,8 +74,8 @@ public:
         WSACleanup();
     }
 
-    void set_connectionToSCPIServer() {
-        if (initialize_iWsaStartup() && initialize_clientSocket() && initialize_TCPServerStruct() && connectServer()) {
+    void SetConnectionToSCPIServer() {
+        if (InitializeiWsaStartup() && InitializeTCPClientSocket() && InitializeTCPServerStruct() && ConnectServer()) {
             connectionSuccess = true;
        }
         else { connectionSuccess = false; }
@@ -83,10 +83,10 @@ public:
 
     }
 
-    bool initialize_iWsaStartup(){
+    bool InitializeiWsaStartup(){
 
 
-        iWsaStartup = WSAStartup(MAKEWORD(2, 2), &Winsockdata);
+        iWsaStartup = WSAStartup(MAKEWORD(2, 2), &winSockData);
         if (iWsaStartup != 0)
         {
             std::cout << "WSAStartup Failed" << std::endl;
@@ -98,7 +98,7 @@ public:
 
     }
 
-    bool initialize_clientSocket() {
+    bool InitializeTCPClientSocket() {
 
         TCPClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (TCPClientSocket == INVALID_SOCKET)
@@ -112,18 +112,18 @@ public:
 
     }
 
-    bool initialize_TCPServerStruct() {
+    bool InitializeTCPServerStruct() {
 
         TCPServerAdd.sin_family = AF_INET;
-        if (inet_pton(AF_INET, host_address, &TCPServerAdd.sin_addr) != 1) {
-            std::cout << "Invalid IPv4 address: " << host_address << std::endl;
+        if (inet_pton(AF_INET, hostAddress, &TCPServerAdd.sin_addr) != 1) {
+            std::cout << "Invalid IPv4 address: " << hostAddress << std::endl;
             return false;
         }
-        TCPServerAdd.sin_port = htons(port_number);
+        TCPServerAdd.sin_port = htons(portNumber);
         return true;
 
     }
-    bool connectServer() {
+    bool ConnectServer() {
 
         iConnect = connect(TCPClientSocket, (SOCKADDR*)&TCPServerAdd, sizeof(TCPServerAdd));
         if (iConnect == SOCKET_ERROR)
@@ -194,7 +194,7 @@ public:
         return rx_txt();  // Return received response
     }
 
-    bool get_connectionStatus()const {
+    bool GetConnectionStatus()const {
         return connectionSuccess;
     }
 };

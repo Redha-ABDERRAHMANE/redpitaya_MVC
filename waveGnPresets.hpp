@@ -65,30 +65,30 @@ private:
 public:
 	waveGnPresets(){}
 
-    const preset_array_t& get_currentPreset()const {
+    const preset_array_t& GetCurrentPreset()const {
 		return currentPreset;
 	}
-    const preset_array_t& get_previousPresetUsed()const {
+    const preset_array_t& GetPreviousPresetUsed()const {
 		return previousPresetUsed;
 	}
-    const preset_array_t& get_nextPreset()const {
+    const preset_array_t& GetNextPreset()const {
 		return nextPreset;
 	}
-    void set_previousPresetUsed(const preset_array_t preset) {
+    void SetPreviousPresetUsed(const preset_array_t preset) {
 		previousPresetUsed = preset;
 	}
 
     //  USED BY MVC_Controller  TO SET  GUI USER INPUT INSTRUCTIONS
-    void set_currentPreset(const int& button_value) {
+    void SetCurrentPreset(const int& button_value) {
         currentPreset =  dictionary_bumperHatPreset.at(button_value);
     }
     ////////////////////////////////////////////////////////
-    void set_currentPreset(const preset_array_t preset) {
+    void SetCurrentPreset(const preset_array_t preset) {
 		currentPreset = preset;
 	}
 
 	//Second parameter for GUI use only
-	void set_nextPreset(const int& button_value,const int& GUI_hat_button=-1){
+	void SetNextPreset(const int& button_value,const int& GUI_hat_button=-1){
 
         static const preset_array_t& hat_up_preset = dictionary_bumperHatPreset.at(Buttons::HAT_UP);
         static const preset_array_t& hat_left_preset = dictionary_bumperHatPreset.at(Buttons::HAT_LEFT);
@@ -113,9 +113,9 @@ public:
 
 
 
-	void update_currentAndPreviousPreset() {
-		set_previousPresetUsed(currentPreset);
-		set_currentPreset(nextPreset);
+	void UpdateCurrentAndPreviousPreset() {
+		SetPreviousPresetUsed(currentPreset);
+		SetCurrentPreset(nextPreset);
 	}
 
 

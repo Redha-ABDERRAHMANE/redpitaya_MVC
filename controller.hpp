@@ -58,7 +58,7 @@ private:
 
 	int lastDpadUsed = -1;
 
-	bool check_validControllerButtonAndCoherence(const int& button_value) {
+	bool CheckValidControllerButtonAndCoherence(const int& button_value) {
         if (WithInInterval(Buttons::BUMPER_RIGHT, button_value, Buttons::BUMPER_LEFT)) {
             lastDpadUsed=-1;
             return true;
@@ -104,7 +104,7 @@ public:
 		DWORD dwReserved = 0;
 		DWORD KeyStroke_result = XInputGetKeystroke(dwControllerIndex, dwReserved, (PXINPUT_KEYSTROKE)&keyStroke);
         (void)KeyStroke_result;
-		return  (keyStroke.Flags == XINPUT_KEYSTROKE_KEYDOWN && check_validControllerButtonAndCoherence(keyStroke.VirtualKey)) ? keyStroke.VirtualKey : -1;
+		return  (keyStroke.Flags == XINPUT_KEYSTROKE_KEYDOWN && CheckValidControllerButtonAndCoherence(keyStroke.VirtualKey)) ? keyStroke.VirtualKey : -1;
 
 
 

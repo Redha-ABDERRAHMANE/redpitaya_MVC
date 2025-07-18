@@ -6,8 +6,8 @@ class RedpitayaCards
 {
 private:
     
-    scpi rp_primary;
-    scpi rp_secondary;
+    ScpiServer rp_primary;
+    ScpiServer rp_secondary;
 
 
 
@@ -15,31 +15,31 @@ public:
 
     RedpitayaCards(const char* host_primary, const char* host_secondary, const int& frequency=5) :rp_primary(host_primary), rp_secondary(host_secondary) {
         std::cout<<"frequency:"<<frequency<<std::endl;
-        connect_configure_rpBoards(frequency);
+        ConnectConfigureRpBoards(frequency);
 
 
 
 
     }
     ~RedpitayaCards() {
-        disable_daisy_chain_configuration(rp_primary);
-        disable_daisy_chain_configuration(rp_secondary);
+        DisableDaisyChainConfig(rp_primary);
+        DisableDaisyChainConfig(rp_secondary);
     }
 
 
-    bool connect_configure_rpBoards(const int& frequency=5) {
-        rp_primary.set_connectionToSCPIServer();
-        rp_secondary.set_connectionToSCPIServer();
-        if (rp_primary.get_connectionStatus() && rp_secondary.get_connectionStatus()) {
-            reset_generators();
-            set_DaisyChain_SourceTrigger_MasterBoard();
-            set_DaisyChain_SourceTrigger_SlaveBoard();
-            verify_board_daisy_configuration();
-            set_InitialSource_sineWave_parameters(PRIMARY_BOARD, frequency, PHASE_0);
-            set_InitialSource_sineWave_parameters(SECONDARY_BOARD, frequency, PHASE_0);
-            enable_board_outputs();
-            set_arm_trigger_slave_board(rp_secondary);
-            displayBoardsConfig();
+    bool ConnectConfigureRpBoards(const int& frequency=5) {
+        rp_primary.SetConnectionToSCPIServer();
+        rp_secondary.SetConnectionToSCPIServer();
+        if (rp_primary.GetConnectionStatus() && rp_secondary.GetConnectionStatus()) {
+            ResetGenerators();
+            SetDaisyChainSourceTriggerMasterBoard();
+            SetDaisySourceTriggerSlaveBoard();
+            CheckBoardDaisyConfiguration();
+            SetInitialSourceSineWaveParams(PRIMARY_BOARD, frequency, PHASE_0);
+            SetInitialSourceSineWaveParams(SECONDARY_BOARD, frequency, PHASE_0);
+            EnableAllBoardsOutputs();
+            SetArmTriggerSlaveBoard(rp_secondary);
+            DisplayBoardsConfig();
 
             rp_primary.tx_txt("SOUR:TRig:INT");
             return true;
@@ -50,21 +50,21 @@ public:
 
 
     void send_txt(const int& card,std::string full_command) {
-        scpi& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
+        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
         rp_board.tx_txt(full_command.c_str());
 
 
     }
 
     std::string send_txrxt(const int& card,std::string full_command) {
-        scpi& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
+        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
         return rp_board.txrx_txt(full_command.c_str());
 
 
     }
-    bool get_connectionStatus()const {
-        std::cout << "state: " << rp_primary.get_connectionStatus() && rp_secondary.get_connectionStatus() << '\n';
-        return rp_primary.get_connectionStatus() && rp_secondary.get_connectionStatus();
+    bool GetConnectionStatus()const {
+        std::cout << "state: " << rp_primary.GetConnectionStatus() && rp_secondary.GetConnectionStatus() << '\n';
+        return rp_primary.GetConnectionStatus() && rp_secondary.GetConnectionStatus();
     }
 
 
@@ -72,13 +72,13 @@ private:
 
 
 
-    void reset_generators() {
+    void ResetGenerators() {
         rp_primary.tx_txt("GEN:RST");
         rp_secondary.tx_txt("GEN:RST");
     }
 
 
-    void set_DaisyChain_SourceTrigger_MasterBoard() {
+    void SetDaisyChainSourceTriggerMasterBoard() {
 
         rp_primary.tx_txt("DAISY:SYNC:TRig ON");
         rp_primary.tx_txt("DAISY:SYNC:CLK ON");
@@ -89,7 +89,7 @@ private:
         rp_primary.tx_txt("TRIG:O:SLO POS");        //Set output trigger slope to positive
 
     }
-    void set_DaisyChain_SourceTrigger_SlaveBoard() {
+    void SetDaisySourceTriggerSlaveBoard() {
         rp_secondary.tx_txt("DAISY:SYNC:TRig ON");
         rp_secondary.tx_txt("DAISY:SYNC:CLK ON");
         rp_secondary.tx_txt("DAISY:TRIG_I:SOUR EXT");    // Setting internal trigger coming from external source ie. SOUR DAC of the primary board
@@ -104,7 +104,7 @@ private:
 
     //TOPUT IN RPSIGNALGN
 
-    void verify_board_daisy_configuration() {
+    void CheckBoardDaisyConfiguration() {
         printf("PRIMARY Trig Sync:  %s\n", (rp_primary.txrx_txt("DAISY:SYNC:TRig?")).c_str());
         printf("PRIMARY Clock Sync: %s\n", (rp_primary.txrx_txt("DAISY:SYNC:CLK?")).c_str());
         printf("SECONDARY Trig Sync: %s\n", (rp_secondary.txrx_txt("DAISY:SYNC:TRig?")).c_str());
@@ -112,8 +112,8 @@ private:
     }
 
     // Amplitude , frequency and phase are fixed at the start of the code.No need to put them as parameters
-    void set_InitialSource_sineWave_parameters(const int card, const int frequency, const float amplitude = AMPLITUDE_0, const int phase = PHASE_0) {
-        scpi& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
+    void SetInitialSourceSineWaveParams(const int card, const int frequency, const float amplitude = AMPLITUDE_0, const int phase = PHASE_0) {
+        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : rp_secondary;
         for (int source = 1; source <= 2; source++) {
             rp_board.tx_txt("SOUR" + std::to_string(source) + ":FUNC SINE");
             rp_board.tx_txt("SOUR" + std::to_string(source) + ":FREQ:FIX " + std::to_string(frequency));
@@ -122,28 +122,28 @@ private:
         }
     }
 
-    void enable_SingleBoard_outputs(scpi& board) {
+    void EnableBoardOutputs(ScpiServer& board) {
         board.tx_txt("OUTPUT1:STATE ON");
         board.tx_txt("OUTPUT2:STATE ON");
     }
-    void enable_board_outputs() {
-        enable_SingleBoard_outputs(rp_primary);
-        enable_SingleBoard_outputs(rp_secondary);
+    void EnableAllBoardsOutputs() {
+        EnableBoardOutputs(rp_primary);
+        EnableBoardOutputs(rp_secondary);
 
     }
 
     // Make the slave board sources wait for the external trigger
-    void set_arm_trigger_slave_board(scpi& rp_board) {
+    void SetArmTriggerSlaveBoard(ScpiServer& rp_board) {
         (void)(rp_board);
         rp_secondary.tx_txt("SOUR1:TRIG:ARM");
         rp_secondary.tx_txt("SOUR2:TRIG:ARM");
     }
 
-    void disable_daisy_chain_configuration(scpi& rp_board) {
+    void DisableDaisyChainConfig(ScpiServer& rp_board) {
         rp_board.tx_txt("DAISY:SYNC:TRig OFF");
         rp_board.tx_txt("DAISY:SYNC:CLK OFF");
     }
-    void displayBoardsConfig() {
+    void DisplayBoardsConfig() {
         printf("PRIMARY Output state : %s\n", rp_primary.txrx_txt("OUTPUT1:STATE?").c_str());
         printf("SECONDARY Output state : %s\n", rp_secondary.txrx_txt("OUTPUT1:STATE?").c_str());
         printf("SECONDARY Output state : %s\n", rp_secondary.txrx_txt("OUTPUT2:STATE?").c_str());

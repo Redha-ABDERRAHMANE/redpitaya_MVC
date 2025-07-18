@@ -19,7 +19,7 @@ public:
     }
 
 signals:
-    void validInputDetected(int button_value);
+    void ValidInputDetected(int button_value);
 
 protected:
     void run() override {
@@ -28,7 +28,7 @@ protected:
            
             button_value = controller->CheckControllerEvent();
             if (button_value != -1) {
-                emit validInputDetected(button_value);
+                emit ValidInputDetected(button_value);
             }
             msleep(100); // Delay to avoid CPU overload
         }

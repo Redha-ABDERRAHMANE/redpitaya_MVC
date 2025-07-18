@@ -255,7 +255,7 @@ void View:: ConnectionToBoardsFailedPopUp() {
     // With custom buttons
     QMessageBox msgBox;
     msgBox.setWindowTitle("Connection Failed");
-    msgBox.setText("Could not connect to SCPI server.one or multiple Red Pitaya boards are not connected (The boards needs to be connected to power and connected to the same network as the pc)");
+    msgBox.setText("Could not connect to SCPI server.One or multiple Red Pitaya boards are not connected (The boards needs to be connected to power and connected to the same network as the pc)");
     msgBox.setInformativeText("Would you like to retry?");
     msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Retry);
