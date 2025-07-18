@@ -27,81 +27,9 @@ void View::StartGUIComponentsInitialization() {
 
 
     QHBoxLayout* mainLayout = new QHBoxLayout(ui->centralwidget);
-    ////////////////////////////////////////////////////////////
-    //mediaCaptureSession = new QMediaCaptureSession();
-    //currentCam = new QCamera();
-    //comboBox = new QComboBox();
-    //videoWidget = new QVideoWidget();
-    // 
-    
-    //ImageLabelDisplay.setScaledContents(true);
-    imageView = new QGraphicsView(this);
-    scene = new QGraphicsScene(this);
-    pixmapItem = new QGraphicsPixmapItem();
-    imageView->installEventFilter(this);
-    scene->addItem(pixmapItem);
-    imageView->setScene(scene);
-
-    imageView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
-    imageView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-    imageView->setDragMode(QGraphicsView::NoDrag);
-    
- 
-    // Main horizontal layout (splits left and right)
-    // Left side vertical layout
-    layoutLeftPart = new QVBoxLayout();
-
-    // Camera group box (top left)
-    groupBoxCamera = new QGroupBox("Camera", this);
-    layoutverticalCamera = new QVBoxLayout();
-   
-    layoutverticalCamera->addWidget(imageView, 3);
-    groupBoxCamera->setLayout(layoutverticalCamera);
-
-    // Controller group box (bottom left)
-    QGroupBox* controllerGroupBox = new QGroupBox("Controller", this);
-    QHBoxLayout* horizontalControllerLayout = new QHBoxLayout();
-
-    // Controller image (left side)
-    labelControllerImage = new QLabel(this);
-    LoadControllerImage(-1);
-
-    // Direction buttons group (right side)
-    QGroupBox* directionGroupBox = new QGroupBox("Directions", this);
-    QGridLayout* directionGridLayout = new QGridLayout();
-
-    SetDirectionButtons(directionGridLayout);
-    directionGroupBox->setLayout(directionGridLayout);
-    /////////////////////////////////////////////
-    // Axis group
-    // Direction buttons group (right side)
-    QGroupBox* movementInfoGroupBox = new QGroupBox("Info", this);
-    QVBoxLayout* movementInfoVerticalLayout = new QVBoxLayout();
-    movementInfoGroupBox->setLayout(movementInfoVerticalLayout);
-
-    QHBoxLayout* axisInfoHorizontalLayout = new QHBoxLayout();
 
 
-
-    // Direction text group :
-    QHBoxLayout* directionIndicatorHorizontalLayout = new QHBoxLayout();
-    SetAxisDirectionButtons(movementInfoVerticalLayout, axisInfoHorizontalLayout, directionIndicatorHorizontalLayout);
-
-
-
-
-    ///////////////////////////////////////////////////////////
-
-    // Add both to horizontal layout
-    horizontalControllerLayout->addWidget(labelControllerImage, 2);
-    horizontalControllerLayout->addWidget(movementInfoGroupBox, 1);
-    horizontalControllerLayout->addWidget(directionGroupBox, 1);
-
-
-
-    controllerGroupBox->setLayout(horizontalControllerLayout);
-
-
+    ConfigureLeftLayout();
     ConfigureInfoLayout();
    
 
@@ -397,6 +325,54 @@ void View::SetNewFrameToDisplay( const QImage& image) {
     
 
 
+}
+
+void View::ConfigureLeftLayout() {
+
+    imageView = new QGraphicsView(this);
+    scene = new QGraphicsScene(this);
+    pixmapItem = new QGraphicsPixmapItem();
+    imageView->installEventFilter(this);
+    scene->addItem(pixmapItem);
+    imageView->setScene(scene);
+    imageView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
+    imageView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    imageView->setDragMode(QGraphicsView::NoDrag);
+    // Main horizontal layout (splits left and right)
+    // Left side vertical layout
+    layoutLeftPart = new QVBoxLayout();
+    // Camera group box (top left)
+    groupBoxCamera = new QGroupBox("Camera", this);
+    layoutverticalCamera = new QVBoxLayout();
+    layoutverticalCamera->addWidget(imageView, 3);
+    groupBoxCamera->setLayout(layoutverticalCamera);
+    // Controller group box (bottom left)
+    controllerGroupBox = new QGroupBox("Controller", this);
+    horizontalControllerLayout = new QHBoxLayout();
+    // Controller image (left side)
+    labelControllerImage = new QLabel(this);
+    LoadControllerImage(-1);
+    // Direction buttons group (right side)
+    directionGroupBox = new QGroupBox("Directions", this);
+    directionGridLayout = new QGridLayout();
+    SetDirectionButtons(directionGridLayout);
+    directionGroupBox->setLayout(directionGridLayout);
+    /////////////////////////////////////////////
+    // Axis group
+    // Direction buttons group (right side)
+    movementInfoGroupBox = new QGroupBox("Info", this);
+    movementInfoVerticalLayout = new QVBoxLayout();
+    movementInfoGroupBox->setLayout(movementInfoVerticalLayout);
+    axisInfoHorizontalLayout = new QHBoxLayout();
+    // Direction text group :
+    directionIndicatorHorizontalLayout = new QHBoxLayout();
+    SetAxisDirectionButtons(movementInfoVerticalLayout, axisInfoHorizontalLayout, directionIndicatorHorizontalLayout);
+    ///////////////////////////////////////////////////////////
+    // Add both to horizontal layout
+    horizontalControllerLayout->addWidget(labelControllerImage, 2);
+    horizontalControllerLayout->addWidget(movementInfoGroupBox, 1);
+    horizontalControllerLayout->addWidget(directionGroupBox, 1);
+    controllerGroupBox->setLayout(horizontalControllerLayout);
 }
 
 void View::ConfigureInfoLayout() {

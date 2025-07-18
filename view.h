@@ -95,6 +95,21 @@ QGroupBox*               groupBoxInformation        = nullptr;
 QVBoxLayout*             layoutverticalCamera       = nullptr;
 QVBoxLayout*             layoutInformation          = nullptr;
 QVBoxLayout*             layoutLeftPart             = nullptr;
+///////////
+QGroupBox*               controllerGroupBox         = nullptr;
+QHBoxLayout*             horizontalControllerLayout = nullptr;
+QGroupBox*               directionGroupBox          = nullptr;
+QGridLayout*             directionGridLayout        = nullptr;
+QGroupBox*               movementInfoGroupBox       = nullptr;
+QVBoxLayout*             movementInfoVerticalLayout = nullptr;
+QHBoxLayout*             axisInfoHorizontalLayout   = nullptr;
+QHBoxLayout*             directionIndicatorHorizontalLayout = nullptr;
+
+
+//////////
+
+
+
 QLabel*                  labelControllerImage       = nullptr;
 QPixmap                  pixmap;
 QPushButton*             buttonDirectionPrimary     = nullptr;
@@ -198,6 +213,7 @@ private:
     void UpdateDirectionIndicators(const int& newDirectionIndex);
 
     void ConfigureInfoLayout();
+    void ConfigureLeftLayout();
 
    
 
