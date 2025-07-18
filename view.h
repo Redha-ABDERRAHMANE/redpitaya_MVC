@@ -45,131 +45,112 @@ public:
 
 
 signals:
-    void buttonDirection_pressed(ButtonCombination button_combination);
-    void frequencyChange_pressed(const int& frequency_value);
-    void phaseChange_pressed(const int& card, const int& phase_value);
-    void saturationChange_pressed(const int saturation_value);
-    void exposureTimeChange_pressed(const int exposureTime_value);
-    void initialize_MVCModel(bool state);
-    void retryButton_pressed(bool state);
+    void PressedButtonDirection(ButtonCombination button_combination);
+    void PressedFrequencyChange(const int& frequency_value);
+    void PressedPhaseChange(const int& card, const int& phase_value);
+    void PressedSaturationChange(const int saturation_value);
+    void PressedExposureTimeChange(const int exposureTime_value);
+    void InitializeMVCModel(bool state);
+    void PressedRetryButton(bool state);
     void CameraRetryButtonPressed();
-    void programShutdown();
+    void ProgramShutdown();
     void GUIReady();
-    void startVideoRecord();
-    void stopVideoRecord();
+    void StartCameraRecord();
+    void StopCameraRecord();
 
 
 private slots:
-    void selectCam();
+    void SelectCam();
 
 
 
 public slots:
-    void load_ControllerImage(const int& button_value);
-    void handleInputReceived(const int& button_value, const int& directionIndex);
-    void connectionFailedPopUp();
+    void LoadControllerImage(const int& button_value);
+    void HandleInputReceived(const int& button_value, const int& directionIndex);
+    void ConnectionToBoardsFailedPopUp();
     void CameraFailedPopUp();
 
-    void trigger_initialization();
+    void StartGUIComponentsInitialization();
 
-    void get_refresh_imageReceived(const QImage& image);
+    void SetNewFrameToDisplay(const QImage& image);
 
 private:
 
-    Ui::View* ui;
-    int8_t last_DirectionIndexUsed = -1;
-    double imageRotationAngle = 0.0;
-    QList<QCameraDevice> cameras;
-    QComboBox* comboBox;
+Ui::View*                ui                          = nullptr;
+int8_t                   indexLastDirectionUsed     = -1;
+double                   imageRotationAngle         = 0.0;
+QList<QCameraDevice>     cameras;
+QComboBox*               comboBox                   = nullptr;
+//////////////////
+QGraphicsView*           imageView                  = nullptr;
+QGraphicsPixmapItem*     pixmapItem                 = nullptr;
+QGraphicsScene*          scene                      = nullptr;
+//////////
+QVideoWidget*            videoWidget                = nullptr;
+QCamera*                 currentCam                 = nullptr;
+QMediaCaptureSession*    mediaCaptureSession        = nullptr;
+////////////////////////
+QGroupBox*               groupBoxCamera             = nullptr;
+QGroupBox*               groupBoxInformation        = nullptr;
+QVBoxLayout*             layoutverticalCamera       = nullptr;
+QVBoxLayout*             layoutInformation          = nullptr;
+QVBoxLayout*             layoutLeftPart             = nullptr;
+QLabel*                  labelControllerImage       = nullptr;
+QPixmap                  pixmap;
+QPushButton*             buttonDirectionPrimary     = nullptr;
+QPushButton*             buttonDirectionSecondary   = nullptr;
+QPushButton*             buttonDisplayCameraWindowPopup = nullptr;
+//Second window widgets
+// Frequency controls
+QSlider*                 SliderFrequency            = nullptr;
+QLabel*                  labelFrequencyValue        = nullptr;
+QPushButton*             buttonFrequencyConfirmation = nullptr;
+// Phase controls
+QLabel*                  labelPrimaryPhaseValue     = nullptr;
+QLineEdit*               textBoxPrimaryPhase        = nullptr;
+QPushButton*             buttonPrimaryPhaseConfirmation = nullptr;
+QLabel*                  labelSecondaryPhaseValue   = nullptr;
+QLineEdit*               textBoxSecondaryPhase      = nullptr;
+QPushButton*             buttonSecondaryPhaseConfirmation = nullptr;
+// Exposure controls
+QLabel*                  labelExposureTimeValue     = nullptr;
+QSlider*                 sliderExposureTime         = nullptr;
+QPushButton*             buttonExposureTimeConfirmation = nullptr;
+// Saturation controls
+QLabel*                  labelSaturationValue       = nullptr;
+QSlider*                 sliderSaturation           = nullptr;
+QPushButton*             buttonSaturationConfirmation = nullptr;
+// Image rotation controls
+QLabel*                  labelRotationText          = nullptr;
+QRadioButton*            button270Degrees           = nullptr;
+QRadioButton*            button180Degrees           = nullptr;
+QRadioButton*            button90Degrees            = nullptr;
+QRadioButton*            button0Degrees             = nullptr;
+// Capture Video button
+QPushButton*             buttonCaptureVideo         = nullptr;
+bool                     recording                  = false;
+//Second window
+QWidget*                 windowCameraPopup          = nullptr;
+QVBoxLayout*             layoutCameraWindowPopup    = nullptr;
 
-    //////////////////
-    QGraphicsView* imageView;
-    QGraphicsPixmapItem* pixmapItem;
-    QGraphicsScene* scene;
-
-    //////////
-    QVideoWidget* videoWidget;
-
-
-    QCamera* currentCam;
-
-
-    QMediaCaptureSession* mediaCaptureSession;
-    ////////////////////////
-
-    QGroupBox* cameraGroupBox;
-    QGroupBox* infoGroupBox;
-    QVBoxLayout* verticalCameraLayout;
-    QVBoxLayout* infoLayout;
-    QVBoxLayout* leftLayout;
-    QLabel* controllerImageLabel;
-    QPixmap pixmap;
-    QPushButton* testButton;
-    QPushButton* button_Direction_Primary;
-    QPushButton* button_Direction_Secondary;
-    QPushButton* button_displaySecondWindow;
-
-    //Second window widgets
-
-    // Frequency controls
-    QSlider* frequencySlider;
-    QLabel* display_FrequencyValue;
-    QPushButton* button_frequencyConfirmation;
-
-    // Phase controls
-    QLabel* display_primaryPhaseValue;
-    QLineEdit* textBox_primaryPhaseValue;
-    QPushButton* button_primaryPhaseConfirmation;
-    QLabel* display_secondaryPhaseValue;
-    QLineEdit* textBox_secondaryPhaseValue;
-    QPushButton* button_secondaryPhaseConfirmation;
-
-    // Exposure controls
-    QLabel* display_ExposureTimeValue;
-    QSlider* exposureTimeSlider;
-    QPushButton* button_exposureTimeConfirmation;
-
-    // Saturation controls
-    QLabel* display_SaturationValue;
-    QSlider* saturationSlider;
-    QPushButton* button_saturationConfirmation;
-
-    // Image rotation controls
-
-    QLabel* display_rotationValue;
-    
-    QRadioButton* button_270DegreeRotation;
-    QRadioButton* button_180DegreeRotation;
-    QRadioButton* button_90DegreeRotation;
-    QRadioButton* button_0DegreeRotation;
-
-    // Capture Video button
-
-    QPushButton* button_captureVideo;
-    bool recording = false;
-
-    //Second window
-    QWidget* window_popup;
-    QVBoxLayout* window_popupLayout;
-
-    bool popup_running = false;
-    bool popup_firstOpening = true;
+    bool cameraPopupRunning = false;
+    bool popupFirstOpening = true;
 
 
 
-    //Template for array_directionButtons = {up-left, up-right,down-left, down-right, right-up , right-down, left-up  , left-down}
+    //Template for arrayDirectionButtons = {up-left, up-right,down-left, down-right, right-up , right-down, left-up  , left-down}
 
-    std::array<QPushButton*, 10> array_directionButtons;
-    std::array<QPushButton*, 3> array_axisButtons;
+    std::array<QPushButton*, 10> arrayDirectionButtons;
+    std::array<QPushButton*, 3> arrayAxisButtons;
 
 
 
 
 
 
-    const QString arrowImagePath = "Images/arrows_images/arrows_XY/arrow";
-    const QString controllerImagePath = "Images/controller_images/controller";
-    std::array<ButtonCombination, 10> array_button_combination = { {
+    const QString imagePathXYArrows = "Images/arrows_images/arrows_XY/arrow";
+    const QString imagePathGamepad = "Images/controller_images/controller";
+    const std::array<ButtonCombination, 10> array_button_combination = { {
         {Buttons::HAT_UP, -1}, {Buttons::X,Buttons::HAT_UP},
         {Buttons::HAT_DOWN, -1},{Buttons::X,Buttons::HAT_DOWN},
         {Buttons::HAT_RIGHT, -1},{Buttons::Y,Buttons::HAT_RIGHT},
@@ -177,14 +158,14 @@ private:
         {Buttons::BUMPER_RIGHT, -1},{Buttons::BUMPER_LEFT, -1}
     } };
 
-    const std::array<QString, 10> array_arrowPath = {
+    const std::array<QString, 10> arrayXYArrowPath = {
         "_up_right.png","_up_left.png",
         "_down_right.png","_down_left.png",
         "_right_down.png","_right_up.png",
         "_left_down.png","_left_up.png",
         "_circle.png","_stop.png"
     };
-    const std::unordered_map<int, QString> dictionary_controllerButtonsPath = {
+    const std::unordered_map<int, QString> dictionaryControllerButtonsPath = {
         {-1    , ".png"},
         {Buttons::A,"_button_A.png"},
         {Buttons::B,"_button_B.png"},
@@ -207,16 +188,16 @@ private:
 
 private:
 
-    void getCameras();
-    void update_DirectionButton_clicked(const int& directionIndex);
-    void update_lastDirectionButtonUsed(const int& newDirectionIndex);
+    void GetCameras();
+    void UpdateClickedDirectionButton(const int& directionIndex);
+    void UpdateLastDirectionButtonUsed(const int& newDirectionIndex);
 
-    void set_Direction_buttons(QGridLayout*& directionGridLayout);
-    void set_Axis_Direction_buttons(QVBoxLayout*& movementInfoVerticalLayout, QHBoxLayout*& axisInfoHorizontalLayout, QHBoxLayout*& directionIndicatorHorizontalLayout);
+    void SetDirectionButtons(QGridLayout*& directionGridLayout);
+    void SetAxisDirectionButtons(QVBoxLayout*& movementInfoVerticalLayout, QHBoxLayout*& axisInfoHorizontalLayout, QHBoxLayout*& directionIndicatorHorizontalLayout);
 
-    void update_directionIndicators(const int& newDirectionIndex);
+    void UpdateDirectionIndicators(const int& newDirectionIndex);
 
-    void configureInfoLayout();
+    void ConfigureInfoLayout();
 
    
 

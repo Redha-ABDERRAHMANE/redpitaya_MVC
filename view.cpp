@@ -5,53 +5,13 @@
 View::View(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::View)
-    ,comboBox(nullptr),
-    imageView(nullptr),
-    pixmapItem(nullptr),
-    scene(nullptr),
-    videoWidget(nullptr),
-    currentCam(nullptr),
-    mediaCaptureSession(nullptr),
-    cameraGroupBox(nullptr),
-    infoGroupBox(nullptr),
-    verticalCameraLayout(nullptr),
-    infoLayout(nullptr),
-    leftLayout(nullptr),
-    controllerImageLabel(nullptr),
-    testButton(nullptr),
-    button_Direction_Primary(nullptr),
-    button_Direction_Secondary(nullptr),
-    button_displaySecondWindow(nullptr),
-    frequencySlider(nullptr),
-    display_FrequencyValue(nullptr),
-    button_frequencyConfirmation(nullptr),
-    display_primaryPhaseValue(nullptr),
-    textBox_primaryPhaseValue(nullptr),
-    button_primaryPhaseConfirmation(nullptr),
-    display_secondaryPhaseValue(nullptr),
-    textBox_secondaryPhaseValue(nullptr),
-    button_secondaryPhaseConfirmation(nullptr),
-    display_ExposureTimeValue(nullptr),
-    exposureTimeSlider(nullptr),
-    button_exposureTimeConfirmation(nullptr),
-    display_SaturationValue(nullptr),
-    saturationSlider(nullptr),
-    button_saturationConfirmation(nullptr),
-    display_rotationValue(nullptr),
-    button_270DegreeRotation(nullptr),
-    button_180DegreeRotation(nullptr),
-    button_90DegreeRotation(nullptr),
-    button_0DegreeRotation(nullptr),
-    button_captureVideo(nullptr),
-    window_popup(nullptr),
-    window_popupLayout(nullptr)
 {
     static int j = 0;
     std::cout << "called J: " << ++j << std::endl;
 
 }
 
-void View::trigger_initialization() {
+void View::StartGUIComponentsInitialization() {
     ui->setupUi(this);
 
     std::cout << "entered" << std::endl;
@@ -89,28 +49,28 @@ void View::trigger_initialization() {
  
     // Main horizontal layout (splits left and right)
     // Left side vertical layout
-    leftLayout = new QVBoxLayout();
+    layoutLeftPart = new QVBoxLayout();
 
     // Camera group box (top left)
-    cameraGroupBox = new QGroupBox("Camera", this);
-    verticalCameraLayout = new QVBoxLayout();
+    groupBoxCamera = new QGroupBox("Camera", this);
+    layoutverticalCamera = new QVBoxLayout();
    
-    verticalCameraLayout->addWidget(imageView, 3);
-    cameraGroupBox->setLayout(verticalCameraLayout);
+    layoutverticalCamera->addWidget(imageView, 3);
+    groupBoxCamera->setLayout(layoutverticalCamera);
 
     // Controller group box (bottom left)
     QGroupBox* controllerGroupBox = new QGroupBox("Controller", this);
     QHBoxLayout* horizontalControllerLayout = new QHBoxLayout();
 
     // Controller image (left side)
-    controllerImageLabel = new QLabel(this);
-    load_ControllerImage(-1);
+    labelControllerImage = new QLabel(this);
+    LoadControllerImage(-1);
 
     // Direction buttons group (right side)
     QGroupBox* directionGroupBox = new QGroupBox("Directions", this);
     QGridLayout* directionGridLayout = new QGridLayout();
 
-    set_Direction_buttons(directionGridLayout);
+    SetDirectionButtons(directionGridLayout);
     directionGroupBox->setLayout(directionGridLayout);
     /////////////////////////////////////////////
     // Axis group
@@ -125,7 +85,7 @@ void View::trigger_initialization() {
 
     // Direction text group :
     QHBoxLayout* directionIndicatorHorizontalLayout = new QHBoxLayout();
-    set_Axis_Direction_buttons(movementInfoVerticalLayout, axisInfoHorizontalLayout, directionIndicatorHorizontalLayout);
+    SetAxisDirectionButtons(movementInfoVerticalLayout, axisInfoHorizontalLayout, directionIndicatorHorizontalLayout);
 
 
 
@@ -133,7 +93,7 @@ void View::trigger_initialization() {
     ///////////////////////////////////////////////////////////
 
     // Add both to horizontal layout
-    horizontalControllerLayout->addWidget(controllerImageLabel, 2);
+    horizontalControllerLayout->addWidget(labelControllerImage, 2);
     horizontalControllerLayout->addWidget(movementInfoGroupBox, 1);
     horizontalControllerLayout->addWidget(directionGroupBox, 1);
 
@@ -142,7 +102,7 @@ void View::trigger_initialization() {
     controllerGroupBox->setLayout(horizontalControllerLayout);
 
 
-    configureInfoLayout();
+    ConfigureInfoLayout();
    
 
 
@@ -151,12 +111,12 @@ void View::trigger_initialization() {
 
     /////////////////////////////////////////////////////////////////
     // Assemble left side (camera on top, controller below)
-    leftLayout->addWidget(cameraGroupBox, 2);
-    leftLayout->addWidget(controllerGroupBox, 1);
+    layoutLeftPart->addWidget(groupBoxCamera, 2);
+    layoutLeftPart->addWidget(controllerGroupBox, 1);
 
     // Add left side and right side to main layout
-    mainLayout->addLayout(leftLayout, 3);
-    mainLayout->addWidget(infoGroupBox, 1);
+    mainLayout->addLayout(layoutLeftPart, 3);
+    mainLayout->addWidget(groupBoxInformation, 1);
 
     //getCameras();
     //connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
@@ -171,7 +131,7 @@ void View::trigger_initialization() {
 
 
 
-void View::getCameras(){
+void View::GetCameras(){
     comboBox->addItem("<None>");
     cameras = QMediaDevices::videoInputs();
     for(const QCameraDevice& camera:std::as_const(cameras)){
@@ -180,10 +140,10 @@ void View::getCameras(){
     }
 }
 
-void View::update_DirectionButton_clicked(const int& directionIndex)
+void View::UpdateClickedDirectionButton(const int& directionIndex)
 {
-    update_lastDirectionButtonUsed(directionIndex);
-    emit buttonDirection_pressed( array_button_combination.at(directionIndex));
+    UpdateLastDirectionButtonUsed(directionIndex);
+    emit PressedButtonDirection( array_button_combination.at(directionIndex));
     qDebug()<< "sent to controller : current button: "<< array_button_combination.at(directionIndex).currentHat;
     qDebug()<< "sent to controller : next button: "<< array_button_combination.at(directionIndex).nextButton;
 
@@ -192,27 +152,27 @@ void View::update_DirectionButton_clicked(const int& directionIndex)
 
 
 
-void View::update_lastDirectionButtonUsed(const int &newDirectionIndex)
+void View::UpdateLastDirectionButtonUsed(const int &newDirectionIndex)
 {
 
-    if(last_DirectionIndexUsed != -1){
-        auto previous_button=array_directionButtons[last_DirectionIndexUsed];
+    if(indexLastDirectionUsed != -1){
+        auto previous_button=arrayDirectionButtons[indexLastDirectionUsed];
         previous_button->setDisabled(false);
         previous_button->setStyleSheet("background-color: #3c3c3c; QPushButton:hover { background-color: #5c5c5c; }");
     }
-    auto new_button =array_directionButtons[newDirectionIndex];
+    auto new_button =arrayDirectionButtons[newDirectionIndex];
     new_button->setDisabled(true);
     new_button->setStyleSheet("background-color: green");
 
 
 
-    last_DirectionIndexUsed= newDirectionIndex;
+    indexLastDirectionUsed= newDirectionIndex;
 
 
 
 }
 
-void View::selectCam(){
+void View::SelectCam(){
     if(currentCam->isActive()){
         currentCam->stop();
     }
@@ -243,24 +203,24 @@ void View::selectCam(){
 
 }
 
-void View::load_ControllerImage(const int &button_value = 22528)
+void View::LoadControllerImage(const int &button_value = 22528)
 {
-    bool success = pixmap.load(controllerImagePath + dictionary_controllerButtonsPath.at(button_value));
+    bool success = pixmap.load(imagePathGamepad + dictionaryControllerButtonsPath.at(button_value));
     if (success) {
-        controllerImageLabel->setPixmap(pixmap);
-        controllerImageLabel->update();
-        controllerImageLabel->repaint();
+        labelControllerImage->setPixmap(pixmap);
+        labelControllerImage->update();
+        labelControllerImage->repaint();
     }
     if(button_value != -1) {
         QTimer::singleShot(300, this, [this]() {
-            load_ControllerImage(-1);
+            LoadControllerImage(-1);
         });
     }
 
 }
 
 
-void View::set_Direction_buttons(QGridLayout*& directionGridLayout){
+void View::SetDirectionButtons(QGridLayout*& directionGridLayout){
 
 
     uint8_t row;
@@ -269,37 +229,37 @@ void View::set_Direction_buttons(QGridLayout*& directionGridLayout){
 
 
 
-    size_t size= array_directionButtons.size();
+    size_t size= arrayDirectionButtons.size();
 
 
     for(size_t index = 0; index !=size; index++) {
-        array_directionButtons[index] = new QPushButton("&Test", this);
-        connect(array_directionButtons[index], &QPushButton::clicked, this, [this, index]() {
-            update_DirectionButton_clicked((const int)index);
+        arrayDirectionButtons[index] = new QPushButton("&Test", this);
+        connect(arrayDirectionButtons[index], &QPushButton::clicked, this, [this, index]() {
+            UpdateClickedDirectionButton((const int)index);
         });
     }
 
 
 
-    size_t array_size= array_directionButtons.size();
+    size_t array_size= arrayDirectionButtons.size();
     for(int i=0 ; i!=array_size;i++){
-        array_directionButtons[i]->setIcon(QIcon(arrowImagePath+ array_arrowPath[i]));
-        array_directionButtons[i]->setIconSize(QSize(32,32));
-        array_directionButtons[i]->setText("");
+        arrayDirectionButtons[i]->setIcon(QIcon(imagePathXYArrows+ arrayXYArrowPath[i]));
+        arrayDirectionButtons[i]->setIconSize(QSize(32,32));
+        arrayDirectionButtons[i]->setText("");
         row = i / 2;  // 2 buttons per row
         col = i % 2;  // Alternate columns
-        directionGridLayout->addWidget(array_directionButtons[i], row, col);
+        directionGridLayout->addWidget(arrayDirectionButtons[i], row, col);
 
 
     }
 }
 
-void View::set_Axis_Direction_buttons(QVBoxLayout*& movementInfoVerticalLayout,QHBoxLayout*& axisInfoHorizontalLayout, QHBoxLayout*& directionIndicatorHorizontalLayout){
+void View::SetAxisDirectionButtons(QVBoxLayout*& movementInfoVerticalLayout,QHBoxLayout*& axisInfoHorizontalLayout, QHBoxLayout*& directionIndicatorHorizontalLayout){
     /// For directionInfo
     QLabel* axisLabel = new QLabel("Axis :");
     QLabel* currentDirectionLabel = new QLabel("Direction: ");
-    button_Direction_Primary = new QPushButton("Primary");
-    button_Direction_Secondary = new QPushButton("Secondary");
+    buttonDirectionPrimary = new QPushButton("Primary");
+    buttonDirectionSecondary = new QPushButton("Secondary");
 
     movementInfoVerticalLayout->addWidget(axisLabel);
     movementInfoVerticalLayout->addLayout(axisInfoHorizontalLayout);
@@ -311,49 +271,49 @@ void View::set_Axis_Direction_buttons(QVBoxLayout*& movementInfoVerticalLayout,Q
 
 
     // For axisinfo
-    array_axisButtons= {
+    arrayAxisButtons= {
         new QPushButton("XY", this),
         new QPushButton("XZ", this),
         new QPushButton("YZ", this),
     };
 
-    for(QPushButton*& axisButton: array_axisButtons) {
+    for(QPushButton*& axisButton: arrayAxisButtons) {
 
         axisButton->setDisabled(true);
         axisInfoHorizontalLayout->addWidget(axisButton);
     }
-    array_axisButtons[0]->setStyleSheet("background-color: green");
+    arrayAxisButtons[0]->setStyleSheet("background-color: green");
 
 
-    button_Direction_Primary->setDisabled(true);
-    button_Direction_Secondary->setDisabled(true);
-    directionIndicatorHorizontalLayout->addWidget(button_Direction_Primary);
-    directionIndicatorHorizontalLayout->addWidget(button_Direction_Secondary);
+    buttonDirectionPrimary->setDisabled(true);
+    buttonDirectionSecondary->setDisabled(true);
+    directionIndicatorHorizontalLayout->addWidget(buttonDirectionPrimary);
+    directionIndicatorHorizontalLayout->addWidget(buttonDirectionSecondary);
 
 
 
 }
 
-void View::update_directionIndicators(const int &newDirectionIndex)
+void View::UpdateDirectionIndicators(const int &newDirectionIndex)
 {
-    button_Direction_Primary->setStyleSheet("background-color: #3c3c3c");
-    button_Direction_Secondary->setStyleSheet("background-color: #3c3c3c");
+    buttonDirectionPrimary->setStyleSheet("background-color: #3c3c3c");
+    buttonDirectionSecondary->setStyleSheet("background-color: #3c3c3c");
 
 
-    if((newDirectionIndex & 0x1) ==1){button_Direction_Secondary->setStyleSheet("background-color: green");}
-    else{button_Direction_Primary->setStyleSheet("background-color: green");}
+    if((newDirectionIndex & 0x1) ==1){buttonDirectionSecondary->setStyleSheet("background-color: green");}
+    else{buttonDirectionPrimary->setStyleSheet("background-color: green");}
 }
 
 /* 2 roles:
  * -change controller input image
  * -disable the direction button used by the user
 */
-void View::handleInputReceived(const int& button_value , const int& directionIndex)
+void View::HandleInputReceived(const int& button_value , const int& directionIndex)
 {
     qDebug()<<"button value: "<< button_value<<" direction : "<< directionIndex;
-    load_ControllerImage(button_value);
-    update_lastDirectionButtonUsed(directionIndex);
-    update_directionIndicators(directionIndex);
+    LoadControllerImage(button_value);
+    UpdateLastDirectionButtonUsed(directionIndex);
+    UpdateDirectionIndicators(directionIndex);
 
 
 
@@ -361,7 +321,7 @@ void View::handleInputReceived(const int& button_value , const int& directionInd
 
 }
 
-void View:: connectionFailedPopUp() {
+void View:: ConnectionToBoardsFailedPopUp() {
     static int i = 0;
     std::cout << "called: " <<++i<< std::endl;
     // With custom buttons
@@ -377,13 +337,13 @@ void View:: connectionFailedPopUp() {
 
     if (result == QMessageBox::Retry) {
         msgBox.close();
-        emit retryButton_pressed(true);
+        emit PressedRetryButton(true);
 
 
     }
     else if (result == QMessageBox::Cancel){
         msgBox.close();
-        emit programShutdown();
+        emit ProgramShutdown();
         this->close();
         
     }
@@ -415,10 +375,10 @@ void View:: CameraFailedPopUp() {
     }
 }
 
-void View::get_refresh_imageReceived( const QImage& image) {
+void View::SetNewFrameToDisplay( const QImage& image) {
 
-    if ((popup_running &&( window_popup->isMinimized())) ||( !popup_running && !this->isActiveWindow())) { return; }
-    QSize imageSize = popup_running ? window_popup->size() : cameraGroupBox->size();
+    if ((cameraPopupRunning &&( windowCameraPopup->isMinimized())) ||( !cameraPopupRunning && !this->isActiveWindow())) { return; }
+    QSize imageSize = cameraPopupRunning ? windowCameraPopup->size() : groupBoxCamera->size();
     QSize temp = QSize(imageSize.width()-50, imageSize.height()-50 );
 
     //std::cout << "QImage size : " << imageSize.height()<<"x "<<imageSize.width() << '\n';
@@ -439,12 +399,12 @@ void View::get_refresh_imageReceived( const QImage& image) {
 
 }
 
-void View::configureInfoLayout() {
+void View::ConfigureInfoLayout() {
 
     // Info group box (right side)
-    infoGroupBox = new QGroupBox("Info", this);
-    infoLayout = new QVBoxLayout();
-    infoLayout->setSpacing(0);
+    groupBoxInformation = new QGroupBox("Info", this);
+    layoutInformation = new QVBoxLayout();
+    layoutInformation->setSpacing(0);
 
     // Frequency group box with no margins
     QGroupBox* frequencyGroupBox = new QGroupBox("", this);
@@ -454,54 +414,54 @@ void View::configureInfoLayout() {
     frequencyLayout->setAlignment(Qt::AlignTop);
 
     // Create the slider
-    frequencySlider = new QSlider(Qt::Horizontal, this);
-    frequencySlider->setRange(0, 50);
-    frequencySlider->setTickInterval(5);
-    frequencySlider->setSingleStep(5);
-    frequencySlider->setPageStep(5);
-    frequencySlider->setTickPosition(QSlider::TicksBothSides);
-    frequencySlider->setFixedHeight(50);
-    frequencySlider->setContentsMargins(5, 5, 5, 5);
-    frequencySlider->setValue(5);
+    SliderFrequency = new QSlider(Qt::Horizontal, this);
+    SliderFrequency->setRange(0, 50);
+    SliderFrequency->setTickInterval(5);
+    SliderFrequency->setSingleStep(5);
+    SliderFrequency->setPageStep(5);
+    SliderFrequency->setTickPosition(QSlider::TicksBothSides);
+    SliderFrequency->setFixedHeight(50);
+    SliderFrequency->setContentsMargins(5, 5, 5, 5);
+    SliderFrequency->setValue(5);
 
     // Create the label to be overlaid
-    display_FrequencyValue = new QLabel("Frequency slider value : 5 Hz", this);
-    display_FrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    display_FrequencyValue->setMargin(0);
-    display_FrequencyValue->setAlignment(Qt::AlignHCenter);
+    labelFrequencyValue = new QLabel("Frequency slider value : 5 Hz", this);
+    labelFrequencyValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    labelFrequencyValue->setMargin(0);
+    labelFrequencyValue->setAlignment(Qt::AlignHCenter);
 
     // Create the button to confirm the new frequency value 
-    button_frequencyConfirmation = new QPushButton("Confirm", this);
+    buttonFrequencyConfirmation = new QPushButton("Confirm", this);
 
-    connect(button_frequencyConfirmation, &QPushButton::clicked, this, [this]() {
-        emit frequencyChange_pressed(frequencySlider->value());
+    connect(buttonFrequencyConfirmation, &QPushButton::clicked, this, [this]() {
+        emit PressedFrequencyChange(SliderFrequency->value());
         });
 
     // Add both widgets to the same cell to stack them
-    frequencyLayout->addWidget(display_FrequencyValue);
-    frequencyLayout->addWidget(frequencySlider);
-    frequencyLayout->addWidget(button_frequencyConfirmation);
+    frequencyLayout->addWidget(labelFrequencyValue);
+    frequencyLayout->addWidget(SliderFrequency);
+    frequencyLayout->addWidget(buttonFrequencyConfirmation);
 
     frequencyGroupBox->setLayout(frequencyLayout);
 
     // Manual snap-to-tick implementation
-    connect(frequencySlider, &QSlider::valueChanged, [this](int value) {
+    connect(SliderFrequency, &QSlider::valueChanged, [this](int value) {
         int tickInterval = 5;
         int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
         snappedValue = qBound(0, snappedValue, 50);
 
         if (snappedValue != value) {
-            frequencySlider->blockSignals(true);
-            frequencySlider->setValue(snappedValue);
-            frequencySlider->blockSignals(false);
+            SliderFrequency->blockSignals(true);
+            SliderFrequency->setValue(snappedValue);
+            SliderFrequency->blockSignals(false);
         }
         });
 
     // Output the snapped value when user releases the slider
-    connect(frequencySlider, &QSlider::sliderReleased, [this]() {
-        qDebug() << "Frequency value :" << frequencySlider->value();
-        QString messageToDisplay = "Frequency slider value : " + QString::number(frequencySlider->value()) + " Hz";
-        display_FrequencyValue->setText(messageToDisplay);
+    connect(SliderFrequency, &QSlider::sliderReleased, [this]() {
+        qDebug() << "Frequency value :" << SliderFrequency->value();
+        QString messageToDisplay = "Frequency slider value : " + QString::number(SliderFrequency->value()) + " Hz";
+        labelFrequencyValue->setText(messageToDisplay);
         });
 
     ///////////////////////////////////////////////////////////////////
@@ -511,43 +471,43 @@ void View::configureInfoLayout() {
     QVBoxLayout* phaseLayout = new QVBoxLayout();
 
     // Create the label to be overlaid
-    display_primaryPhaseValue = new QLabel("Primary card phase value :", this);
-    display_primaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    display_primaryPhaseValue->setMargin(0);
-    display_primaryPhaseValue->setAlignment(Qt::AlignHCenter);
+    labelPrimaryPhaseValue = new QLabel("Primary card phase value :", this);
+    labelPrimaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    labelPrimaryPhaseValue->setMargin(0);
+    labelPrimaryPhaseValue->setAlignment(Qt::AlignHCenter);
 
-    textBox_primaryPhaseValue = new QLineEdit("0", this);
+    textBoxPrimaryPhase = new QLineEdit("0", this);
 
     // Create the button to confirm the new phase value 
-    button_primaryPhaseConfirmation = new QPushButton("Confirm", this);
+    buttonPrimaryPhaseConfirmation = new QPushButton("Confirm", this);
 
-    connect(button_primaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-        emit phaseChange_pressed(1, textBox_primaryPhaseValue->text().toInt());
+    connect(buttonPrimaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
+        emit PressedPhaseChange(1, textBoxPrimaryPhase->text().toInt());
         });
 
     // Create the label to be overlaid
-    display_secondaryPhaseValue = new QLabel("Secondary card phase value :", this);
-    display_secondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    display_secondaryPhaseValue->setMargin(0);
-    display_secondaryPhaseValue->setAlignment(Qt::AlignHCenter);
+    labelSecondaryPhaseValue = new QLabel("Secondary card phase value :", this);
+    labelSecondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    labelSecondaryPhaseValue->setMargin(0);
+    labelSecondaryPhaseValue->setAlignment(Qt::AlignHCenter);
 
-    textBox_secondaryPhaseValue = new QLineEdit("0", this);
+    textBoxSecondaryPhase = new QLineEdit("0", this);
 
     // Create the button to confirm the new phase value 
-    button_secondaryPhaseConfirmation = new QPushButton("Confirm", this);
+    buttonSecondaryPhaseConfirmation = new QPushButton("Confirm", this);
 
-    connect(button_secondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-        emit phaseChange_pressed(2, textBox_secondaryPhaseValue->text().toInt());
+    connect(buttonSecondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
+        emit PressedPhaseChange(2, textBoxSecondaryPhase->text().toInt());
         });
 
     // Add both widgets to the same cell to stack them
-    phaseLayout->addWidget(display_primaryPhaseValue);
-    phaseLayout->addWidget(textBox_primaryPhaseValue);
-    phaseLayout->addWidget(button_primaryPhaseConfirmation);
+    phaseLayout->addWidget(labelPrimaryPhaseValue);
+    phaseLayout->addWidget(textBoxPrimaryPhase);
+    phaseLayout->addWidget(buttonPrimaryPhaseConfirmation);
 
-    phaseLayout->addWidget(display_secondaryPhaseValue);
-    phaseLayout->addWidget(textBox_secondaryPhaseValue);
-    phaseLayout->addWidget(button_secondaryPhaseConfirmation);
+    phaseLayout->addWidget(labelSecondaryPhaseValue);
+    phaseLayout->addWidget(textBoxSecondaryPhase);
+    phaseLayout->addWidget(buttonSecondaryPhaseConfirmation);
 
 
 
@@ -561,140 +521,140 @@ void View::configureInfoLayout() {
 
     // === EXPOSURE TIME SLIDER ===
     // Display label for exposure time
-    display_ExposureTimeValue = new QLabel("Exposure Time: 5 ms", this);
+    labelExposureTimeValue = new QLabel("Exposure Time: 5 ms", this);
 
     // Create exposure time slider 
-    exposureTimeSlider = new QSlider(Qt::Horizontal, this);
-    exposureTimeSlider->setRange(1, 200);
-    exposureTimeSlider->setValue(5);
-    exposureTimeSlider->setTickPosition(QSlider::TicksBelow);
-    exposureTimeSlider->setTickInterval(2);
+    sliderExposureTime = new QSlider(Qt::Horizontal, this);
+    sliderExposureTime->setRange(1, 200);
+    sliderExposureTime->setValue(5);
+    sliderExposureTime->setTickPosition(QSlider::TicksBelow);
+    sliderExposureTime->setTickInterval(2);
 
     // Create the button to confirm the new exposure time value 
-    button_exposureTimeConfirmation = new QPushButton("Confirm Exposure", this);
-    connect(button_exposureTimeConfirmation, &QPushButton::clicked, this, [this]() {
+    buttonExposureTimeConfirmation = new QPushButton("Confirm Exposure", this);
+    connect(buttonExposureTimeConfirmation, &QPushButton::clicked, this, [this]() {
         std::cout << "yolo 1 " << std::endl;
-        emit exposureTimeChange_pressed(exposureTimeSlider->value() * 1000);
+        emit PressedExposureTimeChange(sliderExposureTime->value() * 1000);
         });
 
     // Manual snap-to-tick implementation for exposure time
-    connect(exposureTimeSlider, &QSlider::valueChanged, [this](int value) {
+    connect(sliderExposureTime, &QSlider::valueChanged, [this](int value) {
         int tickInterval = 2;
         int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
         snappedValue = qBound(1, snappedValue, 200);
         if (snappedValue != value) {
-            exposureTimeSlider->blockSignals(true);
-            exposureTimeSlider->setValue(snappedValue);
-            exposureTimeSlider->blockSignals(false);
+            sliderExposureTime->blockSignals(true);
+            sliderExposureTime->setValue(snappedValue);
+            sliderExposureTime->blockSignals(false);
         }
         });
 
     // Output the snapped value when user releases the exposure time slider
-    connect(exposureTimeSlider, &QSlider::sliderReleased, [this]() {
-        qDebug() << "Exposure Time value:" << exposureTimeSlider->value();
-        QString messageToDisplay = "Exposure Time: " + QString::number(exposureTimeSlider->value()) + " ms";
-        display_ExposureTimeValue->setText(messageToDisplay);
+    connect(sliderExposureTime, &QSlider::sliderReleased, [this]() {
+        qDebug() << "Exposure Time value:" << sliderExposureTime->value();
+        QString messageToDisplay = "Exposure Time: " + QString::number(sliderExposureTime->value()) + " ms";
+        labelExposureTimeValue->setText(messageToDisplay);
         });
 
     // === SATURATION SLIDER ===
     // Display label for saturation
-    display_SaturationValue = new QLabel("Saturation: 100%", this);
+    labelSaturationValue = new QLabel("Saturation: 100%", this);
 
     // Create saturation slider (assuming range 0-100%)
-    saturationSlider = new QSlider(Qt::Horizontal, this);
-    saturationSlider->setRange(0, 300);
-    saturationSlider->setValue(100);
-    saturationSlider->setTickPosition(QSlider::TicksBelow);
-    saturationSlider->setTickInterval(10);
+    sliderSaturation = new QSlider(Qt::Horizontal, this);
+    sliderSaturation->setRange(0, 300);
+    sliderSaturation->setValue(100);
+    sliderSaturation->setTickPosition(QSlider::TicksBelow);
+    sliderSaturation->setTickInterval(10);
 
     // Create the button to confirm the new saturation value 
-    button_saturationConfirmation = new QPushButton("Confirm Saturation", this);
-    connect(button_saturationConfirmation, &QPushButton::clicked, this, [this]() {
-        emit saturationChange_pressed(saturationSlider->value());
+    buttonSaturationConfirmation = new QPushButton("Confirm Saturation", this);
+    connect(buttonSaturationConfirmation, &QPushButton::clicked, this, [this]() {
+        emit PressedSaturationChange(sliderSaturation->value());
         });
 
     // Manual snap-to-tick implementation for saturation
-    connect(saturationSlider, &QSlider::valueChanged, [this](int value) {
+    connect(sliderSaturation, &QSlider::valueChanged, [this](int value) {
         int tickInterval = 10;
         int snappedValue = ((value + tickInterval / 2) / tickInterval) * tickInterval;
         snappedValue = qBound(0, snappedValue, 300);
         if (snappedValue != value) {
-            saturationSlider->blockSignals(true);
-            saturationSlider->setValue(snappedValue);
-            saturationSlider->blockSignals(false);
+            sliderSaturation->blockSignals(true);
+            sliderSaturation->setValue(snappedValue);
+            sliderSaturation->blockSignals(false);
         }
         });
 
     // Output the snapped value when user releases the saturation slider
-    connect(saturationSlider, &QSlider::sliderReleased, [this]() {
-        qDebug() << "Saturation value:" << saturationSlider->value();
-        QString messageToDisplay = "Saturation: " + QString::number(saturationSlider->value()) + "%";
-        display_SaturationValue->setText(messageToDisplay);
+    connect(sliderSaturation, &QSlider::sliderReleased, [this]() {
+        qDebug() << "Saturation value:" << sliderSaturation->value();
+        QString messageToDisplay = "Saturation: " + QString::number(sliderSaturation->value()) + "%";
+        labelSaturationValue->setText(messageToDisplay);
         });
 
     //Image rotation controls
     QVBoxLayout* imageRotationLayout = new QVBoxLayout();
     QHBoxLayout* imageButtonRotationLayout = new QHBoxLayout();
-    display_rotationValue = new QLabel("Image rotation: ", this);
-    button_0DegreeRotation = new QRadioButton("0 degrees", this);
-    button_90DegreeRotation = new QRadioButton("90 degrees", this);
-    button_180DegreeRotation = new QRadioButton("180 degrees", this);
-    button_270DegreeRotation = new QRadioButton("270 degrees", this);
+    labelRotationText = new QLabel("Image rotation: ", this);
+    button0Degrees = new QRadioButton("0 degrees", this);
+    button90Degrees = new QRadioButton("90 degrees", this);
+    button180Degrees = new QRadioButton("180 degrees", this);
+    button270Degrees = new QRadioButton("270 degrees", this);
 
-    imageRotationLayout->addWidget(display_rotationValue);
+    imageRotationLayout->addWidget(labelRotationText);
 
-    imageButtonRotationLayout->addWidget(button_0DegreeRotation);
-    imageButtonRotationLayout->addWidget(button_90DegreeRotation);
-    imageButtonRotationLayout->addWidget(button_180DegreeRotation);
-    imageButtonRotationLayout->addWidget(button_270DegreeRotation);
+    imageButtonRotationLayout->addWidget(button0Degrees);
+    imageButtonRotationLayout->addWidget(button90Degrees);
+    imageButtonRotationLayout->addWidget(button180Degrees);
+    imageButtonRotationLayout->addWidget(button270Degrees);
 
     imageRotationLayout->addLayout(imageButtonRotationLayout);
-    button_0DegreeRotation->setChecked(true);
+    button0Degrees->setChecked(true);
 
-    connect(button_0DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 0.0;});
-    connect(button_90DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 90.0;});
-    connect(button_180DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 180.0;});
-    connect(button_270DegreeRotation, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 270.0;});
+    connect(button0Degrees, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 0.0;});
+    connect(button90Degrees, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 90.0;});
+    connect(button180Degrees, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 180.0;});
+    connect(button270Degrees, &QRadioButton::toggled, this, [this]() { imageRotationAngle = 270.0;});
 
 
 
     //////////////////////////////////////////////////////////////////TEST CAPTURE VIDEO
-    button_captureVideo = new QPushButton("Record camera feed", this);
+    buttonCaptureVideo = new QPushButton("Record camera feed", this);
 
     
 
-    connect(button_captureVideo, &QPushButton::clicked, this, [this]() {
+    connect(buttonCaptureVideo, &QPushButton::clicked, this, [this]() {
         if (!recording) {
-            button_captureVideo->setText("stop recording");
+            buttonCaptureVideo->setText("stop recording");
             recording = true;
-            emit startVideoRecord();
+            emit StartCameraRecord();
         }
         else {
             recording = false;
-            emit stopVideoRecord();
-            button_captureVideo->setText("video capture");
+            emit StopCameraRecord();
+            buttonCaptureVideo->setText("video capture");
         }
     });
 
  
 
     // Add all widgets to the layout
-    otherLayout->addWidget(display_ExposureTimeValue);
-    otherLayout->addWidget(exposureTimeSlider);
-    otherLayout->addWidget(button_exposureTimeConfirmation);
-    otherLayout->addWidget(display_SaturationValue);
-    otherLayout->addWidget(saturationSlider);
-    otherLayout->addWidget(button_saturationConfirmation);
+    otherLayout->addWidget(labelExposureTimeValue);
+    otherLayout->addWidget(sliderExposureTime);
+    otherLayout->addWidget(buttonExposureTimeConfirmation);
+    otherLayout->addWidget(labelSaturationValue);
+    otherLayout->addWidget(sliderSaturation);
+    otherLayout->addWidget(buttonSaturationConfirmation);
     otherLayout->addLayout(imageRotationLayout);
-    otherLayout->addWidget(button_captureVideo);
+    otherLayout->addWidget(buttonCaptureVideo);
 
     otherGroupBox->setLayout(otherLayout);
 
     // Final assembly
-    infoLayout->addWidget(frequencyGroupBox);
-    infoLayout->addWidget(otherGroupBox);
-    infoLayout->addWidget(phaseGroupBox);
-    infoGroupBox->setLayout(infoLayout);
+    layoutInformation->addWidget(frequencyGroupBox);
+    layoutInformation->addWidget(otherGroupBox);
+    layoutInformation->addWidget(phaseGroupBox);
+    groupBoxInformation->setLayout(layoutInformation);
 
 
 
@@ -724,11 +684,11 @@ void View::closeEvent(QCloseEvent* event)
 
         if (reply == QMessageBox::Yes) {
             event->accept();
-            if (popup_running) {
-                window_popup->close();
+            if (cameraPopupRunning) {
+                windowCameraPopup->close();
             }
             this->close();
-            emit programShutdown();
+            emit ProgramShutdown();
             //QApplication::quit();
 
         }
@@ -744,42 +704,42 @@ bool View::eventFilter(QObject* obj, QEvent* event) {
         std::cout << "clicked\n";
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
-            if (popup_firstOpening) {
+            if (popupFirstOpening) {
                 std::cout << "entered first popup\n";
-                window_popup = new QWidget();
-                window_popupLayout = new QVBoxLayout(window_popup);
-                window_popup->setWindowTitle("Label Popup");
-                window_popup->setMinimumSize(200, 150);  // Set reasonable minimum
-                popup_firstOpening = false;
+                windowCameraPopup = new QWidget();
+                layoutCameraWindowPopup = new QVBoxLayout(windowCameraPopup);
+                windowCameraPopup->setWindowTitle("Label Popup");
+                windowCameraPopup->setMinimumSize(200, 150);  // Set reasonable minimum
+                popupFirstOpening = false;
 
-                window_popup->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowTitleHint);
+                windowCameraPopup->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint | Qt::WindowTitleHint);
 
                 
 
 
             }
-            else if (popup_running) {
+            else if (cameraPopupRunning) {
                 std::cout << "entered pop up running\n";
-                window_popup->hide();
-                window_popupLayout->removeWidget(imageView);
-                verticalCameraLayout->addWidget(imageView);
-                cameraGroupBox->show();
-                leftLayout->update(); // Update the layout
-                leftLayout->activate(); // Activate layout changes
-                popup_running = false;
+                windowCameraPopup->hide();
+                layoutCameraWindowPopup->removeWidget(imageView);
+                layoutverticalCamera->addWidget(imageView);
+                groupBoxCamera->show();
+                layoutLeftPart->update(); // Update the layout
+                layoutLeftPart->activate(); // Activate layout changes
+                cameraPopupRunning = false;
 
                 return true;
 
             }
 
-                cameraGroupBox->hide(); // Hide the widget
-                verticalCameraLayout->removeWidget(imageView);
-                window_popupLayout->addWidget(imageView);
-                leftLayout->update(); // Update the layout
-                leftLayout->activate(); // Activate layout changes
+                groupBoxCamera->hide(); // Hide the widget
+                layoutverticalCamera->removeWidget(imageView);
+                layoutCameraWindowPopup->addWidget(imageView);
+                layoutLeftPart->update(); // Update the layout
+                layoutLeftPart->activate(); // Activate layout changes
 
-                window_popup->show(); // show popup window
-                popup_running = true;
+                windowCameraPopup->show(); // show popup window
+                cameraPopupRunning = true;
 
             
         }

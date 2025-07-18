@@ -434,7 +434,7 @@ private:
 
 
 public :
-    CameraInputWorkerThread(QObject* parent = nullptr) : sys(VmbSystem::GetInstance()),frames(3){
+    CameraInputWorkerThread() : sys(VmbSystem::GetInstance()),frames(3){
 
     }
 

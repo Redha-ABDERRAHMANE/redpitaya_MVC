@@ -176,12 +176,12 @@ public:
         connect(view, &View::CameraRetryButtonPressed, &workerThread_cameraInput, &CameraInputWorkerThread::StartCamera);
         connect(this, &MVC_Controller::workerThreads_shutdown, &workerThread_cameraInput, &CameraInputWorkerThread::CleanUpCameraRessources);
 
-        connect(this, &MVC_Controller::startMainGUI, view, &View::trigger_initialization);
+        connect(this, &MVC_Controller::startMainGUI, view, &View::StartGUIComponentsInitialization);
 
-        connect(this, &MVC_Controller::controllerInput_Direction, view, &View::handleInputReceived);
+        connect(this, &MVC_Controller::controllerInput_Direction, view, &View::HandleInputReceived);
     
         connect(&workerThread_cameraInput, &CameraInputWorkerThread::CameraNotFound, view, &View::CameraFailedPopUp);
-        connect(&workerThread_cameraInput, &CameraInputWorkerThread::ImageReceived, view, &View::get_refresh_imageReceived);
+        connect(&workerThread_cameraInput, &CameraInputWorkerThread::ImageReceived, view, &View::SetNewFrameToDisplay);
 
         connect(&workerThread_cameraInput, &CameraInputWorkerThread::CameraReady, this, &MVC_Controller::SendSignalstartCheckInput);
         
@@ -197,29 +197,29 @@ public:
         
 
         // Connect view to workers
-        connect(view, &View::buttonDirection_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_GUIInput);
+        connect(view, &View::PressedButtonDirection, &worker_ApplyInput, &ApplyInputWorker::apply_GUIInput);
 
-        connect(view, &View::frequencyChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_FrequencyShift);
+        connect(view, &View::PressedFrequencyChange, &worker_ApplyInput, &ApplyInputWorker::apply_FrequencyShift);
 
-        connect(view, &View::exposureTimeChange_pressed, this, &MVC_Controller::setCameraExposureTime);
+        connect(view, &View::PressedExposureTimeChange, this, &MVC_Controller::setCameraExposureTime);
 
-        connect(view, &View::saturationChange_pressed, this, &MVC_Controller::setCameraSaturation);
+        connect(view, &View::PressedSaturationChange, this, &MVC_Controller::setCameraSaturation);
 
-        connect(view, &View::phaseChange_pressed, &worker_ApplyInput, &ApplyInputWorker::apply_PhaseShift);
+        connect(view, &View::PressedPhaseChange, &worker_ApplyInput, &ApplyInputWorker::apply_PhaseShift);
 
-        connect(view, &View::initialize_MVCModel, this, &MVC_Controller::initialize_MVCModel);
+        connect(view, &View::InitializeMVCModel, this, &MVC_Controller::initialize_MVCModel);
 
-        connect(view, &View::retryButton_pressed, &model, &MVC_Model::retry_connectRpBoards);
+        connect(view, &View::PressedRetryButton, &model, &MVC_Model::retry_connectRpBoards);
 
-        connect(view, &View::programShutdown, this, &MVC_Controller::shutDownProgram);
+        connect(view, &View::ProgramShutdown, this, &MVC_Controller::shutDownProgram);
 
         connect(view, &View::GUIReady, this, &MVC_Controller::startWorkerThreads);
 
 
         // Connect model signals
-        connect(&model, &MVC_Model::rpBoards_connectionFailed, view, &View::connectionFailedPopUp);
+        connect(&model, &MVC_Model::rpBoards_connectionFailed, view, &View::ConnectionToBoardsFailedPopUp);
 
-        connect(&model, &MVC_Model::rpBoards_connectionSuccess, view, &View::trigger_initialization);
+        connect(&model, &MVC_Model::rpBoards_connectionSuccess, view, &View::StartGUIComponentsInitialization);
 
 
         
@@ -228,11 +228,11 @@ public:
         workerThread_videoRecorder.start();
 
 
-        connect(view, &View::startVideoRecord, &worker_videoRecorder, &VideoRecorderThread::startRecording, Qt::QueuedConnection);
-        connect(view, &View::stopVideoRecord, &worker_videoRecorder, &VideoRecorderThread::stopRecording, Qt::QueuedConnection);
+        connect(view, &View::StartCameraRecord, &worker_videoRecorder, &VideoRecorderThread::startRecording, Qt::QueuedConnection);
+        connect(view, &View::StopCameraRecord, &worker_videoRecorder, &VideoRecorderThread::stopRecording, Qt::QueuedConnection);
 
-        connect(view, &View::startVideoRecord, &workerThread_cameraInput, &CameraInputWorkerThread::StartRecording);
-        connect(view, &View::stopVideoRecord, &workerThread_cameraInput, &CameraInputWorkerThread::StopRecording);
+        connect(view, &View::StartCameraRecord, &workerThread_cameraInput, &CameraInputWorkerThread::StartRecording);
+        connect(view, &View::StopCameraRecord, &workerThread_cameraInput, &CameraInputWorkerThread::StopRecording);
         connect(&workerThread_cameraInput, &CameraInputWorkerThread::SendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture, Qt::QueuedConnection);
         
         /////////////////////

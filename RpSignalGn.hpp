@@ -137,7 +137,7 @@ public:
 
         for (std::future<void>& thread : threadArray) {thread.get();}
 
-        currentFrequency= nextFrequency;
+        currentFrequency= static_cast<int> (nextFrequency);
 
 
     }
