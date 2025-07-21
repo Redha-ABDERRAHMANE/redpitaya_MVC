@@ -22,9 +22,10 @@ private:
 
     QThread thread_GUIInput;
     ApplyInputWorker worker_ApplyInput;
+    
+    CameraInputWorker worker_cameraInput;
+    QThread workerThread_cameraInput;
 
-   
-    CameraInputWorkerThread workerThread_cameraInput;
     QThread  workerThread_videoRecorder;
     VideoRecorderThread worker_videoRecorder;
 
@@ -72,13 +73,13 @@ public slots:
 
 
     void setCameraExposureTime(int value) {
-        workerThread_cameraInput.SetExposureTimeValue(value);
+        worker_cameraInput.SetExposureTimeValue(value);
         
 
     }
 
     void setCameraSaturation(int value) {
-        workerThread_cameraInput.SetSaturationValue(value);
+        worker_cameraInput.SetSaturationValue(value);
         
 
     }
@@ -164,6 +165,7 @@ public:
         // Move workers to their respective threads
         worker_ApplyInput.moveToThread(&thread_GUIInput);
         worker_videoRecorder.moveToThread(&workerThread_videoRecorder);
+        worker_cameraInput.moveToThread(&workerThread_cameraInput);
         
 
 
@@ -172,18 +174,18 @@ public:
        
         //connect(this, &MVC_Controller::startCheckInput, &workerThread_cameraInput, &CameraInputWorkerThread::getDisplayFrame);
 
-        connect(this, &MVC_Controller::StartCamera, &workerThread_cameraInput, &CameraInputWorkerThread::StartCamera);
-        connect(view, &View::CameraRetryButtonPressed, &workerThread_cameraInput, &CameraInputWorkerThread::StartCamera);
-        connect(this, &MVC_Controller::workerThreads_shutdown, &workerThread_cameraInput, &CameraInputWorkerThread::CleanUpCameraRessources);
+        connect(this, &MVC_Controller::StartCamera, &worker_cameraInput, &CameraInputWorker::StartCamera, Qt::QueuedConnection);
+        connect(view, &View::CameraRetryButtonPressed, &worker_cameraInput, &CameraInputWorker::StartCamera,Qt::QueuedConnection);
+        connect(this, &MVC_Controller::workerThreads_shutdown, &worker_cameraInput, &CameraInputWorker::CleanUpCameraRessources);
 
         connect(this, &MVC_Controller::startMainGUI, view, &View::StartGUIComponentsInitialization);
 
         connect(this, &MVC_Controller::controllerInput_Direction, view, &View::HandleInputReceived);
     
-        connect(&workerThread_cameraInput, &CameraInputWorkerThread::CameraNotFound, view, &View::CameraFailedPopUp);
-        connect(&workerThread_cameraInput, &CameraInputWorkerThread::ImageReceived, view, &View::SetNewFrameToDisplay);
+        connect(&worker_cameraInput, &CameraInputWorker::CameraNotFound, view, &View::CameraFailedPopUp);
+        connect(&worker_cameraInput, &CameraInputWorker::ImageReceived, view, &View::SetNewFrameToDisplay);
 
-        connect(&workerThread_cameraInput, &CameraInputWorkerThread::CameraReady, this, &MVC_Controller::SendSignalstartCheckInput);
+        connect(&worker_cameraInput, &CameraInputWorker::CameraReady, this, &MVC_Controller::SendSignalstartCheckInput);
         
 
 
@@ -231,9 +233,9 @@ public:
         connect(view, &View::StartCameraRecord, &worker_videoRecorder, &VideoRecorderThread::startRecording, Qt::QueuedConnection);
         connect(view, &View::StopCameraRecord, &worker_videoRecorder, &VideoRecorderThread::stopRecording, Qt::QueuedConnection);
 
-        connect(view, &View::StartCameraRecord, &workerThread_cameraInput, &CameraInputWorkerThread::StartRecording);
-        connect(view, &View::StopCameraRecord, &workerThread_cameraInput, &CameraInputWorkerThread::StopRecording);
-        connect(&workerThread_cameraInput, &CameraInputWorkerThread::SendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture, Qt::QueuedConnection);
+        connect(view, &View::StartCameraRecord, &worker_cameraInput, &CameraInputWorker::StartRecording);
+        connect(view, &View::StopCameraRecord, &worker_cameraInput, &CameraInputWorker::StopRecording);
+        connect(&worker_cameraInput, &CameraInputWorker::SendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture, Qt::QueuedConnection);
         
         /////////////////////
 
@@ -241,7 +243,7 @@ public:
         
         //model.setup_MVCModel();
 
-
+        std::cout << "emitting start GUI\n";
         emit startMainGUI();
         
         

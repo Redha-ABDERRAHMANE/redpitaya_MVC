@@ -135,7 +135,7 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-class CameraInputWorkerThread : public QThread {
+class CameraInputWorker :public QObject {
     Q_OBJECT
 
 private:
@@ -412,13 +412,19 @@ private:
 
     bool InitializeCamera() {
         CameraStartup();
-        if (!GetCamera() && !GetCameraInfo()) {
+        if (!GetCamera()) {
             emit CameraNotFound();
             return false;
         }
+        if (!GetCameraInfo()) {
+            emit CameraNotFound();
+            return false;
+
+        }
 
         std::cout << "yolo 1\n";
-        if (!SetPixelFormat()) return false;
+        SetPixelFormat();
+        //if (!SetPixelFormat()) return false;
         std::cout << "yolo 2\n";
         if (!SetFrameDimensions()) return false;
         std::cout << "yolo 3\n";
@@ -448,11 +454,11 @@ private:
 
 
 public :
-    CameraInputWorkerThread() : sys(VmbSystem::GetInstance()),frames(3){
+    CameraInputWorker() : sys(VmbSystem::GetInstance()),frames(3){
 
     }
 
-    ~CameraInputWorkerThread() {
+    ~CameraInputWorker() {
         //stopAcquisitionAndSysShutdown();
         
     }
@@ -465,12 +471,12 @@ public slots:
 
         if (!StartAcquisition()) return;
 
+        emit CameraReady();
+
         std::cout << "starting Display Frame\n";
         GetDisplayFrame();
 
-        std::cout << "emiting camera ready\n";
-
-        emit CameraReady();
+        
 
     }
 
@@ -557,8 +563,8 @@ public:
 
         displayFrame.fill(Qt::black);
         
-
-        while (!isInterruptionRequested()) {
+        QThread* currentThread = QThread::currentThread();
+        while (!currentThread->isInterruptionRequested()) {
             if (frameObserver->GetFrame(displayFrame)) {
                 frameCount++;
                 if (frameCount % 30 == 0) {
@@ -665,5 +671,7 @@ public:
         }
        return true;
     }
+
+
 
 };
