@@ -39,21 +39,26 @@ enum SignalGnSource {
 
 };
 
-enum RPBoards {
+const enum RPBoards {
     PRIMARY_BOARD = 1,
     SECONDARY_BOARD = 2
 
 };
 
-enum LinearStageMotion {
-    FORWARD,
-    BACKWARD,
+const enum LinearStageMotion:int {
+    MOVEBACKWARD,
+    STOPMOTION,
+    MOVEFORWARD,
+    HOME,
     JOGFORWARD,
     JOGBACKWARD,
-    STOP,
-    HOME
+    MOTIONSIZE,
+    MOVESIZE = 4,
+    JOGSIZE = 2
+
 
 };
+
 
 
 #endif // COMMONVALUES_H

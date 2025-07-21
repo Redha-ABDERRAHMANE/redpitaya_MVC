@@ -27,6 +27,7 @@
 #include <unordered_map>
 #include <array>
 #include "controller.hpp"
+#include "commonValues.h"
 #define withinInterval(a,b,c) (((a)<=(b)) && ((b)<=(c)))
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -42,8 +43,6 @@ public:
     ~View();
 
 
-
-
 signals:
     void PressedButtonDirection(ButtonCombination button_combination);
     void PressedFrequencyChange(const int& frequency_value);
@@ -57,6 +56,9 @@ signals:
     void GUIReady();
     void StartCameraRecord();
     void StopCameraRecord();
+
+    void PressedLinearStageControlButton(LinearStageMotion motion);
+
 
 
 private slots:
@@ -144,6 +146,10 @@ QRadioButton*            button0Degrees             = nullptr;
 // Capture Video button
 QPushButton*             buttonCaptureVideo         = nullptr;
 bool                     recording                  = false;
+// Linear Stage controls
+QGroupBox*               groupBoxLinearStageControls= nullptr;
+std::array<QPushButton*, LinearStageMotion::MOTIONSIZE> arrayLinearStageControlsButtons;
+
 //Second window
 QWidget*                 windowCameraPopup          = nullptr;
 QVBoxLayout*             layoutCameraWindowPopup    = nullptr;
@@ -199,6 +205,10 @@ QVBoxLayout*             layoutCameraWindowPopup    = nullptr;
 
     };
 
+    
+
+
+
 
 
 private:
@@ -214,6 +224,12 @@ private:
 
     void ConfigureInfoLayout();
     void ConfigureLeftLayout();
+
+    void ConfigureLinearStageSubLayout();
+
+    void UpdateLinearStageButton(const LinearStageMotion motionButtonIndex);
+    
+   
 
    
 

@@ -46,6 +46,7 @@ void View::StartGUIComponentsInitialization() {
     mainLayout->addLayout(layoutLeftPart, 3);
     mainLayout->addWidget(groupBoxInformation, 1);
 
+
     //getCameras();
     //connect(comboBox, &QComboBox::currentIndexChanged, this, &View::selectCam);
     qDebug() << " view ready";
@@ -633,6 +634,80 @@ void View::ConfigureInfoLayout() {
     groupBoxInformation->setLayout(layoutInformation);
 
 
+
+}
+
+
+
+void View::ConfigureLinearStageSubLayout() {
+
+    groupBoxLinearStageControls = new QGroupBox(this);
+    QVBoxLayout* layoutLinearStageControls = new QVBoxLayout(this);
+    QHBoxLayout* layoutLinearStageMoveButtons = new QHBoxLayout(this);
+    QHBoxLayout* layoutLinearStageJogButtons = new QHBoxLayout(this);
+
+
+    for (int index = 0; index < LinearStageMotion::MOTIONSIZE;index++) {
+        arrayLinearStageControlsButtons[index] = new QPushButton(this); 
+        
+        
+
+        if (index == LinearStageMotion::MOVEFORWARD || index == LinearStageMotion::MOVEBACKWARD) {
+            connect(arrayDirectionButtons[index], &QPushButton::toggle, this, [this, index]() {
+                emit PressedLinearStageControlButton((LinearStageMotion)index);
+                });
+
+            connect(arrayDirectionButtons[index], &QPushButton::released, this, [this, index]() {
+                emit PressedLinearStageControlButton(LinearStageMotion::STOPMOTION);
+                });
+        }
+        else {
+            connect(arrayDirectionButtons[index], &QPushButton::clicked, this, [this, index]() {
+                emit PressedLinearStageControlButton((LinearStageMotion)index);
+                });
+
+            
+        }
+
+        if (index <= LinearStageMotion::HOME) {
+            layoutLinearStageMoveButtons->addWidget(arrayLinearStageControlsButtons[index]);
+        }
+        else {
+            layoutLinearStageJogButtons->addWidget(arrayLinearStageControlsButtons[index]);
+        }
+
+
+        layoutLinearStageControls->addLayout(layoutLinearStageMoveButtons);
+        layoutLinearStageControls->addLayout(layoutLinearStageJogButtons);
+
+        layoutInformation->addLayout(layoutLinearStageControls);
+
+
+
+
+
+        
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+}
+
+void View::UpdateLinearStageButton(const LinearStageMotion motionButtonIndex) {
+
+    
+
+    emit PressedLinearStageControlButton(motionButtonIndex);
 
 }
 

@@ -259,6 +259,7 @@ private:
             }
             return true;
         }
+        std::cout << "could not get pixel format feature\n";
         return false;
     }
 
@@ -410,23 +411,36 @@ private:
     }
 
     bool InitializeCamera() {
+        CameraStartup();
         if (!GetCamera() && !GetCameraInfo()) {
             emit CameraNotFound();
             return false;
         }
 
+        std::cout << "yolo 1\n";
         if (!SetPixelFormat()) return false;
+        std::cout << "yolo 2\n";
         if (!SetFrameDimensions()) return false;
+        std::cout << "yolo 3\n";
         if (!SetWhiteBalanceAutoOnce()) return false;
+        std::cout << "yolo 4\n";
 
         SetFrameObserver();
+        std::cout << "yolo 5\n";
 
         if (!CalculateBufferSize()) return false;
+        std::cout << "yolo 6\n";
         if (!PrepareFrame()) return false;
+        std::cout << "yolo 7\n";
         if (!GetSaturationAndExposureTimeFeaturePtr()) return false;
+        std::cout << "yolo 8\n";
         if (!GetReverseFeatureToPtr()) return false;
-        if (!SetTriggerOff()) return false;
+        std::cout << "yolo 9\n";
+        if (!SetTriggerOff()) return false;std::cout << "yolo 10\n";
         if (!GetFrameRateFeatureToPtr()) return false;
+        std::cout << "yolo 11\n";
+
+        std::cout << "initialization success\n";
 
         return true;
     }
@@ -451,7 +465,10 @@ public slots:
 
         if (!StartAcquisition()) return;
 
+        std::cout << "starting Display Frame\n";
         GetDisplayFrame();
+
+        std::cout << "emiting camera ready\n";
 
         emit CameraReady();
 

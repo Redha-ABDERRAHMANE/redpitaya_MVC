@@ -14,7 +14,7 @@ private:
 
 
 private:
-    bool ApplyLinearStageMoveForward() {
+    void ApplyLinearStageMoveForward() {
         model->LinearStageMoveForward();
     }
     void ApplyLinearStageMoveBackward() {
@@ -58,15 +58,15 @@ public slots:
     }
 
     void ApplyLinearStageMotion(const LinearStageMotion motionState ) {
-        bool (ApplyInputWorker:: * functionToRun)() = nullptr;
         switch (motionState) {
-        case LinearStageMotion::FORWARD:    functionToRun = &ApplyInputWorker::ApplyLinearStageMoveForward;  break;
-        case LinearStageMotion::BACKWARD:   ApplyLinearStageMoveBackward(); break;
-        case LinearStageMotion::JOGFORWARD: ApplyLinearStageJogForward();   break;
-        case LinearStageMotion::JOGBACKWARD:ApplyLinearStageJogBackward();  break;
-        case LinearStageMotion::STOP:       ApplyLinearStageStopMotion();   break;
-        case LinearStageMotion::HOME:       ApplyLinearStageHome();         break;
+        case LinearStageMotion::MOVEFORWARD:    ApplyLinearStageMoveForward();  break;
+        case LinearStageMotion::MOVEBACKWARD:   ApplyLinearStageMoveBackward(); break;
+        case LinearStageMotion::JOGFORWARD:     ApplyLinearStageJogForward();   break;
+        case LinearStageMotion::JOGBACKWARD:    ApplyLinearStageJogBackward();  break;
+        case LinearStageMotion::STOPMOTION:     ApplyLinearStageStopMotion();   break;
+        case LinearStageMotion::HOME:           ApplyLinearStageHome();         break;
         }
+
     }
 
 
