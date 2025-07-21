@@ -233,9 +233,9 @@ public:
         connect(view, &View::StartCameraRecord, &worker_videoRecorder, &VideoRecorderThread::startRecording, Qt::QueuedConnection);
         connect(view, &View::StopCameraRecord, &worker_videoRecorder, &VideoRecorderThread::stopRecording, Qt::QueuedConnection);
 
-        connect(view, &View::StartCameraRecord, &worker_cameraInput, &CameraInputWorker::StartRecording);
-        connect(view, &View::StopCameraRecord, &worker_cameraInput, &CameraInputWorker::StopRecording);
-        connect(&worker_cameraInput, &CameraInputWorker::SendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture, Qt::QueuedConnection);
+        connect(view, &View::StartCameraRecord, &worker_cameraInput, &CameraInputWorker::StartRecording, Qt::QueuedConnection);
+        connect(view, &View::StopCameraRecord, &worker_cameraInput, &CameraInputWorker::StopRecording, Qt::QueuedConnection);
+        connect(&worker_cameraInput, &CameraInputWorker::SendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture);
         
         /////////////////////
 

@@ -2,6 +2,7 @@
 #include <VmbCPP/VmbCPP.h>
 #include <QObject>
 #include <QImage>
+#include<QCoreApplication>
 #include <QThread>
 using namespace VmbCPP;
 
@@ -565,6 +566,7 @@ public:
         
         QThread* currentThread = QThread::currentThread();
         while (!currentThread->isInterruptionRequested()) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
             if (frameObserver->GetFrame(displayFrame)) {
                 frameCount++;
                 if (frameCount % 30 == 0) {
@@ -576,7 +578,7 @@ public:
                         
                         emit ImageReceived(displayFrame);
                         
-                        if (IsRecordingVideoActive() && frameCount % 2 == 0) {
+                        if (IsRecordingVideoActive() && frameCount % 4 == 0) {
                            
                             emit SendImageToCapture(displayFrame);
                         
