@@ -8,7 +8,7 @@
 // Exclude problematic Windows components
 #define NOMINMAX        // Prevents min/max macro conflicts
 #define NOGDI          // Excludes GDI
-#define NOUSER         // Excludes user interface
+//#define NOUSER         // Excludes user interface
 #define NOSERVICE      // Excludes service functions
 #define NOMCX          // Excludes modem configuration
 #define NOIME          // Excludes IME functions

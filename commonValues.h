@@ -45,5 +45,15 @@ enum RPBoards {
 
 };
 
+enum LinearStageMotion {
+    FORWARD,
+    BACKWARD,
+    JOGFORWARD,
+    JOGBACKWARD,
+    STOP,
+    HOME
+
+};
+
 
 #endif // COMMONVALUES_H

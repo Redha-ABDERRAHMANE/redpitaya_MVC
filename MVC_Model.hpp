@@ -1,6 +1,7 @@
 #pragma once
 #include "RpSignalGn.hpp"
 #include "waveGnPresets.hpp"
+#include "linearStage.hpp"
 #include <QObject>
 #include <QThread>
 #include <QDebug>
@@ -18,6 +19,8 @@ private:
     RpSignalGn signalGn;
     waveGnPresets presetsGn;
     Controller& controller ;
+    LinearStage linearStage;
+    
   
 
     
@@ -27,10 +30,14 @@ private:
 
 public:
     
-    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c), nextPreset({}), currentPreset({}) {
+    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c),linearStage(), nextPreset({}), currentPreset({}) {
+        if (!linearStage.ConnectToDevice()) {
+            std::cout << "Could not connect to linear stage\n";
+
+        }
 
     }
-    virtual ~MVC_Model() = default;
+    MVC_Model() = default;
 
 
     void SetupMVCModel() {
@@ -142,6 +149,31 @@ public slots:
 
         
     }
+
+    bool LinearStageMoveForward() {
+        return linearStage.MoveForward();
+    }
+    bool LinearStageMoveBackward() {
+        return linearStage.MoveBackward();
+    }
+    bool LinearStageJogForward(){
+        return linearStage.JogForward();
+
+    }
+    bool LinearStageJogBackward(){
+        return linearStage.JogBackward();
+
+    }
+
+    bool LinearStageStopMotion() {
+        return linearStage.StopMotion();
+    }
+
+    bool LinearStageHome() {
+        return linearStage.Home();
+    }
+
+
 
 
 

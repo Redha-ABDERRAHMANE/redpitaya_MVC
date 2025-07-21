@@ -8,10 +8,10 @@
 
 #define NOMINMAX        // Prevent min/max conflicts
 #define NOGDI
-#define NOUSER
+//#define NOUSER
 #define NOSERVICE
 #include <Windows.h>
-#include <mmsystem.h>
+
 #include <Xinput.h>
 #include <iostream>
 #include <unordered_map>

@@ -12,6 +12,27 @@ class ApplyInputWorker : public QObject {
 private:
     MVC_Model* model;
 
+
+private:
+    bool ApplyLinearStageMoveForward() {
+        model->LinearStageMoveForward();
+    }
+    void ApplyLinearStageMoveBackward() {
+        model->LinearStageMoveBackward();
+    }
+    void ApplyLinearStageJogForward() {
+        model->LinearStageJogForward();
+    }
+    void ApplyLinearStageJogBackward() {
+        model->LinearStageJogBackward();
+    }
+    void ApplyLinearStageStopMotion() {
+        model->LinearStageStopMotion();
+    }
+    void ApplyLinearStageHome() {
+        model->LinearStageHome();
+    }
+
 public:
     ApplyInputWorker(MVC_Model* m)
         : model(m) {}
@@ -35,6 +56,19 @@ public slots:
     void apply_PhaseShift(const int& card,const int& phaseValue) {
         model->ApplyPhaseValue( card, phaseValue);
     }
+
+    void ApplyLinearStageMotion(const LinearStageMotion motionState ) {
+        bool (ApplyInputWorker:: * functionToRun)() = nullptr;
+        switch (motionState) {
+        case LinearStageMotion::FORWARD:    functionToRun = &ApplyInputWorker::ApplyLinearStageMoveForward;  break;
+        case LinearStageMotion::BACKWARD:   ApplyLinearStageMoveBackward(); break;
+        case LinearStageMotion::JOGFORWARD: ApplyLinearStageJogForward();   break;
+        case LinearStageMotion::JOGBACKWARD:ApplyLinearStageJogBackward();  break;
+        case LinearStageMotion::STOP:       ApplyLinearStageStopMotion();   break;
+        case LinearStageMotion::HOME:       ApplyLinearStageHome();         break;
+        }
+    }
+
 
 
 
