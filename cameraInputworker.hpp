@@ -577,30 +577,20 @@ public:
                     if (!displayFrame.isNull()) {
                         try {
                             if (IsRecordingVideoActive()) {
-                                auto now = std::chrono::high_resolution_clock::now();
+ 
 
                                 // Capture at 25 FPS
-                                auto captureElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastCaptureTime);
-                                if (captureElapsed.count() >= captureInterval) {
-                                    emit SendImageToCapture(displayFrame);
-                                    lastCaptureTime = now;
-                                }
 
-                                auto displayElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplayTime);
-                                if (displayElapsed.count() >= displayWhileCaptureInterval) {
-                                    emit  ImageReceived(displayFrame);;
-                                    lastDisplayTime = now;
-                                }
+                               DisplayAtPreciseFPS(lastCaptureTime, captureInterval, [this]() { emit SendImageToCapture(displayFrame);});
+
+                               DisplayAtPreciseFPS(lastDisplayTime, captureInterval, [this]() { emit ImageReceived(displayFrame);});
+
                                
                             }
                             else {
                                 // When NOT recording: limit display to 30 FPS
-                                auto now = std::chrono::high_resolution_clock::now();
-                                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplayTime);
-                                if (elapsed.count() >= displayInterval) {
-                                    emit ImageReceived(displayFrame);
-                                    lastDisplayTime = now;
-                                }
+                                DisplayAtPreciseFPS(lastDisplayTime, displayInterval, [this]() { emit ImageReceived(displayFrame);});
+
                             }
                         }
                         catch (const std::exception& e) {
@@ -609,14 +599,29 @@ public:
                     }
                 }
 
-                QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
 
                 if (IsRecordingVideoActive()) {
                     QThread::msleep(10);
                 }
             }
         }
+        void DisplayAtPreciseFPS( std::chrono::steady_clock::time_point& lastUsedTime,const int& timeInterval, std::function<void()> lambda) {
+            static std::chrono::steady_clock::time_point now;
+            static std::chrono::milliseconds elapsedTime;
+            now = std::chrono::high_resolution_clock::now();
+            elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(now - lastUsedTime);
 
+            if (elapsedTime.count() >= timeInterval) {
+                lambda();
+                lastUsedTime = now;
+                
+            }
+            
+
+
+
+        }
 
     bool CleanUpCameraRessources() {
         if (camera == nullptr) return false;

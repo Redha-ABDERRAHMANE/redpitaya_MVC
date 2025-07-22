@@ -25,6 +25,7 @@ public slots:
     void ReceiveImageToCapture(const QImage& image) {
         static int i = 0;
         std::cout << "Image received to capture\n";
+        if (ffmpegProcess==nullptr) return;
 
  
 
@@ -51,9 +52,9 @@ public slots:
         }
         QStringList args;
 
-        // Get image dimensions (you'll need to pass these or make them class members)
-        int width = 2592;  // Replace with actual width
-        int height = 1944; // Replace with actual height
+        
+        int width = 2592; 
+        int height = 1944;
         
 
         args << "-f" << "rawvideo"
