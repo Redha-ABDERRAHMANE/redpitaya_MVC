@@ -339,6 +339,15 @@ void View::ConfigureLeftLayout() {
     imageView->setResizeAnchor(QGraphicsView::AnchorViewCenter);
     imageView->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
     imageView->setDragMode(QGraphicsView::NoDrag);
+    //////////////////////DEBUG
+    imageView->setOptimizationFlags(QGraphicsView::DontAdjustForAntialiasing |
+        QGraphicsView::DontSavePainterState);
+    imageView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+    //////////////////////////
+
+    // For the QGraphicsPixmapItem (your pixmapItem)
+    pixmapItem->setCacheMode(QGraphicsItem::NoCache);
+    // /////////////////////
     // Main horizontal layout (splits left and right)
     // Left side vertical layout
     layoutLeftPart = new QVBoxLayout();
