@@ -574,7 +574,7 @@ public:
         QThread* currentThread = QThread::currentThread();
         while (!currentThread->isInterruptionRequested()) {
    
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+            if(frameCount%4 ==0) QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
             //currentBuffer = (currentBuffer + 1) % bufferSize;
             //displayFrame = frameBuffer[currentBuffer];
             
