@@ -581,15 +581,15 @@ public:
 
                                 // Capture at 25 FPS
 
-                               DisplayAtPreciseFPS(lastCaptureTime, captureInterval, [this]() { emit SendImageToCapture(displayFrame);});
+                               SendFrameAtPreciseInterval(lastCaptureTime, captureInterval, [this]() { emit SendImageToCapture(displayFrame);});
 
-                               DisplayAtPreciseFPS(lastDisplayTime, captureInterval, [this]() { emit ImageReceived(displayFrame);});
+                               SendFrameAtPreciseInterval(lastDisplayTime, captureInterval, [this]() { emit ImageReceived(displayFrame);});
 
                                
                             }
                             else {
                                 // When NOT recording: limit display to 30 FPS
-                                DisplayAtPreciseFPS(lastDisplayTime, displayInterval, [this]() { emit ImageReceived(displayFrame);});
+                                SendFrameAtPreciseInterval(lastDisplayTime, displayInterval, [this]() { emit ImageReceived(displayFrame);});
 
                             }
                         }
@@ -606,7 +606,7 @@ public:
                 }
             }
         }
-        void DisplayAtPreciseFPS( std::chrono::steady_clock::time_point& lastUsedTime,const int& timeInterval, std::function<void()> lambda) {
+        void SendFrameAtPreciseInterval( std::chrono::steady_clock::time_point& lastUsedTime,const int& timeInterval, std::function<void()> lambda) {
             static std::chrono::steady_clock::time_point now;
             static std::chrono::milliseconds elapsedTime;
             now = std::chrono::high_resolution_clock::now();
