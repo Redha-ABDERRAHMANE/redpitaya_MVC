@@ -313,7 +313,7 @@ void View::SetNewFrameToDisplay( const QImage& image) {
     //std::cout << "QImage size : " << imageSize.height()<<"x "<<imageSize.width() << '\n';
     
     imageView->setFixedSize(imageSize);
-    pixmapItem->setPixmap(QPixmap::fromImage(image).scaled(temp));
+    pixmapItem->setPixmap(QPixmap::fromImage(image).scaled(temp,Qt::IgnoreAspectRatio, Qt::FastTransformation));
     pixmapItem->setRotation(imageRotationAngle);
     imageView->fitInView(pixmapItem, Qt::KeepAspectRatio);
 
