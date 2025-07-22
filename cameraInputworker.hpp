@@ -562,16 +562,30 @@ public:
         int frameCount = 0;
         std::cout << "entered camera get frame " << std::endl;
 
-        displayFrame.fill(Qt::black);
-        
+        //displayFrame.fill(Qt::black);
+        //int bufferSize = 3;
+        //std::array<QImage, 3> frameBuffer;
+        //int currentBuffer;
+        //for (QImage& frame : frameBuffer) {
+        //    frame.fill(Qt::black);
+        //    
+        //}
+        //
         QThread* currentThread = QThread::currentThread();
         while (!currentThread->isInterruptionRequested()) {
+   
             QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+            //currentBuffer = (currentBuffer + 1) % bufferSize;
+            //displayFrame = frameBuffer[currentBuffer];
+            
             if (frameObserver->GetFrame(displayFrame)) {
                 frameCount++;
-                if (frameCount % 30 == 0) {
-                    //std::cout << "Received " << frameCount << " frames" << std::endl;
-                }
+
+            
+                
+                
+            
+
 
                 if (!displayFrame.isNull()) {
                     try {
