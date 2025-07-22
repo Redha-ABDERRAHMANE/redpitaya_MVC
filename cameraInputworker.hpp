@@ -564,14 +564,12 @@ public:
             std::cout << "entered camera get frame " << std::endl;
             bool frameToCapture = true;
             QThread* currentThread = QThread::currentThread();
-            // Simple 30 FPS timing for display only
+
             auto lastDisplayTime = std::chrono::high_resolution_clock::now();
-            auto lastCaptureTime = std::chrono::high_resolution_clock::now(); // For 25 FPS capture
+            auto lastCaptureTime = std::chrono::high_resolution_clock::now();
             const int displayInterval = 33; // 33ms = ~30 FPS
             const int captureInterval = 40; // 40ms = 25 FPS
-            auto now = std::chrono::high_resolution_clock::now();
-            auto captureElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastCaptureTime);
-            auto displayElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplayTime);
+            const int displayWhileCaptureInterval = 50;// 40ms = 20 FPS
 
             while (!currentThread->isInterruptionRequested()) {
                 if (frameObserver->GetFrame(displayFrame)) {
@@ -579,38 +577,46 @@ public:
                     if (!displayFrame.isNull()) {
                         try {
                             if (IsRecordingVideoActive()) {
-                                now = std::chrono::high_resolution_clock::now();
+                                auto now = std::chrono::high_resolution_clock::now();
 
                                 // Capture at 25 FPS
-                                captureElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastCaptureTime);
+                                auto captureElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastCaptureTime);
                                 if (captureElapsed.count() >= captureInterval) {
                                     emit SendImageToCapture(displayFrame);
                                     lastCaptureTime = now;
                                 }
 
-                                // Display every frame or limit it
-                                emit ImageReceived(displayFrame);
+                                auto displayElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplayTime);
+                                if (displayElapsed.count() >= displayWhileCaptureInterval) {
+                                    emit  ImageReceived(displayFrame);;
+                                    lastDisplayTime = now;
+                                }
+                               
                             }
                             else {
                                 // When NOT recording: limit display to 30 FPS
-                                now = std::chrono::high_resolution_clock::now();
-                                displayElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplayTime);
-                                if (displayElapsed.count() >= displayInterval) {
+                                auto now = std::chrono::high_resolution_clock::now();
+                                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplayTime);
+                                if (elapsed.count() >= displayInterval) {
                                     emit ImageReceived(displayFrame);
                                     lastDisplayTime = now;
                                 }
-                                // Skip this frame for display if too soon
                             }
                         }
                         catch (const std::exception& e) {
-                            std::cerr << "Error displaying frame" << e.what() << std::endl;
+                            std::cerr << "Error displaying frame: " << e.what() << std::endl;
                         }
                     }
                 }
+
                 QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
-                
+
+                if (IsRecordingVideoActive()) {
+                    QThread::msleep(10);
+                }
             }
         }
+
 
     bool CleanUpCameraRessources() {
         if (camera == nullptr) return false;
