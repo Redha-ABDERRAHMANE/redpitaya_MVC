@@ -574,7 +574,7 @@ public:
         QThread* currentThread = QThread::currentThread();
         while (!currentThread->isInterruptionRequested()) {
    
-            if(frameCount%4 ==0) QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
             //currentBuffer = (currentBuffer + 1) % bufferSize;
             //displayFrame = frameBuffer[currentBuffer];
             
@@ -589,14 +589,14 @@ public:
 
                 if (!displayFrame.isNull()) {
                     try {
-                        
+                        if (IsRecordingVideoActive() && frameCount % 4 == 0) {
+
+                            emit SendImageToCapture(displayFrame);
+
+                        }
                         emit ImageReceived(displayFrame);
                         
-                        if (IsRecordingVideoActive() && frameCount % 4 == 0) {
-                           
-                            emit SendImageToCapture(displayFrame);
-                        
-                        }
+
                         
                     }
                     catch (const std::exception& e) {

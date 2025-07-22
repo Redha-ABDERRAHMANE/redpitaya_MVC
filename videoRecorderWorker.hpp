@@ -40,6 +40,14 @@ public slots:
         std::cout << "start record\n";
         if (ffmpegProcess == nullptr) {
             ffmpegProcess = new QProcess(this);
+            connect(ffmpegProcess, &QProcess::errorOccurred, [this](QProcess::ProcessError error) {
+                std::cerr << "FFmpeg process error: " << error << std::endl;
+                });
+
+            connect(ffmpegProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+                [this](int exitCode, QProcess::ExitStatus exitStatus) {
+                    std::cout << "FFmpeg finished with exit code: " << exitCode << std::endl;
+                });
         }
         QStringList args;
 
@@ -54,6 +62,7 @@ public slots:
             << "-r" << "25"
             << "-i" << "-"
             << "-vcodec" << "libx264"
+            << "-preset" << "ultrafast"  // Move here
             << "-pix_fmt" << "yuv420p"
             << "-y"
             << QString("C:/Users/Redha/Pictures/testcapture/output_%1.mp4").arg(i);
