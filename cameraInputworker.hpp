@@ -568,9 +568,9 @@ public:
 
             auto lastDisplayTime = std::chrono::high_resolution_clock::now();
             auto lastCaptureTime = std::chrono::high_resolution_clock::now();
-            const int displayInterval = 25; // 33ms = ~30 FPS
-            const int captureInterval = 40; // 40ms = 25 FPS
-            const int displayWhileCaptureInterval = 25;// 40ms = 20 FPS
+            const int displayInterval = 25; // experimental value for 30+ fps
+            const int captureInterval = 40; // experimental value for 25 fps recording
+            const int displayWhileCaptureInterval = 25;// experimental value for 25 fps for GUI display due to SendImageToCapture
 
             while (!currentThread->isInterruptionRequested()) {
                 if (frameObserver->GetFrame(displayFrame)) {
@@ -581,10 +581,10 @@ public:
  
 
                                 // Capture at 25 FPS
+                               SendFrameAtPreciseInterval(lastDisplayTime, displayWhileCaptureInterval, [this]() { emit ImageReceived(displayFrame);});
+                               SendFrameAtPreciseInterval(lastCaptureTime, captureInterval, [this]() { emit SendImageToCapture(displayFrame);});
 
-                               SendFrameAtPreciseInterval(lastCaptureTime, displayWhileCaptureInterval, [this]() { emit SendImageToCapture(displayFrame);});
-
-                               SendFrameAtPreciseInterval(lastDisplayTime, captureInterval, [this]() { emit ImageReceived(displayFrame);});
+                               
 
                                
                             }
