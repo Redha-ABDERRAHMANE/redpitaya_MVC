@@ -12,6 +12,7 @@
 #include <QIODevice>
 #include <iostream>
 #include <QCoreApplication>
+#include <commonValues.h>
 
 class VideoRecorderThread : public QObject {
     Q_OBJECT
@@ -53,8 +54,8 @@ public slots:
         QStringList args;
 
         
-        int width = 2592; 
-        int height = 1944;
+        int width = FRAMEWIDTH; 
+        int height = FRAMEHEIGHT;
         
 
         args << "-f" << "rawvideo"

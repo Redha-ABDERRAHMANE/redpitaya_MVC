@@ -59,6 +59,11 @@ const enum LinearStageMotion:int {
 
 };
 
+const enum CameraFrameResolution {
+    FRAMEWIDTH = 2592,
+    FRAMEHEIGHT= 1944
+};
+
 
 
 #endif // COMMONVALUES_H

@@ -5,6 +5,7 @@
 #include<QCoreApplication>
 #include <QThread>
 #include <chrono>
+#include <commonValues.h>
 using namespace VmbCPP;
 
 
@@ -157,7 +158,7 @@ private:
     FeaturePtr imageReverseXFeature;
     FeaturePtr imageReverseYFeature;
     FeaturePtr balanceWhiteAutoFeature;
-    VmbInt64_t width = 2592, height = 1944;
+    VmbInt64_t width = FRAMEWIDTH, height = FRAMEHEIGHT;
     FrameObserver* frameObserver = nullptr;
     IFrameObserverPtr observerPtr;
     VmbInt64_t payloadSize = 0;
@@ -567,9 +568,9 @@ public:
 
             auto lastDisplayTime = std::chrono::high_resolution_clock::now();
             auto lastCaptureTime = std::chrono::high_resolution_clock::now();
-            const int displayInterval = 33; // 33ms = ~30 FPS
+            const int displayInterval = 25; // 33ms = ~30 FPS
             const int captureInterval = 40; // 40ms = 25 FPS
-            const int displayWhileCaptureInterval = 50;// 40ms = 20 FPS
+            const int displayWhileCaptureInterval = 25;// 40ms = 20 FPS
 
             while (!currentThread->isInterruptionRequested()) {
                 if (frameObserver->GetFrame(displayFrame)) {

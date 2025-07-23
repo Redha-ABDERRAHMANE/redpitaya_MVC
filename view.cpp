@@ -305,19 +305,46 @@ void View:: CameraFailedPopUp() {
 }
 
 void View::SetNewFrameToDisplay( const QImage& image) {
+  
+    static QSizeF imageSize = image.size();
+    static QSizeF targetSize;
+    static bool needResize = false;
+    static qreal scale;
+
+
+    static int i = 0;
+    static int fps = 0;
+    static QTimer test;
+    fps++;
+    if (i == 0) {
+        test.setInterval(1000);
+        connect(&test, &QTimer::timeout, this, []() {
+            std::cout << " frames: " << fps << '\n';
+            fps = 0;
+            });
+        test.start();
+    }
+    i++;
+
 
   if ((cameraPopupRunning &&( windowCameraPopup->isMinimized())) ||( !cameraPopupRunning && !this->isActiveWindow())) { return; }
-    QSize imageSize = cameraPopupRunning ? windowCameraPopup->size() : groupBoxCamera->size();
-    QSize temp = QSize(imageSize.width()-50, imageSize.height()-50 );
 
-    //std::cout << "QImage size : " << imageSize.height()<<"x "<<imageSize.width() << '\n';
-    if(cameraPopupRunning) imageView->setFixedSize(temp);
+    targetSize = imageView->viewport()->size();
+    scale = qMin(targetSize.width() / imageSize.width(),targetSize.height() / imageSize.height());
+    
 
-    pixmapItem->setPixmap(QPixmap::fromImage(image).scaled(temp,Qt::IgnoreAspectRatio, Qt::FastTransformation));
+    pixmapItem->setPixmap(QPixmap::fromImage(image));
+    
+
+
+    imageView->resetTransform();
+    pixmapItem->resetTransform();
+
+    pixmapItem->setTransform(QTransform::fromScale(scale, scale));
     pixmapItem->setRotation(imageRotationAngle);
-    imageView->fitInView(pixmapItem, Qt::KeepAspectRatio);
 
     imageView->centerOn(pixmapItem);
+    imageView->viewport()->update();
 
 
 
