@@ -581,7 +581,7 @@ public:
 
                                 // Capture at 25 FPS
 
-                               SendFrameAtPreciseInterval(lastCaptureTime, captureInterval, [this]() { emit SendImageToCapture(displayFrame);});
+                               SendFrameAtPreciseInterval(lastCaptureTime, displayWhileCaptureInterval, [this]() { emit SendImageToCapture(displayFrame);});
 
                                SendFrameAtPreciseInterval(lastDisplayTime, captureInterval, [this]() { emit ImageReceived(displayFrame);});
 

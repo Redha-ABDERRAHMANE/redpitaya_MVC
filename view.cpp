@@ -306,13 +306,13 @@ void View:: CameraFailedPopUp() {
 
 void View::SetNewFrameToDisplay( const QImage& image) {
 
-    if ((cameraPopupRunning &&( windowCameraPopup->isMinimized())) ||( !cameraPopupRunning && !this->isActiveWindow())) { return; }
+  if ((cameraPopupRunning &&( windowCameraPopup->isMinimized())) ||( !cameraPopupRunning && !this->isActiveWindow())) { return; }
     QSize imageSize = cameraPopupRunning ? windowCameraPopup->size() : groupBoxCamera->size();
     QSize temp = QSize(imageSize.width()-50, imageSize.height()-50 );
 
     //std::cout << "QImage size : " << imageSize.height()<<"x "<<imageSize.width() << '\n';
-    
-    imageView->setFixedSize(imageSize);
+    if(cameraPopupRunning) imageView->setFixedSize(temp);
+
     pixmapItem->setPixmap(QPixmap::fromImage(image).scaled(temp,Qt::IgnoreAspectRatio, Qt::FastTransformation));
     pixmapItem->setRotation(imageRotationAngle);
     imageView->fitInView(pixmapItem, Qt::KeepAspectRatio);
