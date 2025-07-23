@@ -331,20 +331,22 @@ void View::SetNewFrameToDisplay( const QImage& image) {
 
     targetSize = imageView->viewport()->size();
     scale = qMin(targetSize.width() / imageSize.width(),targetSize.height() / imageSize.height());
-    
+
+    imageView->resetTransform();
+    pixmapItem->resetTransform();
+
 
     pixmapItem->setPixmap(QPixmap::fromImage(image));
     
 
 
-    imageView->resetTransform();
-    pixmapItem->resetTransform();
+
 
     pixmapItem->setTransform(QTransform::fromScale(scale, scale));
     pixmapItem->setRotation(imageRotationAngle);
-
     imageView->centerOn(pixmapItem);
     imageView->viewport()->update();
+    
 
 
 
@@ -370,6 +372,8 @@ void View::ConfigureLeftLayout() {
     imageView->setOptimizationFlags(QGraphicsView::DontAdjustForAntialiasing |
         QGraphicsView::DontSavePainterState);
     imageView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+    imageView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    imageView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //////////////////////////
 
     // For the QGraphicsPixmapItem (your pixmapItem)
