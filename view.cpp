@@ -668,9 +668,9 @@ void View::ConfigureInfoLayout() {
 void View::ConfigureLinearStageSubLayout() {
 
     groupBoxLinearStageControls = new QGroupBox(this);
-    QVBoxLayout* layoutLinearStageControls = new QVBoxLayout(this);
-    QHBoxLayout* layoutLinearStageMoveButtons = new QHBoxLayout(this);
-    QHBoxLayout* layoutLinearStageJogButtons = new QHBoxLayout(this);
+    QVBoxLayout* layoutLinearStageControls = new QVBoxLayout();
+    QHBoxLayout* layoutLinearStageMoveButtons = new QHBoxLayout();
+    QHBoxLayout* layoutLinearStageJogButtons = new QHBoxLayout();
 
     std::array<QString, 6> arrayLetter = { "B","S","F","H","F","B" };
     for (int index = 0; index < LinearStageMotion::MOTIONSIZE;index++) {
@@ -679,16 +679,18 @@ void View::ConfigureLinearStageSubLayout() {
         
 
         if (index == LinearStageMotion::MOVEFORWARD || index == LinearStageMotion::MOVEBACKWARD) {
-            connect(arrayDirectionButtons[index], &QPushButton::toggle, this, [this, index]() {
+            std::cout << "CONNECTING BUTTONS\n";
+            connect(arrayLinearStageControlsButtons[index], &QPushButton::pressed, this, [this, index]() {
                 emit PressedLinearStageControlButton((LinearStageMotion)index);
                 });
 
-            connect(arrayDirectionButtons[index], &QPushButton::released, this, [this, index]() {
+            connect(arrayLinearStageControlsButtons[index], &QPushButton::released, this, [this, index]() {
                 emit PressedLinearStageControlButton(LinearStageMotion::STOPMOTION);
                 });
         }
         else {
-            connect(arrayDirectionButtons[index], &QPushButton::clicked, this, [this, index]() {
+            connect(arrayLinearStageControlsButtons[index], &QPushButton::clicked, this, [this, index]() {
+                std::cout << "button pressed \n";
                 emit PressedLinearStageControlButton((LinearStageMotion)index);
                 });
 
@@ -701,23 +703,14 @@ void View::ConfigureLinearStageSubLayout() {
         else {
             layoutLinearStageJogButtons->addWidget(arrayLinearStageControlsButtons[index]);
         }
-
-
-        layoutLinearStageControls->addLayout(layoutLinearStageMoveButtons);
-        layoutLinearStageControls->addLayout(layoutLinearStageJogButtons);
-
-        groupBoxLinearStageControls->setLayout(layoutLinearStageControls);
-
-        layoutInformation->addWidget(groupBoxLinearStageControls);
-
-
-
-
-
-        
-
-
     }
+    layoutLinearStageControls->addLayout(layoutLinearStageMoveButtons);
+    layoutLinearStageControls->addLayout(layoutLinearStageJogButtons);
+
+    groupBoxLinearStageControls->setLayout(layoutLinearStageControls);
+
+    layoutInformation->addWidget(groupBoxLinearStageControls);
+
 
 
 
