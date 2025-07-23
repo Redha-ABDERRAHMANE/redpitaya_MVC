@@ -342,6 +342,13 @@ void View::SetNewFrameToDisplay( const QImage& image) {
 
 }
 
+
+void View::EnableLinearStageButtons() {
+    for (int i = 0; i < LinearStageMotion::MOTIONSIZE;i++) {
+        arrayLinearStageControlsButtons[i]->setDisabled(false);
+    }
+}
+
 void View::ConfigureLeftLayout() {
 
     imageView = new QGraphicsView(this);
@@ -675,10 +682,21 @@ void View::ConfigureLinearStageSubLayout() {
     std::array<QString, 6> arrayLetter = { "B","S","F","H","F","B" };
     for (int index = 0; index < LinearStageMotion::MOTIONSIZE;index++) {
         arrayLinearStageControlsButtons[index] = new QPushButton(arrayLetter[index],this );
-        
-        
 
-        if (index == LinearStageMotion::MOVEFORWARD || index == LinearStageMotion::MOVEBACKWARD) {
+        switch (index) {
+        case LinearStageMotion::HOME:
+            connect(arrayLinearStageControlsButtons[index], &QPushButton::clicked, this, [this, index]() {
+
+                emit PressedLinearStageControlButton((LinearStageMotion)index);
+
+                for (int i = 0; i < LinearStageMotion::MOTIONSIZE;i++) {
+                    arrayLinearStageControlsButtons[i]->setDisabled(true);
+                }
+                });
+            break;
+        case LinearStageMotion::MOVEFORWARD:
+
+        case LinearStageMotion::MOVEBACKWARD:
             std::cout << "CONNECTING BUTTONS\n";
             connect(arrayLinearStageControlsButtons[index], &QPushButton::pressed, this, [this, index]() {
                 emit PressedLinearStageControlButton((LinearStageMotion)index);
@@ -687,15 +705,19 @@ void View::ConfigureLinearStageSubLayout() {
             connect(arrayLinearStageControlsButtons[index], &QPushButton::released, this, [this, index]() {
                 emit PressedLinearStageControlButton(LinearStageMotion::STOPMOTION);
                 });
-        }
-        else {
+            break;
+        default:
             connect(arrayLinearStageControlsButtons[index], &QPushButton::clicked, this, [this, index]() {
                 std::cout << "button pressed \n";
                 emit PressedLinearStageControlButton((LinearStageMotion)index);
                 });
+            break;
 
-            
+
+
+
         }
+        
 
         if (index <= LinearStageMotion::HOME) {
             layoutLinearStageMoveButtons->addWidget(arrayLinearStageControlsButtons[index]);

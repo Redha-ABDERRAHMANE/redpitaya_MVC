@@ -75,6 +75,7 @@ public slots:
     void StartGUIComponentsInitialization();
 
     void SetNewFrameToDisplay(const QImage& image);
+    void EnableLinearStageButtons();
 
 private:
 

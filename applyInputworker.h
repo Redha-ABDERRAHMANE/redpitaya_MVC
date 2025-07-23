@@ -29,8 +29,8 @@ private:
     void ApplyLinearStageStopMotion() {
         model->LinearStageStopMotion();
     }
-    void ApplyLinearStageHome() {
-        model->LinearStageHome();
+    bool ApplyLinearStageHome() {
+        return model->LinearStageHome();
     }
 
 public:
@@ -40,9 +40,11 @@ public:
 signals:
     void finished();
     void ValidInputDetected(int button_value);
+    void HomingComplete();
 
 public slots:
     void apply_GUIInput(ButtonCombination button_combination) {
+        std::cout << "GUI called to apply new preset\n";
         model->GetAndApplyPresetMVC( button_combination.nextButton, button_combination.currentHat);
     }
     void apply_ControllerInput(const int& button_value){
@@ -65,7 +67,7 @@ public slots:
         case LinearStageMotion::JOGFORWARD:     ApplyLinearStageJogForward();   break;
         case LinearStageMotion::JOGBACKWARD:    ApplyLinearStageJogBackward();  break;
         case LinearStageMotion::STOPMOTION:     ApplyLinearStageStopMotion();   break;
-        case LinearStageMotion::HOME:           ApplyLinearStageHome();         break;
+        case LinearStageMotion::HOME:           if (ApplyLinearStageHome()) { emit HomingComplete(); };         break;
         }
 
     }

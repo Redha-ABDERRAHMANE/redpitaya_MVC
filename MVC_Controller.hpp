@@ -238,6 +238,9 @@ public:
         connect(view, &View::StopCameraRecord, &worker_cameraInput, &CameraInputWorker::StopRecording, Qt::QueuedConnection);
         connect(&worker_cameraInput, &CameraInputWorker::SendImageToCapture, &worker_videoRecorder, &VideoRecorderThread::ReceiveImageToCapture);
         
+
+
+        connect(&worker_ApplyInput, &ApplyInputWorker::HomingComplete, view, &View::EnableLinearStageButtons);
         /////////////////////
 
       
