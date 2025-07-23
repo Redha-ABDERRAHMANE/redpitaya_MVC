@@ -312,21 +312,6 @@ void View::SetNewFrameToDisplay( const QImage& image) {
     static qreal scale;
 
 
-    static int i = 0;
-    static int fps = 0;
-    static QTimer test;
-    fps++;
-    if (i == 0) {
-        test.setInterval(1000);
-        connect(&test, &QTimer::timeout, this, []() {
-            std::cout << " frames: " << fps << '\n';
-            fps = 0;
-            });
-        test.start();
-    }
-    i++;
-
-
   if ((cameraPopupRunning &&( windowCameraPopup->isMinimized())) ||( !cameraPopupRunning && !this->isActiveWindow())) { return; }
 
     targetSize = imageView->viewport()->size();
@@ -481,54 +466,54 @@ void View::ConfigureInfoLayout() {
         labelFrequencyValue->setText(messageToDisplay);
         });
 
-    ///////////////////////////////////////////////////////////////////
-    // PHASE SLIDER
-    // phase group box with no margins
-    QGroupBox* phaseGroupBox = new QGroupBox("", this);
-    QVBoxLayout* phaseLayout = new QVBoxLayout();
+    /////////////////////////////////////////////////////////////////////
+    //// PHASE SLIDER
+    //// phase group box with no margins
+    //QGroupBox* phaseGroupBox = new QGroupBox("", this);
+    //QVBoxLayout* phaseLayout = new QVBoxLayout();
 
-    // Create the label to be overlaid
-    labelPrimaryPhaseValue = new QLabel("Primary card phase value :", this);
-    labelPrimaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    labelPrimaryPhaseValue->setMargin(0);
-    labelPrimaryPhaseValue->setAlignment(Qt::AlignHCenter);
+    //// Create the label to be overlaid
+    //labelPrimaryPhaseValue = new QLabel("Primary card phase value :", this);
+    //labelPrimaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    //labelPrimaryPhaseValue->setMargin(0);
+    //labelPrimaryPhaseValue->setAlignment(Qt::AlignHCenter);
 
-    textBoxPrimaryPhase = new QLineEdit("0", this);
+    //textBoxPrimaryPhase = new QLineEdit("0", this);
 
-    // Create the button to confirm the new phase value 
-    buttonPrimaryPhaseConfirmation = new QPushButton("Confirm", this);
+    //// Create the button to confirm the new phase value 
+    //buttonPrimaryPhaseConfirmation = new QPushButton("Confirm", this);
 
-    connect(buttonPrimaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-        emit PressedPhaseChange(1, textBoxPrimaryPhase->text().toInt());
-        });
+    //connect(buttonPrimaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
+    //    emit PressedPhaseChange(1, textBoxPrimaryPhase->text().toInt());
+    //    });
 
-    // Create the label to be overlaid
-    labelSecondaryPhaseValue = new QLabel("Secondary card phase value :", this);
-    labelSecondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    labelSecondaryPhaseValue->setMargin(0);
-    labelSecondaryPhaseValue->setAlignment(Qt::AlignHCenter);
+    //// Create the label to be overlaid
+    //labelSecondaryPhaseValue = new QLabel("Secondary card phase value :", this);
+    //labelSecondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    //labelSecondaryPhaseValue->setMargin(0);
+    //labelSecondaryPhaseValue->setAlignment(Qt::AlignHCenter);
 
-    textBoxSecondaryPhase = new QLineEdit("0", this);
+    //textBoxSecondaryPhase = new QLineEdit("0", this);
 
-    // Create the button to confirm the new phase value 
-    buttonSecondaryPhaseConfirmation = new QPushButton("Confirm", this);
+    //// Create the button to confirm the new phase value 
+    //buttonSecondaryPhaseConfirmation = new QPushButton("Confirm", this);
 
-    connect(buttonSecondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-        emit PressedPhaseChange(2, textBoxSecondaryPhase->text().toInt());
-        });
+    //connect(buttonSecondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
+    //    emit PressedPhaseChange(2, textBoxSecondaryPhase->text().toInt());
+    //    });
 
-    // Add both widgets to the same cell to stack them
-    phaseLayout->addWidget(labelPrimaryPhaseValue);
-    phaseLayout->addWidget(textBoxPrimaryPhase);
-    phaseLayout->addWidget(buttonPrimaryPhaseConfirmation);
+    //// Add both widgets to the same cell to stack them
+    //phaseLayout->addWidget(labelPrimaryPhaseValue);
+    //phaseLayout->addWidget(textBoxPrimaryPhase);
+    //phaseLayout->addWidget(buttonPrimaryPhaseConfirmation);
 
-    phaseLayout->addWidget(labelSecondaryPhaseValue);
-    phaseLayout->addWidget(textBoxSecondaryPhase);
-    phaseLayout->addWidget(buttonSecondaryPhaseConfirmation);
+    //phaseLayout->addWidget(labelSecondaryPhaseValue);
+    //phaseLayout->addWidget(textBoxSecondaryPhase);
+    //phaseLayout->addWidget(buttonSecondaryPhaseConfirmation);
 
 
 
-    phaseGroupBox->setLayout(phaseLayout);
+    //phaseGroupBox->setLayout(phaseLayout);
 
     ///////////////////////////////////////////////////////////////////
 
@@ -670,7 +655,8 @@ void View::ConfigureInfoLayout() {
     // Final assembly
     layoutInformation->addWidget(frequencyGroupBox);
     layoutInformation->addWidget(otherGroupBox);
-    layoutInformation->addWidget(phaseGroupBox);
+    //layoutInformation->addWidget(phaseGroupBox);
+    ConfigureLinearStageSubLayout();
     groupBoxInformation->setLayout(layoutInformation);
 
 
@@ -686,9 +672,9 @@ void View::ConfigureLinearStageSubLayout() {
     QHBoxLayout* layoutLinearStageMoveButtons = new QHBoxLayout(this);
     QHBoxLayout* layoutLinearStageJogButtons = new QHBoxLayout(this);
 
-
+    std::array<QString, 6> arrayLetter = { "B","S","F","H","F","B" };
     for (int index = 0; index < LinearStageMotion::MOTIONSIZE;index++) {
-        arrayLinearStageControlsButtons[index] = new QPushButton(this); 
+        arrayLinearStageControlsButtons[index] = new QPushButton(arrayLetter[index],this );
         
         
 
@@ -720,7 +706,9 @@ void View::ConfigureLinearStageSubLayout() {
         layoutLinearStageControls->addLayout(layoutLinearStageMoveButtons);
         layoutLinearStageControls->addLayout(layoutLinearStageJogButtons);
 
-        layoutInformation->addLayout(layoutLinearStageControls);
+        groupBoxLinearStageControls->setLayout(layoutLinearStageControls);
+
+        layoutInformation->addWidget(groupBoxLinearStageControls);
 
 
 

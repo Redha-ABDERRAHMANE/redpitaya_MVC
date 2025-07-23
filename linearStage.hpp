@@ -229,10 +229,11 @@ public:
     // ADD IN GUI 
     bool SetVelocityAccelerationParams(const double accelerationInMm, const double velocityInMm) {
 
-        if (CC_GetDeviceUnitFromRealValue(bufferSerialNo, velocityInMm, &velocityDU, VELOCITYTYPE) != SUCCESS && CC_GetDeviceUnitFromRealValue(bufferSerialNo, accelerationInMm, &accelerationDU, ACCELERATIONTYPE) != SUCCESS) {
+        if (CC_GetDeviceUnitFromRealValue(bufferSerialNo, velocityInMm, &velocityDU, VELOCITYTYPE) != SUCCESS || CC_GetDeviceUnitFromRealValue(bufferSerialNo, accelerationInMm, &accelerationDU, ACCELERATIONTYPE) != SUCCESS) {
             std::cout << "Failed to convert real values to device values\n";
             return false;
         }
+        std::cout << "acceleration: " << accelerationDU << " velocity: " << velocityDU << "\n";
 
         if (CC_SetVelParams(bufferSerialNo, accelerationDU, velocityDU) == SUCCESS) {
             accelerationRU = accelerationInMm;

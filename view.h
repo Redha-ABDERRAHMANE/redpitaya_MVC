@@ -129,6 +129,7 @@ QPushButton*             buttonPrimaryPhaseConfirmation = nullptr;
 QLabel*                  labelSecondaryPhaseValue   = nullptr;
 QLineEdit*               textBoxSecondaryPhase      = nullptr;
 QPushButton*             buttonSecondaryPhaseConfirmation = nullptr;
+
 // Exposure controls
 QLabel*                  labelExposureTimeValue     = nullptr;
 QSlider*                 sliderExposureTime         = nullptr;

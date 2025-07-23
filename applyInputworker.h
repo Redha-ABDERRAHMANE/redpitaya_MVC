@@ -58,6 +58,7 @@ public slots:
     }
 
     void ApplyLinearStageMotion(const LinearStageMotion motionState ) {
+        std::cout << "linear stage signal called\n";
         switch (motionState) {
         case LinearStageMotion::MOVEFORWARD:    ApplyLinearStageMoveForward();  break;
         case LinearStageMotion::MOVEBACKWARD:   ApplyLinearStageMoveBackward(); break;

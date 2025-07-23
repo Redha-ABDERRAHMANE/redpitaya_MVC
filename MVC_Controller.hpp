@@ -216,6 +216,7 @@ public:
         connect(view, &View::ProgramShutdown, this, &MVC_Controller::shutDownProgram);
 
         connect(view, &View::GUIReady, this, &MVC_Controller::startWorkerThreads);
+        connect(view, &View::PressedLinearStageControlButton, &worker_ApplyInput, &ApplyInputWorker::ApplyLinearStageMotion);
 
 
         // Connect model signals
