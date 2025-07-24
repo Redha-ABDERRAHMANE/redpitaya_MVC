@@ -39,21 +39,14 @@ private:
 
     WSADATA winSockData;
     int iWsaStartup;
-    //int iWsaCleanup;
 
     SOCKET TCPClientSocket;
     int iCloseSocket;
     struct sockaddr_in TCPServerAdd;
     int iConnect;
 
-    //int iSend;
-
-    //int iRecv;
     char RecvBuffer[512];
-    //int iRecvBuffer;
 
-
-    //Step-1 WSAStartup Fun------------------------------------
 public:
     ScpiServer(const char* host, const int& port = 5000):iCloseSocket(),iConnect(),RecvBuffer() {
         hostAddress = host;
@@ -62,7 +55,7 @@ public:
     }
 
     ~ScpiServer() {
-        //STEP - 7 Close Socket
+        
         std::cout << "entered scpi destructor" << std::endl;
         shutdown(TCPClientSocket, SD_BOTH);
         iCloseSocket = closesocket(TCPClientSocket);
@@ -144,7 +137,7 @@ public:
     // STEP-6 Send Data to the server
 
     bool tx_txt(const std::string& message) const {
-        std::string full_message = message + delimiter;  // Add \r\n like Python
+        std::string full_message = message + delimiter;  
 
         int bytes_sent = send(TCPClientSocket, full_message.c_str(), (int)full_message.length(), 0);
 
@@ -174,7 +167,6 @@ public:
                 return "";
             }
 
-            // Null terminate and add to message
             RecvBuffer[bytes_received] = '\0';
             message += std::string(RecvBuffer);
 
