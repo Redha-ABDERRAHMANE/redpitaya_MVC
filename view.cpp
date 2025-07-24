@@ -702,6 +702,7 @@ void View::ConfigureLinearStageSubLayout() {
                 });
 
             break;
+
         default:
             connect(arrayLinearStageControlsButtons[index], &QPushButton::clicked, this, [this, index]() {
 
@@ -725,23 +726,15 @@ void View::ConfigureLinearStageSubLayout() {
             layoutLinearStageJogButtons->addWidget(arrayLinearStageControlsButtons[index]);
         }
     }
+
+
+
     layoutLinearStageControls->addLayout(layoutLinearStageMoveButtons);
     layoutLinearStageControls->addLayout(layoutLinearStageJogButtons);
 
     groupBoxLinearStageControls->setLayout(layoutLinearStageControls);
 
-    
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 }
 
