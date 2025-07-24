@@ -1,44 +1,39 @@
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
+#include<iostream>
+#include<SDL3/SDL_hints.h>
+#include<SDL3/SDL_events.h>
+#include<SDL3/SDL_init.h>
+#include<SDL3/SDL_gamepad.h>
 
-#pragma once
-
-// Ensure consistent Windows header inclusion
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#define NOMINMAX        // Prevent min/max conflicts
-#define NOGDI
-//#define NOUSER
-#define NOSERVICE
-#include <Windows.h>
-
-#include <Xinput.h>
-#include <iostream>
 #include <unordered_map>
-#pragma comment(lib, "xinput.lib") // or "xinput.lib"
-// Add linker XInput.lib
+
+
+
 
 #define WithInInterval(a, b, c) ((a) <= (b) && (b) <= (c))
 
 
 
 enum Buttons {
-	A = VK_PAD_A, B = VK_PAD_B, X = VK_PAD_X, Y = VK_PAD_Y,
+	A = SDL_GAMEPAD_BUTTON_SOUTH, B = SDL_GAMEPAD_BUTTON_EAST, X = SDL_GAMEPAD_BUTTON_WEST, Y = SDL_GAMEPAD_BUTTON_NORTH,
 
-	HAT_UP = VK_PAD_DPAD_UP, HAT_DOWN = VK_PAD_DPAD_DOWN, HAT_LEFT = VK_PAD_DPAD_LEFT, HAT_RIGHT = VK_PAD_DPAD_RIGHT,
+	HAT_UP = SDL_GAMEPAD_BUTTON_DPAD_UP, HAT_DOWN = SDL_GAMEPAD_BUTTON_DPAD_DOWN, HAT_LEFT = SDL_GAMEPAD_BUTTON_DPAD_LEFT, HAT_RIGHT = SDL_GAMEPAD_BUTTON_DPAD_RIGHT,
 
-	BUMPER_RIGHT = VK_PAD_RSHOULDER, BUMPER_LEFT = VK_PAD_LSHOULDER,
+	BUMPER_RIGHT = SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, BUMPER_LEFT = SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,
 
-	SELECT = VK_PAD_START, START = VK_PAD_BACK
+	SELECT = SDL_GAMEPAD_BUTTON_BACK, START = SDL_GAMEPAD_BUTTON_START,
+	INVALID_BUTTON = SDL_GAMEPAD_BUTTON_INVALID
+
 
 };
-inline std::unordered_map<int, int> dictionary_ButtonDirection {
-    {HAT_UP, 0},
-    {HAT_DOWN, 2},
-    {HAT_RIGHT, 4},
-    {HAT_LEFT, 6},
-    {BUMPER_RIGHT, 8},
-    {BUMPER_LEFT, 9}
+inline std::unordered_map<int, int> dictionary_ButtonDirection{
+	{HAT_UP, 0},
+	{HAT_DOWN, 2},
+	{HAT_RIGHT, 4},
+	{HAT_LEFT, 6},
+	{BUMPER_RIGHT, 8},
+	{BUMPER_LEFT, 9}
 };
 
 struct ButtonCombination {
@@ -50,34 +45,37 @@ class Controller
 {
 
 private:
-	DWORD dwControllerIndex = 0;
+	int gamepadIndex = 0;
 
-	_XINPUT_KEYSTROKE keyStroke; // Structure to hold key stroke information
+	bool SDLInitialized;
+	int gamepadsConnected = 0;
+	SDL_JoystickID* joystickIDArray;
+	SDL_Gamepad* GamepadID;
+	SDL_Event event;
 
-	XINPUT_STATE state; // Structure to hold the state of the controller
+	int lastDpadUsed = Buttons::INVALID_BUTTON;
 
-	int lastDpadUsed = -1;
-
-	bool CheckValidControllerButtonAndCoherence(const int& button_value) {
-        if (WithInInterval(Buttons::BUMPER_RIGHT, button_value, Buttons::BUMPER_LEFT)) {
-            lastDpadUsed=-1;
-            return true;
-        }
+	int CheckValidControllerButtonAndCoherence(const int& button_value) {
+		std::cout << "button used" << (int)button_value << std::endl;
+		if (WithInInterval(Buttons::BUMPER_RIGHT, button_value, Buttons::BUMPER_LEFT)) {
+			lastDpadUsed = Buttons::INVALID_BUTTON;
+			return button_value;
+		}
 		if (WithInInterval(Buttons::HAT_UP, button_value, Buttons::HAT_RIGHT)) {
 			if (button_value != lastDpadUsed) {
 				lastDpadUsed = button_value;
-				return true;
+				return button_value;
 			}
-			return false;
+			return Buttons::INVALID_BUTTON;
 		}
 		switch (button_value) {
 
 		case  Buttons::A:
-		case  Buttons::Y:  return lastDpadUsed == Buttons::HAT_LEFT || lastDpadUsed == Buttons::HAT_RIGHT; break;
+		case  Buttons::Y:  return (lastDpadUsed == Buttons::HAT_LEFT || lastDpadUsed == Buttons::HAT_RIGHT) ? button_value : Buttons::INVALID_BUTTON; break;
 
 		case  Buttons::B:
-		case  Buttons::X:  return lastDpadUsed == Buttons::HAT_UP || lastDpadUsed == Buttons::HAT_DOWN; break;
-		default: return false;std::cout << "false"; break;
+		case  Buttons::X:  return (lastDpadUsed == Buttons::HAT_UP || lastDpadUsed == Buttons::HAT_DOWN) ? button_value : Buttons::INVALID_BUTTON; break;
+		default: return Buttons::INVALID_BUTTON; std::cout << "false"; break;
 
 
 
@@ -88,23 +86,64 @@ private:
 	}
 
 public:
-	Controller() :keyStroke{}, state() {
+	Controller() {
 
-		DWORD dwResult = XInputGetState(dwControllerIndex, &state);// Variable to hold the result of XInput functions
 
-		if (dwResult == ERROR_SUCCESS) {
-			std::cout << "Controller is connected." << std::endl;
+		SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+		SDLInitialized = SDL_Init(SDL_INIT_GAMEPAD);
+		joystickIDArray = SDL_GetGamepads(&gamepadsConnected);
+		if (gamepadsConnected != 0) {
+			GamepadID = SDL_OpenGamepad(joystickIDArray[gamepadIndex]);
+
+
 		}
-		else {
-			// Controller is not connected
-			std::cout << "Controller  is not connected." << std::endl;
-		}
+
+
+
+
 	}
+
+	~Controller() {
+
+		if (GamepadID) {
+			SDL_CloseGamepad(GamepadID);
+		}
+		if (joystickIDArray) {
+			SDL_free(joystickIDArray);
+		}
+		GamepadID = nullptr;
+		joystickIDArray = nullptr;
+		SDL_Quit();
+	}
+
+
+	Controller(const Controller&) = delete;
+	Controller& operator=(const Controller&) = delete;
+
+
+
 	const int CheckControllerEvent() {
-		DWORD dwReserved = 0;
-		DWORD KeyStroke_result = XInputGetKeystroke(dwControllerIndex, dwReserved, (PXINPUT_KEYSTROKE)&keyStroke);
-        (void)KeyStroke_result;
-		return  (keyStroke.Flags == XINPUT_KEYSTROKE_KEYDOWN && CheckValidControllerButtonAndCoherence(keyStroke.VirtualKey)) ? keyStroke.VirtualKey : -1;
+		if ((SDL_WaitEvent(&event) && event.type == SDL_EVENT_GAMEPAD_REMOVED)) {
+			if (GamepadID) {
+				SDL_CloseGamepad(GamepadID);
+			}
+			if (joystickIDArray) {
+				SDL_free(joystickIDArray);
+			}
+			GamepadID = nullptr;
+			joystickIDArray = nullptr;
+		}
+		if (!GamepadID) {
+			joystickIDArray = SDL_GetGamepads(&gamepadsConnected);
+			if (gamepadsConnected != 0) {
+				GamepadID = SDL_OpenGamepad(joystickIDArray[gamepadIndex]);
+				std::cout << "Gamepad connected\n";
+			}
+			else { std::cout << "Gamepad not connected\n"; }
+			
+		}
+		
+		return  (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) ? CheckValidControllerButtonAndCoherence(event.gbutton.button) : Buttons::INVALID_BUTTON;
 
 
 
@@ -117,25 +156,19 @@ public:
 
 	}
 
-    static bool isBumper(const int& button_value) {
-        return WithInInterval(Buttons::BUMPER_LEFT, button_value, Buttons::BUMPER_RIGHT);
+	static bool isBumper(const int& button_value) {
+		return WithInInterval(Buttons::BUMPER_LEFT, button_value, Buttons::BUMPER_RIGHT);
 
-    }
-    static bool isHat(const int& button_value) {
-        return WithInInterval(Buttons::HAT_UP, button_value, Buttons::HAT_RIGHT);
+	}
+	static bool isHat(const int& button_value) {
+		return WithInInterval(Buttons::HAT_UP, button_value, Buttons::HAT_RIGHT);
 
-    }
-
-    int get_lastDpadUsed() const {
-        return lastDpadUsed;
-    }
-
-
-
-	~Controller() {
-		std::cout << "end" << std::endl;
 	}
 
+	int get_lastDpadUsed() const {
+		return lastDpadUsed;
+	}
+
+
 };
-
-
+#endif

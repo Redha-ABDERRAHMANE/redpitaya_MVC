@@ -27,7 +27,7 @@ protected:
         while (!isInterruptionRequested()) {
            
             button_value = controller->CheckControllerEvent();
-            if (button_value != -1) {
+            if (button_value != Buttons::INVALID_BUTTON) {
                 emit ValidInputDetected(button_value);
             }
             msleep(100); // Delay to avoid CPU overload
