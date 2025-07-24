@@ -50,14 +50,15 @@ private:
 	bool SDLInitialized;
 	int gamepadsConnected = 0;
 	SDL_JoystickID* joystickIDArray;
-	SDL_Gamepad* GamepadID;
+	SDL_Gamepad* gamepadID;
 	SDL_Event event;
 
 	int lastDpadUsed = Buttons::INVALID_BUTTON;
 
 	int CheckValidControllerButtonAndCoherence(const int& button_value) {
-		std::cout << "button used" << (int)button_value << std::endl;
-		if (WithInInterval(Buttons::BUMPER_RIGHT, button_value, Buttons::BUMPER_LEFT)) {
+		std::cout << "button used" << button_value << std::endl;
+		if (WithInInterval(Buttons::BUMPER_LEFT, button_value, Buttons::BUMPER_RIGHT)) {
+			std::cout << "HAT PRESSED" << std::endl;
 			lastDpadUsed = Buttons::INVALID_BUTTON;
 			return button_value;
 		}
@@ -90,10 +91,11 @@ public:
 
 
 		SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+		SDL_SetHint(SDL_HINT_JOYSTICK_THREAD, "1");
 		SDLInitialized = SDL_Init(SDL_INIT_GAMEPAD);
 		joystickIDArray = SDL_GetGamepads(&gamepadsConnected);
 		if (gamepadsConnected != 0) {
-			GamepadID = SDL_OpenGamepad(joystickIDArray[gamepadIndex]);
+			gamepadID = SDL_OpenGamepad(joystickIDArray[gamepadIndex]);
 
 
 		}
@@ -105,13 +107,13 @@ public:
 
 	~Controller() {
 
-		if (GamepadID) {
-			SDL_CloseGamepad(GamepadID);
+		if (gamepadID) {
+			SDL_CloseGamepad(gamepadID);
 		}
 		if (joystickIDArray) {
 			SDL_free(joystickIDArray);
 		}
-		GamepadID = nullptr;
+		gamepadID = nullptr;
 		joystickIDArray = nullptr;
 		SDL_Quit();
 	}
@@ -124,26 +126,29 @@ public:
 
 	const int CheckControllerEvent() {
 		if ((SDL_WaitEvent(&event) && event.type == SDL_EVENT_GAMEPAD_REMOVED)) {
-			if (GamepadID) {
-				SDL_CloseGamepad(GamepadID);
+			if (gamepadID) {
+				SDL_CloseGamepad(gamepadID);
 			}
 			if (joystickIDArray) {
 				SDL_free(joystickIDArray);
 			}
-			GamepadID = nullptr;
+			gamepadID = nullptr;
 			joystickIDArray = nullptr;
 		}
-		if (!GamepadID) {
+		if (event.type== SDL_EVENT_GAMEPAD_ADDED && !gamepadID) {
+
 			joystickIDArray = SDL_GetGamepads(&gamepadsConnected);
+
 			if (gamepadsConnected != 0) {
-				GamepadID = SDL_OpenGamepad(joystickIDArray[gamepadIndex]);
+
+				gamepadID = SDL_OpenGamepad(joystickIDArray[gamepadIndex]);
 				std::cout << "Gamepad connected\n";
+
 			}
 			else { std::cout << "Gamepad not connected\n"; }
 			
 		}
-		
-		return  (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) ? CheckValidControllerButtonAndCoherence(event.gbutton.button) : Buttons::INVALID_BUTTON;
+		return  (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) ? CheckValidControllerButtonAndCoherence(static_cast<int>(event.gbutton.button)) : Buttons::INVALID_BUTTON;
 
 
 
@@ -157,7 +162,7 @@ public:
 	}
 
 	static bool isBumper(const int& button_value) {
-		return WithInInterval(Buttons::BUMPER_LEFT, button_value, Buttons::BUMPER_RIGHT);
+		return WithInInterval(Buttons::BUMPER_RIGHT, button_value, Buttons::BUMPER_LEFT);
 
 	}
 	static bool isHat(const int& button_value) {

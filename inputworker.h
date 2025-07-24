@@ -5,6 +5,8 @@
 #include <QObject>
 #include "controller.hpp"
 #include <iostream>
+#include <QProcess>
+#include<QCoreApplication>
 
 class InputThread : public QThread
 {
@@ -30,8 +32,10 @@ protected:
             if (button_value != Buttons::INVALID_BUTTON) {
                 emit ValidInputDetected(button_value);
             }
-            msleep(100); // Delay to avoid CPU overload
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+            
         }
+        
         std::cout << "finished checking:::::::::::::::\n";
     }
 };
