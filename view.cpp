@@ -72,6 +72,7 @@ void View::GetCameras(){
 void View::UpdateClickedDirectionButton(const int& directionIndex)
 {
     UpdateLastDirectionButtonUsed(directionIndex);
+    UpdateDirectionIndicators(directionIndex);
     emit PressedButtonDirection( array_button_combination.at(directionIndex));
     qDebug()<< "sent to controller : current button: "<< array_button_combination.at(directionIndex).currentHat;
     qDebug()<< "sent to controller : next button: "<< array_button_combination.at(directionIndex).nextButton;
@@ -476,51 +477,38 @@ void View::ConfigureInfoLayout() {
     /////////////////////////////////////////////////////////////////////
     //// PHASE SLIDER
     //// phase group box with no margins
-    //QGroupBox* phaseGroupBox = new QGroupBox("", this);
-    //QVBoxLayout* phaseLayout = new QVBoxLayout();
-
-    //// Create the label to be overlaid
-    //labelPrimaryPhaseValue = new QLabel("Primary card phase value :", this);
-    //labelPrimaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    //labelPrimaryPhaseValue->setMargin(0);
-    //labelPrimaryPhaseValue->setAlignment(Qt::AlignHCenter);
-
-    //textBoxPrimaryPhase = new QLineEdit("0", this);
-
-    //// Create the button to confirm the new phase value 
-    //buttonPrimaryPhaseConfirmation = new QPushButton("Confirm", this);
-
-    //connect(buttonPrimaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-    //    emit PressedPhaseChange(1, textBoxPrimaryPhase->text().toInt());
-    //    });
-
-    //// Create the label to be overlaid
-    //labelSecondaryPhaseValue = new QLabel("Secondary card phase value :", this);
-    //labelSecondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    //labelSecondaryPhaseValue->setMargin(0);
-    //labelSecondaryPhaseValue->setAlignment(Qt::AlignHCenter);
-
-    //textBoxSecondaryPhase = new QLineEdit("0", this);
-
-    //// Create the button to confirm the new phase value 
-    //buttonSecondaryPhaseConfirmation = new QPushButton("Confirm", this);
-
-    //connect(buttonSecondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-    //    emit PressedPhaseChange(2, textBoxSecondaryPhase->text().toInt());
-    //    });
-
-    //// Add both widgets to the same cell to stack them
-    //phaseLayout->addWidget(labelPrimaryPhaseValue);
-    //phaseLayout->addWidget(textBoxPrimaryPhase);
-    //phaseLayout->addWidget(buttonPrimaryPhaseConfirmation);
-
-    //phaseLayout->addWidget(labelSecondaryPhaseValue);
-    //phaseLayout->addWidget(textBoxSecondaryPhase);
-    //phaseLayout->addWidget(buttonSecondaryPhaseConfirmation);
-
-
-
-    //phaseGroupBox->setLayout(phaseLayout);
+    QGroupBox* phaseGroupBox = new QGroupBox("", this);
+    QVBoxLayout* phaseLayout = new QVBoxLayout();
+    // Create the label to be overlaid
+    labelPrimaryPhaseValue = new QLabel("Primary card phase value :", this);
+    labelPrimaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    labelPrimaryPhaseValue->setMargin(0);
+    labelPrimaryPhaseValue->setAlignment(Qt::AlignHCenter);
+    textBoxPrimaryPhase = new QLineEdit("0", this);
+    // Create the button to confirm the new phase value 
+    buttonPrimaryPhaseConfirmation = new QPushButton("Confirm", this);
+    connect(buttonPrimaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
+        emit PressedPhaseChange(1, textBoxPrimaryPhase->text().toInt());
+        });
+    // Create the label to be overlaid
+    labelSecondaryPhaseValue = new QLabel("Secondary card phase value :", this);
+    labelSecondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    labelSecondaryPhaseValue->setMargin(0);
+    labelSecondaryPhaseValue->setAlignment(Qt::AlignHCenter);
+    textBoxSecondaryPhase = new QLineEdit("0", this);
+    // Create the button to confirm the new phase value 
+    buttonSecondaryPhaseConfirmation = new QPushButton("Confirm", this);
+    connect(buttonSecondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
+        emit PressedPhaseChange(2, textBoxSecondaryPhase->text().toInt());
+        });
+    // Add both widgets to the same cell to stack them
+    phaseLayout->addWidget(labelPrimaryPhaseValue);
+    phaseLayout->addWidget(textBoxPrimaryPhase);
+    phaseLayout->addWidget(buttonPrimaryPhaseConfirmation);
+    phaseLayout->addWidget(labelSecondaryPhaseValue);
+    phaseLayout->addWidget(textBoxSecondaryPhase);
+    phaseLayout->addWidget(buttonSecondaryPhaseConfirmation);
+    phaseGroupBox->setLayout(phaseLayout);
 
     ///////////////////////////////////////////////////////////////////
 
@@ -658,12 +646,14 @@ void View::ConfigureInfoLayout() {
     otherLayout->addWidget(buttonCaptureVideo);
 
     otherGroupBox->setLayout(otherLayout);
-
+    //LinearStage layout
+    ConfigureLinearStageSubLayout();
     // Final assembly
     layoutInformation->addWidget(frequencyGroupBox);
     layoutInformation->addWidget(otherGroupBox);
-    //layoutInformation->addWidget(phaseGroupBox);
-    ConfigureLinearStageSubLayout();
+    layoutInformation->addWidget(phaseGroupBox);
+    
+    layoutInformation->addWidget(groupBoxLinearStageControls);
     groupBoxInformation->setLayout(layoutInformation);
 
 
@@ -679,7 +669,7 @@ void View::ConfigureLinearStageSubLayout() {
     QHBoxLayout* layoutLinearStageMoveButtons = new QHBoxLayout();
     QHBoxLayout* layoutLinearStageJogButtons = new QHBoxLayout();
 
-    std::array<QString, 6> arrayLetter = { "B","S","F","H","F","B" };
+    std::array<QString, 6> arrayLetter = { "Backward","Stop","Forward","Home","Jog backward","Jog forward" };
     for (int index = 0; index < LinearStageMotion::MOTIONSIZE;index++) {
         arrayLinearStageControlsButtons[index] = new QPushButton(arrayLetter[index],this );
 
@@ -689,28 +679,37 @@ void View::ConfigureLinearStageSubLayout() {
 
                 emit PressedLinearStageControlButton((LinearStageMotion)index);
 
-                for (int i = 0; i < LinearStageMotion::MOTIONSIZE;i++) {
-                    arrayLinearStageControlsButtons[i]->setDisabled(true);
+                for (QPushButton*& button: arrayLinearStageControlsButtons) {
+                    button->setDisabled(true);
                 }
                 });
-            break;
-        case LinearStageMotion::MOVEFORWARD:
 
+            break;
+
+        case LinearStageMotion::MOVEFORWARD:
         case LinearStageMotion::MOVEBACKWARD:
             std::cout << "CONNECTING BUTTONS\n";
             connect(arrayLinearStageControlsButtons[index], &QPushButton::pressed, this, [this, index]() {
+
                 emit PressedLinearStageControlButton((LinearStageMotion)index);
+
                 });
 
             connect(arrayLinearStageControlsButtons[index], &QPushButton::released, this, [this, index]() {
+
                 emit PressedLinearStageControlButton(LinearStageMotion::STOPMOTION);
+
                 });
+
             break;
         default:
             connect(arrayLinearStageControlsButtons[index], &QPushButton::clicked, this, [this, index]() {
+
                 std::cout << "button pressed \n";
                 emit PressedLinearStageControlButton((LinearStageMotion)index);
+
                 });
+
             break;
 
 
@@ -731,7 +730,7 @@ void View::ConfigureLinearStageSubLayout() {
 
     groupBoxLinearStageControls->setLayout(layoutLinearStageControls);
 
-    layoutInformation->addWidget(groupBoxLinearStageControls);
+    
 
 
 

@@ -50,8 +50,8 @@ const enum LinearStageMotion:int {
     STOPMOTION,
     MOVEFORWARD,
     HOME,
-    JOGFORWARD,
     JOGBACKWARD,
+    JOGFORWARD,
     MOTIONSIZE,
     MOVESIZE = 4,
     JOGSIZE = 2
