@@ -330,7 +330,7 @@ void View::SetNewFrameToDisplay( const QImage& image) {
 
     pixmapItem->setTransform(QTransform::fromScale(scale, scale));
     pixmapItem->setRotation(imageRotationAngle);
-    imageView->centerOn(pixmapItem);
+    //imageView->centerOn(pixmapItem);
     imageView->viewport()->update();
     
 

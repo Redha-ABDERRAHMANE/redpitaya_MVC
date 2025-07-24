@@ -5,8 +5,7 @@
 #include <QObject>
 #include "controller.hpp"
 #include <iostream>
-#include <QProcess>
-#include<QCoreApplication>
+
 
 class InputThread : public QThread
 {
@@ -18,6 +17,9 @@ private:
 public:
     InputThread(Controller* c, QObject* parent = nullptr)
         : QThread(parent), controller(c) {
+    }
+    ~InputThread() {
+        controller = nullptr;
     }
 
 signals:
@@ -32,8 +34,6 @@ protected:
             if (button_value != Buttons::INVALID_BUTTON) {
                 emit ValidInputDetected(button_value);
             }
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-            
         }
         
         std::cout << "finished checking:::::::::::::::\n";

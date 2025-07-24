@@ -38,7 +38,7 @@ public:
         m_frameReady = false;
  
         m_frame = QImage();
-        //m_frame.release();  // Release OpenCV Mat resources
+       
     }
 
     void FrameReceived(const FramePtr pFrame) override {
@@ -132,7 +132,6 @@ public:
 
     // Destructor to ensure cleanup
     ~FrameObserver() {
-        Shutdown();
         std::cout << "shutdown called \n";
     }
 };
@@ -630,6 +629,7 @@ public:
 
             std::cout << "=== Starting Vimba cleanup ===" << std::endl;
         try {
+
              //Check if objects are valid before cleanup
             std::cout << "Camera valid: " << (camera ? "YES" : "NO") << std::endl;
             std::cout << "Frames count: " << frames.size() << std::endl;
@@ -690,7 +690,15 @@ public:
 
             std::cout << "Shutting down system..." << std::endl;
             sys.Shutdown();
+            if (frameObserver) {
+                std::cout << "Shutting down frame observer..." << std::endl;
+                frameObserver->Shutdown();
+
+
+            }
+
             std::cout << "=== Vimba cleanup complete ===" << std::endl;
+
 
         }
         catch (const std::exception& e) {

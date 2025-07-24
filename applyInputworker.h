@@ -36,6 +36,9 @@ private:
 public:
     ApplyInputWorker(MVC_Model* m)
         : model(m) {}
+    ~ApplyInputWorker() {
+        model = nullptr;
+    }
 
 signals:
     void finished();

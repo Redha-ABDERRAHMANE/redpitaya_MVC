@@ -45,6 +45,7 @@ class Controller
 {
 
 private:
+	static constexpr int SDL_WAITPOLLTIMEOUT = 100;
 	int gamepadIndex = 0;
 
 	bool SDLInitialized;
@@ -125,7 +126,7 @@ public:
 
 
 	const int CheckControllerEvent() {
-		if ((SDL_WaitEvent(&event) && event.type == SDL_EVENT_GAMEPAD_REMOVED)) {
+		if ((SDL_WaitEventTimeout(&event, SDL_WAITPOLLTIMEOUT) && event.type == SDL_EVENT_GAMEPAD_REMOVED)) {
 			if (gamepadID) {
 				SDL_CloseGamepad(gamepadID);
 			}
