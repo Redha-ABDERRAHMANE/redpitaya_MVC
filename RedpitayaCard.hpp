@@ -1,7 +1,7 @@
 #pragma once
 #include"scpi.hpp"
 #include <commonValues.h>
-
+#include <SDL3_net/SDL_net.h>
 class RedpitayaCards
 {
 private:
@@ -13,9 +13,14 @@ private:
 
 public:
 
-    RedpitayaCards(const char* host_primary, const char* host_secondary, const int& frequency=5) :rp_primary(host_primary), rp_secondary(host_secondary) {
-        std::cout<<"frequency:"<<frequency<<std::endl;
-        ConnectConfigureRpBoards(frequency);
+    RedpitayaCards(const char* host_primary, const char* host_secondary, const int& frequency = 5) :rp_primary(host_primary), rp_secondary(host_secondary) {
+        std::cout << "frequency:" << frequency << std::endl;
+        if (NET_Init() == 1) {
+            ConnectConfigureRpBoards(frequency);
+        }
+        else {
+            std::cout << "Could not initialize SDL net" << '\n';
+        }
 
 
 
@@ -24,12 +29,13 @@ public:
     ~RedpitayaCards() {
         DisableDaisyChainConfig(rp_primary);
         DisableDaisyChainConfig(rp_secondary);
+        NET_Quit();
     }
 
 
     bool ConnectConfigureRpBoards(const int& frequency=5) {
-        rp_primary.SetConnectionToSCPIServer();
-        rp_secondary.SetConnectionToSCPIServer();
+        rp_primary.ConnectServer();
+        rp_secondary.ConnectServer();
         if (rp_primary.GetConnectionStatus() && rp_secondary.GetConnectionStatus()) {
             ResetGenerators();
             SetDaisyChainSourceTriggerMasterBoard();

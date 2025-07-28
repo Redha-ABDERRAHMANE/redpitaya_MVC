@@ -25,8 +25,8 @@ private:
 
 public:
     ScpiServer(const char* host, const int& port = 5000) :hostAddress(host), portNumber(port) {
-
-        netHostAddress = NET_ResolveHostname(hostAddress);
+        std::cout << "host address :" << hostAddress << "\n";
+        
 
     }
 
@@ -40,7 +40,8 @@ public:
     }
 
     bool ConnectServer() {
-        int resolveHAResult = NET_WaitUntilResolved(netHostAddress, 200);
+        netHostAddress = NET_ResolveHostname(hostAddress);
+        int resolveHAResult = NET_WaitUntilResolved(netHostAddress, 300);
 
         if (resolveHAResult == 0) {
             std::cout << "still resolving \n";
@@ -74,11 +75,10 @@ public:
 
 
     bool tx_txt(const std::string& message) const {
-        //if (clientTCPSocket==nullptr) return false;
+        if (clientTCPSocket==nullptr) return false;
 
 
         std::string full_message = message + delimiter;
-        std::cout << "sending command " << full_message << std::endl;
 
 
         bool sentBytes = NET_WriteToStreamSocket(clientTCPSocket, (void*)full_message.c_str(), strlen(full_message.c_str()));
@@ -90,12 +90,14 @@ public:
             return false;
         }
 
-        //std::cout << "Data sending success" << std::endl;
+        
         return true;
     }
 
 
     std::string rx_txt() {
+        if (clientTCPSocket == nullptr) return "";
+
         std::string message = "";
         int bytesReceived = -2;
         while (bytesReceived <= 0) {
@@ -109,7 +111,7 @@ public:
             std::cout << message << "\n";
             // Check if we have the delimiter "\r\n"
             if (message.length() >= 2 && message.substr(message.length() - 2) == delimiter) {
-                std::cout << message.substr(0, message.length() - 2) << "\n"; // Remove delimiter
+                std::cout << message.substr(0, message.length() - 2) << "\n"; 
                 return message.substr(0, message.length() - 2); // Remove delimiter
             }
         }
@@ -123,6 +125,7 @@ public:
     }
 
     std::string txrx_txt(const std::string& message) {
+        if (clientTCPSocket == nullptr) return "";
         if (!tx_txt(message)) {
             std::cout << "failed" << std::endl;
             return "";  // Send failed
