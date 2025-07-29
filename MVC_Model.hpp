@@ -1,9 +1,11 @@
 #pragma once
 #include "RpSignalGn.hpp"
 #include "waveGnPresets.hpp"
+#include "linearStage.hpp"
 #include <QObject>
 #include <QThread>
-
+#include <QDebug>
+#include <commonValues.h>
 typedef std::array<float, 6> preset_array_t ;
 class MVC_Model: public QObject
 {
@@ -12,12 +14,14 @@ class MVC_Model: public QObject
 
 private:
 
-    const char* IP_PRIMARY = "169.254.112.159"; // Master board
-    const char* IP_SECONDARY = "169.254.9.76";     // Slave board
-    RpSignalGn SignalGn;
-    waveGnPresets GnPresets;
+    const char* IP_PRIMARY = "169.254.139.169"; // Master board
+    const char* IP_SECONDARY = "127.0.0.1";     // Slave board
+    RpSignalGn signalGn;
+    waveGnPresets presetsGn;
     Controller& controller ;
-
+    LinearStage linearStage;
+    
+  
 
     
     preset_array_t nextPreset;
@@ -25,27 +29,49 @@ private:
     
 
 public:
-    MVC_Model(Controller& c) : SignalGn(IP_PRIMARY, IP_SECONDARY),GnPresets(),controller(c) {
-        currentPreset = GnPresets.get_currentPreset();
-        nextPreset = GnPresets.get_currentPreset();
+    
+    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c),linearStage(), nextPreset({}), currentPreset({}) {
+        if (!linearStage.ConnectToDevice()) {
+            std::cout << "Could not connect to linear stage\n";
+
+        }
+
     }
-      virtual ~MVC_Model() = default;
+    MVC_Model() = default;
 
 
+    void SetupMVCModel() {
+        
+        std::cout << "status : " << signalGn.GetConnectionStatus() << std::endl;
+
+        if (signalGn.GetConnectionStatus()!=0) {
+            currentPreset = presetsGn.GetCurrentPreset();
+            nextPreset = presetsGn.GetCurrentPreset();
+            emit RpConnectionSuccess();
+
+        }
+        else { emit  RpConnectionFailed(); }
+
+    }
+
+
+signals:
+    void RpConnectionFailed();
+    void RpConnectionSuccess();
 
 
 public slots:
 
 
 
-    void get_and_applyPreset(const int& button_value) {
+    void GetAndApplyPreset(const int& button_value) {
 
 
-        GnPresets.set_nextPreset(button_value);
+        presetsGn.SetNextPreset(button_value);
 
-        nextPreset = GnPresets.get_nextPreset();
+        nextPreset = presetsGn.GetNextPreset();
 
-        currentPreset = GnPresets.get_currentPreset();
+        currentPreset = presetsGn.GetCurrentPreset();
 
         for (auto& v : nextPreset)    std::cout << ' ' << v;
         std::cout << "\n";
@@ -54,16 +80,24 @@ public slots:
         for (auto& v : currentPreset) std::cout << ' ' << v;
         std::cout << "\n";
 
-        if (SignalGn.apply_preset_values(nextPreset, currentPreset)) {
+        if (signalGn.ApplyPresetValues(nextPreset, currentPreset)) {
 
-            GnPresets.update_currentAndPreviousPreset();
+            presetsGn.UpdateCurrentAndPreviousPreset();
 
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
     }
 
+    void RpReconnect() {
+        std::cout << "entered retry mode" << std::endl;
+        if (!signalGn.connect_configure_rpBoards()) {
+            emit RpConnectionFailed();
+        }
+            
+    }
 
-    void get_and_applyPreset_MVC(const int& button_next_value,const int& button_current_value=-1){
+
+    void GetAndApplyPresetMVC(const int& button_next_value,const int& button_current_value=-1){
         //In this function current_preset should not be updated before the call of SignalGn.apply_preset_values()
         //Because we want the amplitude to gradually shift from the last amplitudes used and not the ones given to the function to circumvent coherence problems
 
@@ -75,9 +109,9 @@ public slots:
         controller.set_lastDpadUsed(button_current_value != -1 ? button_current_value : button_next_value);
 
 
-        GnPresets.set_nextPreset(button_next_value,button_current_value);
-        nextPreset = GnPresets.get_nextPreset();
-        currentPreset = GnPresets.get_currentPreset();
+        presetsGn.SetNextPreset(button_next_value,button_current_value);
+        nextPreset = presetsGn.GetNextPreset();
+        currentPreset = presetsGn.GetCurrentPreset();
 
             for (auto& v : nextPreset)    std::cout << ' ' << v;
             std::cout << "\n";
@@ -87,9 +121,9 @@ public slots:
             std::cout << "\n";
 
 
-        if (SignalGn.apply_preset_values(nextPreset, currentPreset)) {
+        if (signalGn.ApplyPresetValues(nextPreset, currentPreset)) {
 
-            GnPresets.update_currentAndPreviousPreset();
+            presetsGn.UpdateCurrentAndPreviousPreset();
 
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
@@ -101,20 +135,45 @@ public slots:
 
     }
 
-    void apply_FrequencyValue(const int& frequencyValue) {
-        SignalGn.apply_frequency_values(frequencyValue);
+    void ApplyFrequencyValue(const int& frequencyValue) {
+        signalGn.ApplyFrequencyValues(frequencyValue);
     }
 
-    void apply_PhaseValue(const int& card,const int& phaseValue) {
-        int phaseIndex = card == 1 ? 2 : 5;
-        int currentPhase = GnPresets.get_currentPreset()[phaseIndex];
-        SignalGn.apply_phase_values(card,phaseValue,currentPhase);
-        preset_array_t newPreset = GnPresets.get_currentPreset();
+    void ApplyPhaseValue(const int& board,const int& phaseValue) {
+        int phaseIndex = board == PRIMARY_BOARD ? PRIMARY_BOARD_COMMON_PHASE_INDEX : SECONDARY_BOARD_COMMON_PHASE_INDEX;
+        int currentPhase = presetsGn.GetCurrentPreset()[phaseIndex];
+        signalGn.ApplyPhaseValues(board,phaseValue,currentPhase);
+        preset_array_t newPreset = presetsGn.GetCurrentPreset();
         newPreset[phaseIndex] = phaseValue;
-        GnPresets.set_currentPreset(newPreset);
+        presetsGn.SetCurrentPreset(newPreset);
 
         
     }
+
+    bool LinearStageMoveForward() {
+        return linearStage.MoveForward();
+    }
+    bool LinearStageMoveBackward() {
+        return linearStage.MoveBackward();
+    }
+    bool LinearStageJogForward(){
+        return linearStage.JogForward();
+
+    }
+    bool LinearStageJogBackward(){
+        return linearStage.JogBackward();
+
+    }
+
+    bool LinearStageStopMotion() {
+        return linearStage.StopMotion();
+    }
+
+    bool LinearStageHome() {
+        return linearStage.Home();
+    }
+
+
 
 
 

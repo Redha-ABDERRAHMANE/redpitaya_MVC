@@ -1,159 +1,140 @@
 #pragma once
 
-// Critical: Include winsock2.h BEFORE windows.h to avoid redefinitions
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-// Exclude problematic Windows components
-#define NOMINMAX        // Prevents min/max macro conflicts
-#define NOGDI          // Excludes GDI
-#define NOUSER         // Excludes user interface
-#define NOSERVICE      // Excludes service functions
-#define NOMCX          // Excludes modem configuration
-#define NOIME          // Excludes IME functions
-#define NOSOUND        // Excludes sound functions
-
-// Include Winsock2 FIRST, then Windows
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <windows.h>
 
 #include <iostream>
 #include <string>
-
-// Add this pragma for automatic linking in Visual Studio:
-#pragma comment(lib, "ws2_32.lib")
+#include <SDL3_net/SDL_net.h>
 
 
 
 
 
-class scpi {
+
+
+class ScpiServer {
 private:
+
     std::string delimiter = "\r\n";
-    const char* host_address;
-    int port_number;
+    const char* hostAddress;
+    int portNumber = 5000;
+    NET_Address* netHostAddress = nullptr;
+    bool connectionSuccess = false;
+    NET_StreamSocket* clientTCPSocket = nullptr;
 
-    WSADATA Winsockdata;
-    int iWsaStartup;
-    //int iWsaCleanup;
+    char RecvBuffer[512] = { 0 };
 
-    SOCKET TCPClientSocket;
-    int iCloseSocket;
-    struct sockaddr_in TCPServerAdd;
-    int iConnect;
-
-    //int iSend;
-
-    //int iRecv;
-    char RecvBuffer[512];
-    //int iRecvBuffer;
-
-
-    //Step-1 WSAStartup Fun------------------------------------
 public:
-    scpi(const char* host, const int& port = 5000):iCloseSocket(),iConnect(),RecvBuffer() {
-        host_address = host;
-        port_number = port;
+    ScpiServer(const char* host, const int& port = 5000) :hostAddress(host), portNumber(port) {
+        std::cout << "host address :" << hostAddress << "\n";
+        
 
-
-        iWsaStartup = WSAStartup(MAKEWORD(2, 2), &Winsockdata);
-        if (iWsaStartup != 0)
-        {
-            std::cout << "WSAStartup Failed" << std::endl;
-        }
-        std::cout << "WSAStartup Success" << std::endl;
-
-        //Step -2 Socket Creation------------------------------------
-
-        TCPClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        if (TCPClientSocket == INVALID_SOCKET)
-        {
-            std::cout << "TCP Client Socket Creation failed" << WSAGetLastError() << std::endl;
-        }
-        std::cout << "TCP client socket creation success";
-        // STEP -3 Fill the structure-------------------------------
-
-        TCPServerAdd.sin_family = AF_INET;
-        if (inet_pton(AF_INET, host_address, &TCPServerAdd.sin_addr) != 1) {
-            std::cout << "Invalid IPv4 address: " << host_address << std::endl;
-            return;
-        }
-        TCPServerAdd.sin_port = htons(port_number);
-
-        // STEP-4 Connect fun---------------------------------------------
-
-        iConnect = connect(TCPClientSocket, (SOCKADDR*)&TCPServerAdd, sizeof(TCPServerAdd));
-        if (iConnect == SOCKET_ERROR)
-        {
-            std::cout << "Connection failed & Error No ->" << WSAGetLastError() << std::endl;
-        }
-        std::cout << "Connection success" << std::endl;
     }
 
-    ~scpi() {
-        //STEP - 7 Close Socket
+    ~ScpiServer() {
+        std::cout << "DESTRUCTOR CALLED\n";
+        if (clientTCPSocket) NET_DestroyStreamSocket(clientTCPSocket);
+        if (netHostAddress) NET_UnrefAddress(netHostAddress);
 
-        iCloseSocket = closesocket(TCPClientSocket);
-        if (iCloseSocket == SOCKET_ERROR)
-        {
-            std::cout << "Closing Failed & Error No->" << WSAGetLastError() << std::endl;
-        }
-        std::cout << "Closing Socket success" << std::endl;
+
+
     }
-    // STEP-6 Send Data to the server
 
-    bool tx_txt(const std::string& message) const {
-        std::string full_message = message + delimiter;  // Add \r\n like Python
+    bool ConnectServer() {
+        netHostAddress = NET_ResolveHostname(hostAddress);
+        int resolveHAResult = NET_WaitUntilResolved(netHostAddress, 300);
 
-        int bytes_sent = send(TCPClientSocket, full_message.c_str(), (int)full_message.length(), 0);
-
-        if (bytes_sent == SOCKET_ERROR) {
-            //std::cout << "Sending Failed & Error No->" << WSAGetLastError() << std::endl;
+        if (resolveHAResult == 0) {
+            std::cout << "still resolving \n";
+        }
+        if (resolveHAResult == -1) {
+            std::cout << "Failed to resolve host address \n";
             return false;
         }
 
-        //std::cout << "Data sending success" << std::endl;
+        clientTCPSocket = NET_CreateClient(netHostAddress, portNumber);
+        int socketConnectionStatus;
+        while ((socketConnectionStatus = NET_WaitUntilConnected(clientTCPSocket, 500)) == 0);
+        if (socketConnectionStatus == -1) {
+
+            std::cout << "TCP Client Socket Creation failed: " << SDL_GetError() << "\n";
+
+            return false;
+        }
+        connectionSuccess = true;
+        std::cout << "TCP client socket creation success";
+        return true;
+
+    }
+
+
+
+
+
+
+
+
+
+    bool tx_txt(const std::string& message) const {
+        if (clientTCPSocket==nullptr) return false;
+
+
+        std::string full_message = message + delimiter;
+
+
+        bool sentBytes = NET_WriteToStreamSocket(clientTCPSocket, (void*)full_message.c_str(), strlen(full_message.c_str()));
+
+        //ADD IN CASE DATA ARE NOT SENT PROPERLY : NET_WaitUntilStreamSocketDrained
+
+        if (!sentBytes) {
+            std::cout << " failed because : " << SDL_GetError() << std::endl;
+            return false;
+        }
+
+        
         return true;
     }
 
 
-    std::string rx_txt(int chunksize = 4096) {
+    std::string rx_txt() {
+        if (clientTCPSocket == nullptr) return "";
+
         std::string message = "";
+        int bytesReceived = -2;
+        while (bytesReceived <= 0) {
+            bytesReceived = NET_ReadFromStreamSocket(clientTCPSocket, (void*)RecvBuffer, sizeof(RecvBuffer) - 1);
+        }
 
-        while (true) {
-            int bytes_received = recv(TCPClientSocket, RecvBuffer, (chunksize < (int)sizeof(RecvBuffer) - 1 ? chunksize : (int)sizeof(RecvBuffer) - 1), 0);
-
-            if (bytes_received == SOCKET_ERROR) {
-                std::cout << "Receiving Failed & Error No->" << WSAGetLastError() << std::endl;
-                return "";
-            }
-
-            if (bytes_received == 0) {
-                std::cout << "Connection closed by server" << std::endl;
-                return "";
-            }
-
-            // Null terminate and add to message
-            RecvBuffer[bytes_received] = '\0';
+        if (bytesReceived > 0) {
+            std::cout << "received some stuff\n";
+            RecvBuffer[bytesReceived] = '\0';
             message += std::string(RecvBuffer);
-
+            std::cout << message << "\n";
             // Check if we have the delimiter "\r\n"
-            if (message.length() >= 2 &&
-                message.substr(message.length() - 2) == delimiter) {
+            if (message.length() >= 2 && message.substr(message.length() - 2) == delimiter) {
+                std::cout << message.substr(0, message.length() - 2) << "\n"; 
                 return message.substr(0, message.length() - 2); // Remove delimiter
             }
         }
+
+        return "";
+
+
+
+
+
     }
 
     std::string txrx_txt(const std::string& message) {
+        if (clientTCPSocket == nullptr) return "";
         if (!tx_txt(message)) {
+            std::cout << "failed" << std::endl;
             return "";  // Send failed
-            std::cout<<"failed"<<std::endl;
+
         }
         return rx_txt();  // Return received response
     }
+
+    bool GetConnectionStatus()const {
+        return connectionSuccess;
+    }
 };
-
-

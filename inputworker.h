@@ -1,42 +1,43 @@
+#ifndef INPUTTHREAD_H
+#define INPUTTHREAD_H
 
-#ifndef INPUTWORKER_H
-#define INPUTWORKER_H
-
+#include <QThread>
 #include <QObject>
 #include "controller.hpp"
-#include <QThread>
-class InputWorker : public QObject {
+#include <iostream>
+
+
+class InputThread : public QThread
+{
     Q_OBJECT
 
 private:
     Controller* controller;
 
-    bool run = true;
-
 public:
-    InputWorker(Controller* c)
-        : controller(c) {}
-
-signals:
-    void finished();
-    void validInputDetected(int button_value);
-
-public slots:
-    void runCheckInput() {
-        int button_value ;
-        while (run) {
-             button_value = controller->CheckControllerEvent();
-            if (button_value != -1) {
-                emit validInputDetected(button_value);
-            }
-            QThread::msleep(100); // Delay to avoid CPU overload
-        }
-        emit finished();
+    InputThread(Controller* c, QObject* parent = nullptr)
+        : QThread(parent), controller(c) {
+    }
+    ~InputThread() {
+        controller = nullptr;
     }
 
-    void stopWorker() {
-        run = false;
+signals:
+    void ValidInputDetected(int button_value);
+
+protected:
+    void run() override {
+        int button_value;
+        while (!isInterruptionRequested()) {
+           
+            button_value = controller->CheckControllerEvent();
+            if (button_value != Buttons::INVALID_BUTTON) {
+                emit ValidInputDetected(button_value);
+            }
+        }
+        
+        std::cout << "finished checking:::::::::::::::\n";
     }
 };
 
-#endif // INPUTWORKER_H
+#endif // INPUTTHREAD_H
