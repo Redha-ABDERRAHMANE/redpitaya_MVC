@@ -184,7 +184,7 @@ public slots:
         bool result = false;
         QMetaObject::invokeMethod(&capacitiveBankManager, [&]() {
             result = capacitiveBankManager.sendFrequencyChange(frequency);
-            }, Qt::BlockingQueuedConnection);
+            });
 
         return result;
 
