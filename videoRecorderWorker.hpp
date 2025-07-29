@@ -85,7 +85,7 @@ public slots:
         args << "-f" << "rawvideo"
             << "-pix_fmt" << "gray"
             << "-s" << QString("%1x%2").arg(width).arg(height)
-            << "-r" << "25"
+            << "-r" << "35"
             << "-i" << "-"
             << "-vcodec" << "libx264"
             << "-preset" << "ultrafast"  // Move here
