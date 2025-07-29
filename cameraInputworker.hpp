@@ -25,6 +25,11 @@ private:
     bool m_frameReady;
     std::atomic<bool> m_shutdown;  // Add shutdown flag
     std::mutex m_frameMutex;
+    VmbUchar_t* pBuffer;
+    VmbUint32_t bufferSize;
+    VmbPixelFormatType pixelFormat;
+    VmbUint32_t width, height;
+
 
 public:
     FrameObserver(CameraPtr pCamera)
@@ -58,19 +63,13 @@ public:
             return;
         }
 
-        VmbUchar_t* pBuffer;
-        VmbUint32_t bufferSize;
+
         if (pFrame->GetBuffer(pBuffer) == VmbErrorSuccess &&
             pFrame->GetBufferSize(bufferSize) == VmbErrorSuccess) {
 
-            VmbUint32_t width, height;
-            if (pFrame->GetWidth(width) != VmbErrorSuccess ||
-                pFrame->GetHeight(height) != VmbErrorSuccess) {
-                m_pCamera->QueueFrame(pFrame);
-                return;
-            }
+            
 
-            VmbPixelFormatType pixelFormat;
+            
             pFrame->GetPixelFormat(pixelFormat);
 
             std::lock_guard<std::mutex> lock(m_frameMutex);
@@ -78,29 +77,34 @@ public:
             // Double-check shutdown status after acquiring lock
             if (m_shutdown) {
                 m_pCamera->QueueFrame(pFrame);
-                return;
             }
 
             try {
-                // Convert to OpenCV Mat based on pixel format
-                if (pixelFormat == VmbPixelFormatMono8) {
+                pFrame->GetWidth(width);
+                pFrame->GetHeight(height);
+                
+
+                switch (pixelFormat) {
+                case VmbPixelFormatMono8:
                     m_frame = QImage((uchar*)pBuffer, (int)width, (int)height, QImage::Format_Grayscale8);
                     m_frameReady = true;
-                       
-                }
-                else if (pixelFormat == VmbPixelFormatBgr8) {
+                    break;
+
+                case VmbPixelFormatBgr8:
                     m_frame = QImage((uchar*)pBuffer, (int)width, (int)height, QImage::Format_BGR888);
                     m_frameReady = true;
-                }
-                else if (pixelFormat == VmbPixelFormatRgb8) {
+                    break;
+
+                case VmbPixelFormatRgb8:
                     m_frame = QImage((uchar*)pBuffer, (int)width, (int)height, QImage::Format_RGB888);
-                    
                     m_frameReady = true;
-                }
-                else {
+                    break;
+
+                default:
                     // For other formats, try to convert to mono8
                     m_frame = QImage((uchar*)pBuffer, (int)width, (int)height, QImage::Format_Grayscale8);
                     m_frameReady = true;
+                    break;
                 }
             }
             catch (std::exception e) {
@@ -116,7 +120,7 @@ public:
         }
     }
 
-    bool GetFrame(QImage& frame) {
+    bool GetFrame(QImage& frame, uchar*& buffer) {
         std::lock_guard<std::mutex> lock(m_frameMutex);
         if (m_shutdown) {
             return false;  // Don't provide frames during shutdown
@@ -124,6 +128,7 @@ public:
 
         if (m_frameReady && !m_frame.isNull()) {
             frame = m_frame;
+            buffer =pBuffer;
             m_frameReady = false;
             return true;
         }
@@ -488,7 +493,7 @@ signals:
     void ImageReceived(const QImage& image);
     void CameraNotFound();
     void CameraReady();
-    void SendImageToCapture(const QImage& image);
+    void SendImageToCapture(uchar* frameBuffer,const long int bufferSize);
 
 public:
     
@@ -560,6 +565,7 @@ public:
         void GetDisplayFrame() {
             std::cout << "displaying frames \n";
             static QImage displayFrame;
+            uchar* frameBuffer;
             int frameCount = 0;
             std::cout << "entered camera get frame " << std::endl;
             bool frameToCapture = true;
@@ -572,7 +578,7 @@ public:
             const int displayWhileCaptureInterval = 25;// experimental value for 25 fps for GUI display due to SendImageToCapture
 
             while (!currentThread->isInterruptionRequested()) {
-                if (frameObserver->GetFrame(displayFrame)) {
+                if (frameObserver->GetFrame(displayFrame,frameBuffer)) {
                     frameCount++;
                     if (!displayFrame.isNull()) {
                         try {
@@ -580,12 +586,13 @@ public:
  
 
                                 // Capture at 25 FPS
-                               SendFrameAtPreciseInterval(lastDisplayTime, displayWhileCaptureInterval, [this]() { emit ImageReceived(displayFrame);});
-                               SendFrameAtPreciseInterval(lastCaptureTime, captureInterval, [this]() { emit SendImageToCapture(displayFrame);});
+                                //THIS IS FOR DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+          
+                               SendFrameAtPreciseInterval(lastCaptureTime, displayInterval, [this,&frameBuffer]() { 
+                                   emit ImageReceived(displayFrame);
+                                   emit SendImageToCapture(frameBuffer, (long int)payloadSize);});
 
-                               
-
-                               
+                                
                             }
                             else {
                                 // When NOT recording: limit display to 30 FPS
@@ -598,11 +605,8 @@ public:
                         }
                     }
                 }
-
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
-
-                if (IsRecordingVideoActive()) {
-                    QThread::msleep(10);
+                if (frameCount % 30 == 0) {
+                    QCoreApplication::processEvents(QEventLoop::AllEvents);
                 }
             }
         }

@@ -23,18 +23,15 @@ public:
 
 
 public slots:
-    void ReceiveImageToCapture(const QImage& image) {
-        static int i = 0;
-        std::cout << "Image received to capture\n";
+    void ReceiveImageToCapture(uchar* frameBuffer,const long int bufferSize) {
         if (ffmpegProcess==nullptr) return;
 
  
 
         // Write raw RGB data directly
-        const uchar* data = image.constBits();
-        int dataSize = image.sizeInBytes();
+        
 
-        ffmpegProcess->write(reinterpret_cast<const char*>(data), dataSize);
+        ffmpegProcess->write(reinterpret_cast<const char*>(frameBuffer), bufferSize);
     }
 
     void startRecording() {

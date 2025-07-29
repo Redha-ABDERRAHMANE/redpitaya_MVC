@@ -14,8 +14,8 @@ class MVC_Model: public QObject
 
 private:
 
-    const char* IP_PRIMARY = "169.254.112.159"; // Master board
-    const char* IP_SECONDARY = "169.254.9.76";     // Slave board
+    const char* IP_PRIMARY = "169.254.139.169"; // Master board
+    const char* IP_SECONDARY = "127.0.0.1";     // Slave board
     RpSignalGn signalGn;
     waveGnPresets presetsGn;
     Controller& controller ;

@@ -306,6 +306,39 @@ void View:: CameraFailedPopUp() {
 }
 
 void View::SetNewFrameToDisplay( const QImage& image) {
+    // FPS Counter - Static variables for performance tracking
+    static auto lastTime = std::chrono::high_resolution_clock::now();
+    static int frameCount = 0;
+    static double currentFPS = 0.0;
+    static const int FPS_UPDATE_INTERVAL = 30; // Update FPS display every 30 frames
+
+    // Early return check
+    if ((cameraPopupRunning && (windowCameraPopup->isMinimized())) ||
+        (!cameraPopupRunning && !this->isActiveWindow())) {
+        return;
+    }
+
+    // FPS Calculation
+    frameCount++;
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime);
+
+    // Update FPS every FPS_UPDATE_INTERVAL frames or every 1000ms (whichever comes first)
+    if (frameCount >= FPS_UPDATE_INTERVAL || elapsed.count() >= 1000) {
+        if (elapsed.count() > 0) {
+            currentFPS = (frameCount * 1000.0) / elapsed.count();
+
+            // Optional: Print FPS to console (remove in production)
+            std::cout << "Display FPS: " << std::fixed 
+                << currentFPS << " (" << frameCount << " frames in "
+                << elapsed.count() << "ms)" << std::endl;
+
+            // Reset counters
+            frameCount = 0;
+            lastTime = currentTime;
+        }
+    }
+
   
     static QSizeF imageSize = image.size();
     static QSizeF targetSize;
