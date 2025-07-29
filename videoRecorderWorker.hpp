@@ -13,6 +13,7 @@
 #include <iostream>
 #include <QCoreApplication>
 #include <commonValues.h>
+#include<chrono>
 
 class VideoRecorderThread : public QObject {
     Q_OBJECT
@@ -25,6 +26,32 @@ public:
 public slots:
     void ReceiveImageToCapture(uchar* frameBuffer,const long int bufferSize) {
         if (ffmpegProcess==nullptr) return;
+
+
+
+        static auto lastTime = std::chrono::high_resolution_clock::now();
+        static int frameCount = 0;
+        static double currentFPS = 0.0;
+        static const int FPS_UPDATE_INTERVAL = 30; // Update FPS display every 30 frames
+        frameCount++;
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime);
+
+        // Update FPS every FPS_UPDATE_INTERVAL frames or every 1000ms (whichever comes first)
+        if (frameCount >= FPS_UPDATE_INTERVAL || elapsed.count() >= 1000) {
+            if (elapsed.count() > 0) {
+                currentFPS = (frameCount * 1000.0) / elapsed.count();
+
+                // Optional: Print FPS to console (remove in production)
+                std::cout << "Capture FPS: " << std::fixed
+                    << currentFPS << " (" << frameCount << " frames in "
+                    << elapsed.count() << "ms)" << std::endl;
+
+                // Reset counters
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+        }
 
  
 
