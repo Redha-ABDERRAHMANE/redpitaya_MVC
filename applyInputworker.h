@@ -56,6 +56,7 @@ public slots:
 
     void apply_FrequencyShift(const int& frequencyValue) {
         model->ApplyFrequencyValue(frequencyValue);
+        model->CapacitiveBankManagerFrequencyChange(frequencyValue);
     }
 
     void apply_PhaseShift(const int& card,const int& phaseValue) {

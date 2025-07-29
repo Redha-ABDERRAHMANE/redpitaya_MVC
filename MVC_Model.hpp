@@ -2,10 +2,12 @@
 #include "RpSignalGn.hpp"
 #include "waveGnPresets.hpp"
 #include "linearStage.hpp"
+#include "capacitiveBankManager.hpp"
 #include <QObject>
 #include <QThread>
 #include <QDebug>
 #include <commonValues.h>
+
 typedef std::array<float, 6> preset_array_t ;
 class MVC_Model: public QObject
 {
@@ -20,6 +22,7 @@ private:
     waveGnPresets presetsGn;
     Controller& controller ;
     LinearStage linearStage;
+    CapacitiveBankManager capacitiveBankManager;
     
   
 
@@ -30,11 +33,15 @@ private:
 
 public:
     
-    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c),linearStage(), nextPreset({}), currentPreset({}) {
+    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c),linearStage(),capacitiveBankManager(this), nextPreset({}), currentPreset({}) {
+        if (!capacitiveBankManager.ConnectToDevice()) {
+            std::cout << "Could not connect to Serial Device\n";
+        }
         if (!linearStage.ConnectToDevice()) {
             std::cout << "Could not connect to linear stage\n";
 
         }
+
 
     }
     MVC_Model() = default;
@@ -171,6 +178,16 @@ public slots:
 
     bool LinearStageHome() {
         return linearStage.Home();
+    }
+
+    bool CapacitiveBankManagerFrequencyChange(const int frequency) {
+        bool result = false;
+        QMetaObject::invokeMethod(&capacitiveBankManager, [&]() {
+            result = capacitiveBankManager.sendFrequencyChange(frequency);
+            }, Qt::BlockingQueuedConnection);
+
+        return result;
+
     }
 
 

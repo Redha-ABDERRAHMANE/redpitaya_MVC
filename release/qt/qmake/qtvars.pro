@@ -1,5 +1,5 @@
 CONFIG += no_fixpath
-QT = core gui network widgets multimedia multimediawidgets
+QT = core gui network widgets multimedia multimediawidgets serialbus serialport
         
         
       
