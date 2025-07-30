@@ -100,6 +100,17 @@ public:
 
 
 		}
+		else {
+			if (gamepadID) {
+				SDL_CloseGamepad(gamepadID);
+			}
+			if (joystickIDArray) {
+				SDL_free(joystickIDArray);
+			}
+			gamepadID = nullptr;
+			joystickIDArray = nullptr;
+
+		}
 
 
 
