@@ -8,7 +8,7 @@ class CapacitiveBankManager: public QObject
 {
 	Q_OBJECT
 public:
-	CapacitiveBankManager(QObject* parent = nullptr) {}
+	CapacitiveBankManager() {}
 	~CapacitiveBankManager() {
 		DisconnectSerialPortDevice();
 

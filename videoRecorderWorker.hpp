@@ -72,6 +72,7 @@ public slots:
 
             connect(ffmpegProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                 [this](int exitCode, QProcess::ExitStatus exitStatus) {
+                    (void)exitStatus;
                     std::cout << "FFmpeg finished with exit code: " << exitCode << std::endl;
                 });
         }

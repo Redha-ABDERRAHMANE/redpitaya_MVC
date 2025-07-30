@@ -33,7 +33,7 @@ private:
 
 public:
     
-    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c),linearStage(),capacitiveBankManager(this), nextPreset({}), currentPreset({}) {
+    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c),linearStage(),capacitiveBankManager(), nextPreset({}), currentPreset({}) {
         if (!capacitiveBankManager.ConnectToDevice()) {
             std::cout << "Could not connect to Serial Device\n";
         }
