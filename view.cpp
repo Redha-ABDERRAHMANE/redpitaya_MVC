@@ -351,6 +351,7 @@ void View::SetNewFrameToDisplay( const QImage& image) {
     targetSize = imageView->viewport()->size();
     scale = qMin(targetSize.width() / imageSize.width(),targetSize.height() / imageSize.height());
 
+
     imageView->resetTransform();
     pixmapItem->resetTransform();
 
@@ -364,6 +365,7 @@ void View::SetNewFrameToDisplay( const QImage& image) {
     pixmapItem->setTransform(QTransform::fromScale(scale, scale));
     pixmapItem->setRotation(imageRotationAngle);
     //imageView->centerOn(pixmapItem);
+    imageView->fitInView(pixmapItem, Qt::KeepAspectRatio);
     imageView->viewport()->update();
     
 
@@ -856,6 +858,8 @@ bool View::eventFilter(QObject* obj, QEvent* event) {
                 groupBoxCamera->hide(); // Hide the widget
                 layoutverticalCamera->removeWidget(imageView);
                 layoutCameraWindowPopup->addWidget(imageView);
+                layoutCameraWindowPopup->update();
+                layoutCameraWindowPopup->activate();
                 layoutLeftPart->update(); // Update the layout
                 layoutLeftPart->activate(); // Activate layout changes
 
