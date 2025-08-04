@@ -209,9 +209,10 @@ void View::SetAxisDirectionButtons(QVBoxLayout*& movementInfoVerticalLayout,QHBo
 
     for(QPushButton*& axisButton: arrayAxisButtons) {
 
-        axisButton->setDisabled(true);
+        
         axisInfoHorizontalLayout->addWidget(axisButton);
     }
+    arrayAxisButtons[0]->setDisabled(true);
     arrayAxisButtons[0]->setStyleSheet("background-color: green");
 
 
@@ -383,6 +384,41 @@ void View::EnableLinearStageButtons() {
     for (int i = 0; i < LinearStageMotion::MOTIONSIZE;i++) {
         arrayLinearStageControlsButtons[i]->setDisabled(false);
     }
+}
+
+void View::SetDirectionDimension(const int& button_value) {
+    int index = 0;
+    for (size_t i = 0;i < arrayAxisButtons.size();i++) {
+        if (!arrayAxisButtons[i]->isEnabled()) {
+            index = i;
+            arrayAxisButtons[i]->setDisabled(false);
+            arrayAxisButtons[index]->setStyleSheet("background-color: #3c3c3c");
+            break;
+        }
+
+    }
+
+    switch (button_value) {
+
+    case Buttons::TRIGGER_LEFT:
+        index = ((index - 1) % Dimensions::DIMENSIONSIZE) < 0 ? Dimensions::DIMENSIONSIZE - 1 : (index - 1);
+        break;
+
+    case Buttons::TRIGGER_RIGHT:
+        index = (index + 1) % Dimensions::DIMENSIONSIZE;
+        break;
+    }
+
+
+
+
+   
+
+    arrayAxisButtons[index]->setDisabled(true);
+        
+    
+    arrayAxisButtons[index]->setStyleSheet("background-color: green");
+
 }
 
 void View::ConfigureLeftLayout() {

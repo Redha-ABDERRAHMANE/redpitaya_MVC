@@ -41,6 +41,8 @@ private:
         directionIndexToSend = dictionary_ButtonDirection.at(button_valueToSend);
 
         if (Controller::IsButton(button_value) && !isDefaultDirectionButton(button_value)) {
+            //Look the declaration of directionIndexToSend , i've only mapped the DefaultDirections e.g HATS and buttons returning to HAT values (located on left part of the grid in the GUI)
+            //If it's not one of these buttons that means it's a secondary direction button that's on the right part of the grid
             directionIndexToSend += 1;
         }
         return directionIndexToSend;
@@ -54,6 +56,7 @@ signals:
     void StartCamera();
     void change_exposureTimeValue(int value);
     void workerThreads_shutdown();
+    void SetDimensionONGUI(const int& button_value);
 
 public slots:
 
@@ -83,9 +86,13 @@ public slots:
         
 
     }
-    void send_ControllerInput_Direction(const int& button_value) {
+    void send_ControllerInput_Direction(const int& button_value,const bool isTrigger) {
         //Send signal to GUI to change the visuals then applying the preset
         //Template : {button_value,directionIndexToSend}
+        if (isTrigger) {
+            emit SetDimensionONGUI(button_value);
+            return;
+        }
         int directionIndexToSend = get_DirectionIndex(button_value);
         qDebug() << "sending signal";
         emit controllerInput_Direction(button_value, directionIndexToSend);
@@ -181,6 +188,7 @@ public:
         connect(this, &MVC_Controller::startMainGUI, view, &View::StartGUIComponentsInitialization);
 
         connect(this, &MVC_Controller::controllerInput_Direction, view, &View::HandleInputReceived);
+        connect(this, &MVC_Controller::SetDimensionONGUI, view, &View::SetDirectionDimension);
     
         connect(&worker_cameraInput, &CameraInputWorker::CameraNotFound, view, &View::CameraFailedPopUp);
         connect(&worker_cameraInput, &CameraInputWorker::ImageReceived, view, &View::SetNewFrameToDisplay);

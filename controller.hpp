@@ -73,7 +73,7 @@ private:
 	int CheckValidControllerButtonAndCoherence(const int& button_value) {
 		std::cout << "button used" << button_value << std::endl;
 		if (IsBumper(button_value)) {
-			std::cout << "HAT PRESSED" << std::endl;
+			std::cout << "BUMPER PRESSED" << std::endl;
 			lastDpadUsed = Buttons::INVALID_BUTTON;
 			return button_value;
 		}
@@ -109,6 +109,7 @@ private:
 			std::cout << "trigger pressed \n";
 			Buttons realButtonValue = button_value == Triggers::AXIS_TRIGGER_LEFT ? Buttons::TRIGGER_LEFT : Buttons::TRIGGER_RIGHT;
 			if (blockTrigger) { return Buttons::INVALID_BUTTON; }
+			lastDpadUsed = Buttons::INVALID_BUTTON;
 			return realButtonValue;
 		}
 	}
@@ -187,7 +188,7 @@ public:
 			
 		}
 
-		if (event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION) {
+		if (event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION && event.gaxis.value== SDL_JOYSTICK_AXIS_MAX) {
 			if (IsTrigger(static_cast<int>(event.gaxis.axis)) && !blockTrigger) { std::cout << "Trigger pressed : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n"; }
 			return { CheckValidControllerTriggerAndCoherence(static_cast<int>(event.gaxis.axis)),true,event.gaxis.value };
 
@@ -211,7 +212,7 @@ public:
 	}
 
 	static bool IsBumper(const int& button_value) {
-		return WithInInterval(Buttons::BUMPER_RIGHT, button_value, Buttons::BUMPER_LEFT);
+		return WithInInterval(Buttons::BUMPER_LEFT, button_value, Buttons::BUMPER_RIGHT);
 
 	}
 	static bool isHat(const int& button_value) {

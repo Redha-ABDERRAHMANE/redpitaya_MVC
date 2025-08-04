@@ -71,7 +71,8 @@ const enum CameraFrameResolution {
 const enum Dimensions {
     XY,
     XZ,
-    YZ
+    YZ,
+    DIMENSIONSIZE
 };
 
 

@@ -47,7 +47,8 @@ private:
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_FIRST_AMP_INDEX       ,  SOURCE_1, "VOLT"},
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_SECOND_AMP_INDEX      ,  SOURCE_2, "VOLT"},
         {SECONDARY_BOARD,   SECONDARY_BOARD_FIRST_AMP_INDEX     ,  SOURCE_1, "VOLT"},
-        {SECONDARY_BOARD,   SECONDARY_BOARD_SECOND_AMP_INDEX    ,  SOURCE_2, "VOLT"}
+        {SECONDARY_BOARD,   SECONDARY_BOARD_SECOND_AMP_INDEX    ,  SOURCE_2, "VOLT"},
+
         }};
         // REMOVED THE LAST TWO TO TEST Z UP AND DOWN WITH TWO BUTTONS WITHOUT THE NEED TO CHANGE THE PRESET
         // IT RUNS INDEPENDENTLY FROM THE XY PRESET FOR NOW
@@ -83,6 +84,7 @@ public:
 
         if (V_P == "PHAS") {
             rpBoards.send_txt(card, command + std::to_string(target_value));
+            std::cout << '\n' << command + std::to_string(target_value) << std::endl;
             return; 
 
         }
@@ -96,7 +98,7 @@ public:
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
-        std::cout << command + std::to_string(target_value) << std::endl;
+        std::cout <<'\n' << command + std::to_string(target_value) << std::endl;
 
         rpBoards.send_txt(card, command + std::to_string(target_value));
 

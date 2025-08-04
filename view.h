@@ -76,6 +76,7 @@ public slots:
 
     void SetNewFrameToDisplay(const QImage& image);
     void EnableLinearStageButtons();
+    void SetDirectionDimension(const int& button_value);
 
 private:
 

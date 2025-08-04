@@ -50,8 +50,13 @@ public slots:
         std::cout << "GUI called to apply new preset\n";
         model->GetAndApplyPresetMVC( button_combination.nextButton, button_combination.currentHat);
     }
-    void apply_ControllerInput(const int& button_value){
-        model->GetAndApplyPreset(button_value);
+    void apply_ControllerInput(const int& button_value,const bool is_trigger){
+        if (is_trigger) {
+            model->ChangeDirectionDimension(button_value);
+        }
+        else {
+            model->GetAndApplyPreset(button_value);
+        }
     }
 
     void apply_FrequencyShift(const int& frequencyValue) {
