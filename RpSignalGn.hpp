@@ -37,7 +37,7 @@ private:
 
 	RedpitayaCards rpBoards;
     int currentFrequency=5;
-    std::array<TaskConfig, 10> taskConfigs = {{
+    std::array<TaskConfig, 12> taskConfigs = {{
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_COMMON_PHASE_INDEX    ,  SOURCE_1, "PHAS"},
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_COMMON_PHASE_INDEX    ,  SOURCE_2, "PHAS"},
         {SECONDARY_BOARD,   SECONDARY_BOARD_COMMON_PHASE_INDEX  ,  SOURCE_1, "PHAS"},
@@ -48,6 +48,8 @@ private:
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_SECOND_AMP_INDEX      ,  SOURCE_2, "VOLT"},
         {SECONDARY_BOARD,   SECONDARY_BOARD_FIRST_AMP_INDEX     ,  SOURCE_1, "VOLT"},
         {SECONDARY_BOARD,   SECONDARY_BOARD_SECOND_AMP_INDEX    ,  SOURCE_2, "VOLT"},
+        {TERTIARY_BOARD,    TERTIARY_BOARD_FIRST_AMP_INDEX      ,  SOURCE_1, "VOLT"},
+        {TERTIARY_BOARD,    TERTIARY_BOARD_SECOND_AMP_INDEX     ,  SOURCE_2, "VOLT"}
 
         }};
         // REMOVED THE LAST TWO TO TEST Z UP AND DOWN WITH TWO BUTTONS WITHOUT THE NEED TO CHANGE THE PRESET
@@ -55,7 +57,7 @@ private:
         // 
         //{TERTIARY_BOARD,    TERTIARY_BOARD_FIRST_AMP_INDEX      ,  SOURCE_1, "VOLT"},
         //{TERTIARY_BOARD,    TERTIARY_BOARD_SECOND_AMP_INDEX     ,  SOURCE_2, "VOLT"}
-    
+    static constexpr double EPSILON = 1E-3;
 
 
 
@@ -84,7 +86,7 @@ public:
 
         if (V_P == "PHAS") {
             rpBoards.send_txt(card, command + std::to_string(target_value));
-            std::cout << '\n' << command + std::to_string(target_value) << std::endl;
+            std::cout << "\n board number "<<card<<"command : " << command + std::to_string(target_value) << std::endl;
             return; 
 
         }
@@ -92,10 +94,12 @@ public:
         for (uint8_t i = 0; i < STEPS; i++) {
 			
             new_value += step_size;
-            rpBoards.send_txt(card, command + std::to_string(new_value));
-            //std::cout << command + std::to_string(new_value) << std::endl;
-	
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (!(abs(new_value - target_value) < EPSILON)) {
+                rpBoards.send_txt(card, command + std::to_string(new_value));
+                //std::cout << command + std::to_string(new_value) << std::endl;
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
         }
 
         std::cout <<'\n' << command + std::to_string(target_value) << std::endl;
@@ -113,8 +117,8 @@ public:
 	//TODO COMPLETE THIS METHOD
     bool ApplyPresetValues(preset_array_t& nextPreset, const preset_array_t& currentPreset){
 		
-
-        std::array<std::future<void>, 10> threadArray;
+       
+        std::array<std::future<void>,12 > threadArray;
         for (size_t i = 0; i < taskConfigs.size(); ++i) {  
             const auto& config = taskConfigs[i];
             threadArray[i] = std::async(
