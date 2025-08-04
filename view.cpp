@@ -88,7 +88,7 @@ void View::UpdateLastDirectionButtonUsed(const int &newDirectionIndex)
     if(indexLastDirectionUsed != -1){
         auto previous_button=arrayDirectionButtons[indexLastDirectionUsed];
         previous_button->setDisabled(false);
-        previous_button->setStyleSheet("background-color: #3c3c3c; QPushButton:hover { background-color: #5c5c5c; }");
+        previous_button->setStyleSheet("QPushButton { background-color: #3c3c3c; } QPushButton:hover { background-color: #5c5c5c; }");
     }
     auto new_button =arrayDirectionButtons[newDirectionIndex];
     new_button->setDisabled(true);
@@ -207,10 +207,12 @@ void View::SetAxisDirectionButtons(QVBoxLayout*& movementInfoVerticalLayout,QHBo
         new QPushButton("YZ", this),
     };
 
-    for(QPushButton*& axisButton: arrayAxisButtons) {
-
-        
-        axisInfoHorizontalLayout->addWidget(axisButton);
+    for (size_t i = 0;i < arrayAxisButtons.size();i++) {
+        axisInfoHorizontalLayout->addWidget(arrayAxisButtons[i]);
+        connect(arrayAxisButtons[i], &QPushButton::clicked, this, [this, i]() { 
+            SetDirectionDimension(i,true);
+            emit PressedDimensionChange(i,true);
+            });
     }
     arrayAxisButtons[0]->setDisabled(true);
     arrayAxisButtons[0]->setStyleSheet("background-color: green");
@@ -386,29 +388,30 @@ void View::EnableLinearStageButtons() {
     }
 }
 
-void View::SetDirectionDimension(const int& button_value) {
+void View::SetDirectionDimension(const int& button_value, const bool GUI_button) {
     int index = 0;
     for (size_t i = 0;i < arrayAxisButtons.size();i++) {
         if (!arrayAxisButtons[i]->isEnabled()) {
             index = i;
             arrayAxisButtons[i]->setDisabled(false);
-            arrayAxisButtons[index]->setStyleSheet("background-color: #3c3c3c");
+            arrayAxisButtons[index]->setStyleSheet("QPushButton { background-color: #3c3c3c; } QPushButton:hover { background-color: #5c5c5c; }");
             break;
         }
 
     }
+    if (!GUI_button) {
+        switch (button_value) {
 
-    switch (button_value) {
+        case Buttons::TRIGGER_LEFT:
+            index = ((index - 1) % Dimensions::DIMENSIONSIZE) < 0 ? Dimensions::DIMENSIONSIZE - 1 : (index - 1);
+            break;
 
-    case Buttons::TRIGGER_LEFT:
-        index = ((index - 1) % Dimensions::DIMENSIONSIZE) < 0 ? Dimensions::DIMENSIONSIZE - 1 : (index - 1);
-        break;
-
-    case Buttons::TRIGGER_RIGHT:
-        index = (index + 1) % Dimensions::DIMENSIONSIZE;
-        break;
+        case Buttons::TRIGGER_RIGHT:
+            index = (index + 1) % Dimensions::DIMENSIONSIZE;
+            break;
+        }
     }
-
+    else { index = button_value; }
 
 
 

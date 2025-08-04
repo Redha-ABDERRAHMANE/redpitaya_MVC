@@ -68,6 +68,12 @@ public slots:
         model->ApplyPhaseValue( card, phaseValue);
     }
 
+    void ApplyDimensionChange(const int dimensionIndex, const bool GUI_button = false) {
+
+        model->ChangeDirectionDimension(dimensionIndex, GUI_button);
+
+    }
+
     void ApplyLinearStageMotion(const LinearStageMotion motionState ) {
         std::cout << "linear stage signal called\n";
         switch (motionState) {

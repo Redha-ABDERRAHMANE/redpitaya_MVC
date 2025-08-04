@@ -56,7 +56,7 @@ signals:
     void StartCamera();
     void change_exposureTimeValue(int value);
     void workerThreads_shutdown();
-    void SetDimensionONGUI(const int& button_value);
+    void SetDimensionONGUI(const int& button_value,const bool GUI_button);
 
 public slots:
 
@@ -90,7 +90,7 @@ public slots:
         //Send signal to GUI to change the visuals then applying the preset
         //Template : {button_value,directionIndexToSend}
         if (isTrigger) {
-            emit SetDimensionONGUI(button_value);
+            emit SetDimensionONGUI(button_value,false);
             return;
         }
         int directionIndexToSend = get_DirectionIndex(button_value);
@@ -210,6 +210,8 @@ public:
         connect(view, &View::PressedButtonDirection, &worker_ApplyInput, &ApplyInputWorker::apply_GUIInput);
 
         connect(view, &View::PressedFrequencyChange, &worker_ApplyInput, &ApplyInputWorker::apply_FrequencyShift);
+
+        connect(view, &View::PressedDimensionChange, &worker_ApplyInput, &ApplyInputWorker::ApplyDimensionChange);
 
         connect(view, &View::PressedExposureTimeChange, this, &MVC_Controller::setCameraExposureTime);
 

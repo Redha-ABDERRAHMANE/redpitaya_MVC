@@ -69,8 +69,8 @@ signals:
 
 public slots:
 
-    void ChangeDirectionDimension(int button_value) {
-        presetsGn.SetDimension(button_value);
+    void ChangeDirectionDimension(int button_value, const bool GUI_button = false) {
+        presetsGn.SetDimension(button_value, GUI_button);
     }
 
     void GetAndApplyPreset(const int& button_value) {

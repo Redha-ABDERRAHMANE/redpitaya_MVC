@@ -46,15 +46,20 @@ public:
 		previousPresetUsed = preset;
 	}
 
-	void SetDimension(const int button_value) {
-		switch (button_value) {
-		case Buttons::TRIGGER_LEFT:
-			dimension = ((dimension - 1) % Dimensions::DIMENSIONSIZE) < 0 ? Dimensions::DIMENSIONSIZE -1 : (dimension - 1);
-			break;
-		
-		case Buttons::TRIGGER_RIGHT:
-			dimension = (dimension + 1) % Dimensions::DIMENSIONSIZE;
-			break;
+	void SetDimension(const int button_value, const bool GUI_button = false) {
+		if (GUI_button) {
+			dimension = button_value;
+		}
+		else {
+			switch (button_value) {
+			case Buttons::TRIGGER_LEFT:
+				dimension = ((dimension - 1) % Dimensions::DIMENSIONSIZE) < 0 ? Dimensions::DIMENSIONSIZE - 1 : (dimension - 1);
+				break;
+
+			case Buttons::TRIGGER_RIGHT:
+				dimension = (dimension + 1) % Dimensions::DIMENSIONSIZE;
+				break;
+			}
 		}
 		std::cout << "DIMENSION SET TO : " << dimension << std::endl;
 		dictionary_bumperHatPreset = &arrayDimensionDictionnaries.at(dimension).first;

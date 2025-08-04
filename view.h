@@ -58,6 +58,7 @@ signals:
     void StopCameraRecord();
 
     void PressedLinearStageControlButton(LinearStageMotion motion);
+    void PressedDimensionChange(const int dimension_index, const bool GUI_button);
 
 
 
@@ -76,7 +77,8 @@ public slots:
 
     void SetNewFrameToDisplay(const QImage& image);
     void EnableLinearStageButtons();
-    void SetDirectionDimension(const int& button_value);
+    void SetDirectionDimension(const int& button_value, const bool GUI_button = false);
+
 
 private:
 
