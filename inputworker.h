@@ -27,12 +27,12 @@ signals:
 
 protected:
     void run() override {
-        int button_value;
+        PressedButton pressedButton;
         while (!isInterruptionRequested()) {
            
-            button_value = controller->CheckControllerEvent();
-            if (button_value != Buttons::INVALID_BUTTON) {
-                emit ValidInputDetected(button_value);
+            pressedButton = controller->CheckControllerEvent();
+            if (pressedButton.button != Buttons::INVALID_BUTTON && !pressedButton.isTrigger) {
+                emit ValidInputDetected(pressedButton.button);
             }
         }
         

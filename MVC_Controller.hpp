@@ -36,11 +36,11 @@ private:
     //Template : {button_value,directionIndexToSend}
     int get_DirectionIndex(const int& button_value) {
         int directionIndexToSend;
-        int button_valueToSend = Controller::isButton(button_value) ? controller.get_lastDpadUsed() : button_value;
+        int button_valueToSend = Controller::IsButton(button_value) ? controller.get_lastDpadUsed() : button_value;
 
         directionIndexToSend = dictionary_ButtonDirection.at(button_valueToSend);
 
-        if (Controller::isButton(button_value) && !isDefaultDirectionButton(button_value)) {
+        if (Controller::IsButton(button_value) && !isDefaultDirectionButton(button_value)) {
             directionIndexToSend += 1;
         }
         return directionIndexToSend;

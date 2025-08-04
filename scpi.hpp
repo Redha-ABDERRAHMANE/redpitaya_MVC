@@ -30,6 +30,8 @@ public:
 
     }
 
+    ScpiServer() = default;
+
     ~ScpiServer() {
         std::cout << "DESTRUCTOR CALLED\n";
         if (clientTCPSocket) NET_DestroyStreamSocket(clientTCPSocket);

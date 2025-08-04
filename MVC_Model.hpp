@@ -8,7 +8,6 @@
 #include <QDebug>
 #include <commonValues.h>
 
-typedef std::array<float, 6> preset_array_t ;
 class MVC_Model: public QObject
 {
     Q_OBJECT
@@ -16,8 +15,9 @@ class MVC_Model: public QObject
 
 private:
 
-    const char* IP_PRIMARY = "169.254.139.169"; // Master board
+    const char* IP_PRIMARY = "127.0.0.1"; //"169.254.139.169"; // Master board
     const char* IP_SECONDARY = "127.0.0.1";     // Slave board
+    std::array<const char*, SLAVE_BOARDS> arraySlaveBoardIPs = { "127.0.0.1", "127.0.0.1" };
     RpSignalGn signalGn;
     waveGnPresets presetsGn;
     Controller& controller ;
@@ -33,7 +33,7 @@ private:
 
 public:
     
-    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c),linearStage(),capacitiveBankManager(), nextPreset({}), currentPreset({}) {
+    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, arraySlaveBoardIPs), presetsGn(), controller(c),linearStage(),capacitiveBankManager(), nextPreset({}), currentPreset({}) {
         if (!capacitiveBankManager.ConnectToDevice()) {
             std::cout << "Could not connect to Serial Device\n";
         }
@@ -113,7 +113,7 @@ public slots:
 
         // Change this by signal emition 
         // Let the MVC_Controller handle the lastDpasUsed update
-        controller.set_lastDpadUsed(button_current_value != -1 ? button_current_value : button_next_value);
+        controller.SetLastDpadUsed(button_current_value != -1 ? button_current_value : button_next_value);
 
 
         presetsGn.SetNextPreset(button_next_value,button_current_value);
