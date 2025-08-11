@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AD820FCB-B92A-38D4-AF3C-3487AE43CD3C}</ProjectGuid>
+    <RootNamespace>redpitaya_GUI</RootNamespace>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.26100.0</WindowsTargetPlatformMinVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <PlatformToolset>v143</PlatformToolset>
+    <OutputDirectory>release\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>Application</ConfigurationType>
+    <IntermediateDirectory>release\</IntermediateDirectory>
+    <PrimaryOutput>redpitaya_GUI</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <PlatformToolset>v143</PlatformToolset>
+    <OutputDirectory>debug\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>Application</ConfigurationType>
+    <IntermediateDirectory>debug\</IntermediateDirectory>
+    <PrimaryOutput>redpitaya_GUI</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(QtMsBuild)\qt_defaults.props" Condition="Exists('$(QtMsBuild)\qt_defaults.props')" />
+  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <QtInstall>6.9.1_msvc2022_64</QtInstall>
+    <QtModules>core;gui;network;widgets;multimedia;multimediawidgets;serialbus;serialport</QtModules>
+  </PropertyGroup>
+  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <QtInstall>6.9.1_msvc2022_64</QtInstall>
+    <QtModules>core;gui;network;widgets;multimedia;multimediawidgets;serialbus;serialport</QtModules>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') OR !Exists('$(QtMsBuild)\Qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">redpitaya_GUI</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">redpitaya_GUI</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Program Files\Allied Vision\Vimba X\api\include;C:\SDL3\SDL_net-main\include;C:\SDL3\SDL3-3.2.18\include;C:\opt\opencv\build\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\opt\opencv\build\x64\vc16\lib;C:\SDL3\SDL3-3.2.18\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Program Files\Allied Vision\Vimba X\api\include;C:\opt\opencv\build\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\opt\opencv\build\x64\vc16\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Program Files\Allied Vision\Vimba X\api\include;C:\opt\opencv\build;C:\SDL3\SDL3-3.2.18\include;C:\SDL3\SDL_net-main\include;GeneratedFiles\$(ConfigurationName);GeneratedFiles;.;debug;/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -utf-8 -w34100 -w34189 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>release\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ObjectFileName>release\</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_NO_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>opencv_world4110.lib;opencv_world4110d.lib;SDL3.lib;SDL3_net.lib;VmbCPP.lib;VmbC.lib;$(QTDIR)\lib\Qt6EntryPoint.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\opt\opencv\build\x64\vc16\lib;C:\SDL3\SDL3-3.2.18\lib\x64;C:\SDL3\SDL_net-main\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <LinkIncremental>false</LinkIncremental>
+      <OptimizeReferences>true</OptimizeReferences>
+      <OutputFile>$(OutDir)\redpitaya_GUI.exe</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_NO_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <QtMoc>
+      <CompilerFlavor>msvc</CompilerFlavor>
+      <Include>./$(Configuration)/moc_predefs.h</Include>
+      <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
+      <DynamicSource>output</DynamicSource>
+      <QtMocDir>$(Configuration)</QtMocDir>
+      <QtMocFileName>moc_%(Filename).cpp</QtMocFileName>
+    </QtMoc>
+    <QtUic>
+      <ExecutionDescription>Uic'ing %(Identity)...</ExecutionDescription>
+      <QtUicDir>$(ProjectDir)</QtUicDir>
+      <QtUicFileName>ui_%(Filename).h</QtUicFileName>
+    </QtUic>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Program Files\Allied Vision\Vimba X\api\include;C:\opt\opencv\build;C:\SDL3\SDL_net-main\include;C:\SDL3\SDL3-3.2.18\include;GeneratedFiles\$(ConfigurationName);GeneratedFiles;.;debug;/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -utf-8 -w34100 -w34189 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>debug\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ObjectFileName>debug\</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>opencv_world4110.lib;opencv_world4110d.lib;SDL3.lib;SDL3_net.lib;VmbCPP.lib;VmbC.lib;$(QTDIR)\lib\Qt6EntryPointd.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\opt\opencv\build\x64\vc16\lib;C:\SDL3\SDL3-3.2.18\lib\x64;C:\SDL3\SDL_net-main\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <OutputFile>$(OutDir)\redpitaya_GUI.exe</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <QtUic>
+      <ExecutionDescription>Uic'ing %(Identity)...</ExecutionDescription>
+      <QtUicDir>$(ProjectDir)</QtUicDir>
+      <QtUicFileName>ui_%(Filename).h</QtUicFileName>
+    </QtUic>
+    <QtMoc>
+      <CompilerFlavor>msvc</CompilerFlavor>
+      <Include>./$(Configuration)/moc_predefs.h</Include>
+      <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
+      <DynamicSource>output</DynamicSource>
+      <QtMocDir>$(Configuration)</QtMocDir>
+      <QtMocFileName>moc_%(Filename).cpp</QtMocFileName>
+    </QtMoc>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="view.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="MVC_Controller.hpp" />
+    <QtMoc Include="MVC_Model.hpp" />
+    <QtMoc Include="cameraInputworker.hpp" />
+    <QtMoc Include="capacitiveBankManager.hpp" />
+    <ClInclude Include="linearStage.hpp" />
+    <ClInclude Include="RedpitayaCard.hpp" />
+    <ClInclude Include="RpSignalGn.hpp" />
+    <QtMoc Include="applyInputworker.h" />
+    <ClInclude Include="commonValues.h" />
+    <ClInclude Include="controller.hpp" />
+    <QtMoc Include="inputworker.h" />
+    <ClInclude Include="scpi.hpp" />
+    <QtMoc Include="view.h" />
+    <QtMoc Include="videoRecorderWorker.hpp" />
+    <ClInclude Include="signalPresetValues.hpp" />
+    <ClInclude Include="waveGnPresets.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\mkspecs\features\data\dummy.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cl -Bx"$(QTDIR)\bin\qmake.exe" -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -Zi -MDd -std:c++17 -utf-8 -W3 -w34100 -w34189 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E $(QTDIR)\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;$(IntDir)\moc_predefs.h</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generate moc_predefs.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\moc_predefs.h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\mkspecs\features\data\dummy.cpp;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cl -Bx"$(QTDIR)\bin\qmake.exe" -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -O2 -MD -std:c++17 -utf-8 -W3 -w34100 -w34189 -w44456 -w44457 -w44458 -wd4577 -wd4467 -E $(QTDIR)\mkspecs\features\data\dummy.cpp 2&gt;NUL &gt;$(IntDir)\moc_predefs.h</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generate moc_predefs.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\moc_predefs.h;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="view.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\controller_images\spritesheet\A.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\A.png" />
+    <None Include="Images\controller_images\spritesheet\B.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\B.png" />
+    <None Include="Images\controller_images\spritesheet\Buttons.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\Buttons.png" />
+    <None Include="Images\controller_images\Controller.svg" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\Controller.svg" />
+    <None Include="Images\controller_images\spritesheet\X.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\X.png" />
+    <None Include="Images\controller_images\spritesheet\Y.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\Y.png" />
+    <None Include="Images\arrows_images\arrow_circle.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_circle.png" />
+    <None Include="Images\arrows_images\arrow_down_left.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_down_left.png" />
+    <None Include="Images\arrows_images\arrow_down_right.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_down_right.png" />
+    <None Include="Images\arrows_images\arrow_left_down.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_left_down.png" />
+    <None Include="Images\arrows_images\arrow_left_up.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_left_up.png" />
+    <None Include="Images\arrows_images\arrow_right_down.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_right_down.png" />
+    <None Include="Images\arrows_images\arrow_right_up.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_right_up.png" />
+    <None Include="Images\arrows_images\arrow_up_left.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_up_left.png" />
+    <None Include="Images\arrows_images\arrow_up_right.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_up_right.png" />
+    <None Include="Images\controller_images\controller.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller.png" />
+    <None Include="Images\controller_images\controller_LB.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_LB.png" />
+    <None Include="Images\controller_images\controller_LT.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_LT.png" />
+    <None Include="Images\controller_images\controller_RB.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_RB.png" />
+    <None Include="Images\controller_images\controller_RT.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_RT.png" />
+    <None Include="Images\controller_images\controller_button_A.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_button_A.png" />
+    <None Include="Images\controller_images\controller_button_B.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_button_B.png" />
+    <None Include="Images\controller_images\controller_button_X.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_button_X.png" />
+    <None Include="Images\controller_images\controller_button_Y.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_button_Y.png" />
+    <None Include="Images\controller_images\controller_digi_down.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_digi_down.png" />
+    <None Include="Images\controller_images\controller_digi_left.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_digi_left.png" />
+    <None Include="Images\controller_images\controller_digi_right.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_digi_right.png" />
+    <None Include="Images\controller_images\controller_digi_up.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_digi_up.png" />
+    <None Include="Images\controller_images\controller_menu.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_menu.png" />
+    <None Include="Images\controller_images\controller_select.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_select.png" />
+    <None Include="Images\controller_images\controller_stick_left.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_left.png" />
+    <None Include="Images\controller_images\controller_stick_left_press_0.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_left_press_0.png" />
+    <None Include="Images\controller_images\controller_stick_left_press_1.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_left_press_1.png" />
+    <None Include="Images\controller_images\controller_stick_right.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_right.png" />
+    <None Include="Images\controller_images\controller_stick_right_press_0.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_right_press_0.png" />
+    <None Include="Images\controller_images\controller_stick_right_press_1.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_right_press_1.png" />
+    <None Include="Images\controller_images\controller_top.png" />
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_top.png" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(QtMsBuild)\qt.targets" Condition="Exists('$(QtMsBuild)\qt.targets')" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

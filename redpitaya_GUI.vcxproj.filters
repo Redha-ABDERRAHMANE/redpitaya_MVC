@@ -1,0 +1,346 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Distribution Files">
+      <UniqueIdentifier>{B83CAF91-C7BF-462F-B76C-EA11631F866C}</UniqueIdentifier>
+      <Extensions>*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Distribution Files">
+      <UniqueIdentifier>{B83CAF91-C7BF-462F-B76C-EA11631F866C}</UniqueIdentifier>
+      <Extensions>*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="view.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="MVC_Controller.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MVC_Model.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="applyInputworker.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="commonValues.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="controller.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="inputworker.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="view.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="waveGnPresets.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="cameraInputworker.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="videoRecorderWorker.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="capacitiveBankManager.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="view.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\controller_images\spritesheet\A.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\A.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\spritesheet\B.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\B.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\spritesheet\Buttons.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\Buttons.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\Controller.svg">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\Controller.svg">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\spritesheet\X.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\X.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\spritesheet\Y.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\spritesheet\Y.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_circle.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_circle.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_down_left.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_down_left.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_down_right.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_down_right.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_left_down.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_left_down.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_left_up.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_left_up.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_right_down.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_right_down.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_right_up.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_right_up.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_up_left.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_up_left.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\arrows_images\arrow_up_right.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\arrows_images\arrow_up_right.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_LB.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_LB.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_LT.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_LT.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_RB.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_RB.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_RT.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_RT.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_button_A.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_button_A.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_button_B.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_button_B.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_button_X.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_button_X.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_button_Y.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_button_Y.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_digi_down.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_digi_down.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_digi_left.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_digi_left.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_digi_right.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_digi_right.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_digi_up.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_digi_up.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_menu.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_menu.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_select.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_select.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_stick_left.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_left.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_stick_left_press_0.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_left_press_0.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_stick_left_press_1.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_left_press_1.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_stick_right.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_right.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_stick_right_press_0.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_right_press_0.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_stick_right_press_1.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_right_press_1.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="Images\controller_images\controller_top.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+    <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_top.png">
+      <Filter>Distribution Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="scpi.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RpSignalGn.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RedpitayaCard.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linearStage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="signalPresetValues.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
