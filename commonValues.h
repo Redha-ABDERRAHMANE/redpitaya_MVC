@@ -1,7 +1,7 @@
 #ifndef COMMONVALUES_H
 #define COMMONVALUES_H
 
-
+#include <array>
 
  enum AmplitudeValues {
     AMPLITUDE_0 = 0,
@@ -29,7 +29,10 @@ enum BoardChannel {
     PRIMARY_BOARD_COMMON_PHASE_INDEX = 2,
     SECONDARY_BOARD_FIRST_AMP_INDEX = 3,
     SECONDARY_BOARD_SECOND_AMP_INDEX = 4,
-    SECONDARY_BOARD_COMMON_PHASE_INDEX = 5
+    SECONDARY_BOARD_COMMON_PHASE_INDEX = 5,
+    TERTIARY_BOARD_FIRST_AMP_INDEX = 6,
+    TERTIARY_BOARD_SECOND_AMP_INDEX = 7,
+    TERTIARY_BOARD_COMMON_PHASE_INDEX = 8,
 };
 
 enum SignalGnSource {
@@ -41,7 +44,9 @@ enum SignalGnSource {
 
 const enum RPBoards {
     PRIMARY_BOARD = 1,
-    SECONDARY_BOARD = 2
+    SECONDARY_BOARD = 2,
+    TERTIARY_BOARD = 3,
+    SLAVE_BOARDS = 2
 
 };
 
@@ -60,9 +65,18 @@ const enum LinearStageMotion:int {
 };
 
 const enum CameraFrameResolution {
-    FRAMEWIDTH = 2592,
-    FRAMEHEIGHT= 1944
+    FRAMEWIDTH = 2584,//2592,
+    FRAMEHEIGHT= 1942//1944
 };
+const enum Dimensions {
+    XY,
+    XZ,
+    YZ,
+    DIMENSIONSIZE
+};
+
+
+const std::array<const char*, SLAVE_BOARDS> arraySlaveBoardsIP = { };
 
 
 

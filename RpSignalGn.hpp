@@ -25,33 +25,49 @@ struct TaskConfig {
 };
 
 
-typedef std::array<float, 6> preset_array_t ;
+
 
 class RpSignalGn
 {
+    typedef std::array<float, 9> preset_array_t;
+    typedef std::pair<preset_array_t, preset_array_t> pair_p_array_t;
 private:
 	
 	//waveGnPresets presetFactory;
 
 	RedpitayaCards rpBoards;
     int currentFrequency=5;
-    const std::array<TaskConfig, 8> taskConfigs = {{
+    std::array<TaskConfig, 12> taskConfigs = {{
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_COMMON_PHASE_INDEX    ,  SOURCE_1, "PHAS"},
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_COMMON_PHASE_INDEX    ,  SOURCE_2, "PHAS"},
         {SECONDARY_BOARD,   SECONDARY_BOARD_COMMON_PHASE_INDEX  ,  SOURCE_1, "PHAS"},
         {SECONDARY_BOARD,   SECONDARY_BOARD_COMMON_PHASE_INDEX  ,  SOURCE_2, "PHAS"},
+        {TERTIARY_BOARD,    TERTIARY_BOARD_COMMON_PHASE_INDEX   ,  SOURCE_1, "PHAS"},
+        {TERTIARY_BOARD,    TERTIARY_BOARD_COMMON_PHASE_INDEX   ,  SOURCE_2, "PHAS"},
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_FIRST_AMP_INDEX       ,  SOURCE_1, "VOLT"},
         {PRIMARY_BOARD  ,   PRIMARY_BOARD_SECOND_AMP_INDEX      ,  SOURCE_2, "VOLT"},
         {SECONDARY_BOARD,   SECONDARY_BOARD_FIRST_AMP_INDEX     ,  SOURCE_1, "VOLT"},
-        {SECONDARY_BOARD,   SECONDARY_BOARD_SECOND_AMP_INDEX    ,  SOURCE_2, "VOLT"}
-    }};
+        {SECONDARY_BOARD,   SECONDARY_BOARD_SECOND_AMP_INDEX    ,  SOURCE_2, "VOLT"},
+        {TERTIARY_BOARD,    TERTIARY_BOARD_FIRST_AMP_INDEX      ,  SOURCE_1, "VOLT"},
+        {TERTIARY_BOARD,    TERTIARY_BOARD_SECOND_AMP_INDEX     ,  SOURCE_2, "VOLT"}
+
+        }};
+        // REMOVED THE LAST TWO TO TEST Z UP AND DOWN WITH TWO BUTTONS WITHOUT THE NEED TO CHANGE THE PRESET
+        // IT RUNS INDEPENDENTLY FROM THE XY PRESET FOR NOW
+        // 
+        //{TERTIARY_BOARD,    TERTIARY_BOARD_FIRST_AMP_INDEX      ,  SOURCE_1, "VOLT"},
+        //{TERTIARY_BOARD,    TERTIARY_BOARD_SECOND_AMP_INDEX     ,  SOURCE_2, "VOLT"}
+    static constexpr double EPSILON = 1E-3;
 
 
 
 public:
 	
-	RpSignalGn(const char* primaryBoardIP, const char* secondaryBoardIP) :
-        rpBoards(primaryBoardIP, secondaryBoardIP, DEFAULT_FREQUENCY),currentFrequency(DEFAULT_FREQUENCY){
+	RpSignalGn(const char* primaryBoardIP, std::array<const char*,SLAVE_BOARDS> slaveBoardsIP= arraySlaveBoardsIP) :
+        rpBoards(primaryBoardIP, slaveBoardsIP, DEFAULT_FREQUENCY),currentFrequency(DEFAULT_FREQUENCY){
+
+
+
         
 
 
@@ -70,6 +86,7 @@ public:
 
         if (V_P == "PHAS") {
             rpBoards.send_txt(card, command + std::to_string(target_value));
+            std::cout << "\n board number "<<card<<"command : " << command + std::to_string(target_value) << std::endl;
             return; 
 
         }
@@ -77,13 +94,15 @@ public:
         for (uint8_t i = 0; i < STEPS; i++) {
 			
             new_value += step_size;
-            rpBoards.send_txt(card, command + std::to_string(new_value));
-            //std::cout << command + std::to_string(new_value) << std::endl;
-	
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (!(abs(new_value - target_value) < EPSILON)) {
+                rpBoards.send_txt(card, command + std::to_string(new_value));
+                //std::cout << command + std::to_string(new_value) << std::endl;
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
         }
 
-        std::cout << command + std::to_string(target_value) << std::endl;
+        std::cout <<'\n' << command + std::to_string(target_value) << std::endl;
 
         rpBoards.send_txt(card, command + std::to_string(target_value));
 
@@ -97,11 +116,10 @@ public:
 	}
 	//TODO COMPLETE THIS METHOD
     bool ApplyPresetValues(preset_array_t& nextPreset, const preset_array_t& currentPreset){
-		// In the experiment source 1 and 2 of the secondary board are inverted 
-		//WARNING : THE SOURCES IN THE PRESET ARRAY ARE INVERTED FOR THE SECONDARY BOARD : nextPreset[3] -> GO TO SOURCE_2 ,nextPreset[4] -> GO TO SOURCE_1
-
-        std::array<std::future<void>, 8> threadArray;
-        for (size_t i = 0; i < taskConfigs.size(); ++i) {  //size_t to avoid getting warnings about i < taskConfigs.size() because .size() returns size_t
+		
+       
+        std::array<std::future<void>,12 > threadArray;
+        for (size_t i = 0; i < taskConfigs.size(); ++i) {  
             const auto& config = taskConfigs[i];
             threadArray[i] = std::async(
                 std::launch::async,
@@ -123,14 +141,16 @@ public:
 
     void  ApplyFrequencyValues(const float& nextFrequency){
         std::cout<<"currentFrequency:"<<currentFrequency<<std::endl;
-        std::array<std::future<void>, 4> threadArray={
+        std::array<std::future<void>, 6> threadArray={
 
 
 
         std::async(std::launch::async,&RpSignalGn::DetectRampUpOrDown,this, PRIMARY_BOARD, nextFrequency, currentFrequency, SOURCE_1, "FREQ:FIX:Direct "),
         std::async(std::launch::async,&RpSignalGn::DetectRampUpOrDown,this, PRIMARY_BOARD, nextFrequency, currentFrequency, SOURCE_2, "FREQ:FIX:Direct "),
         std::async(std::launch::async,&RpSignalGn::DetectRampUpOrDown,this, SECONDARY_BOARD, nextFrequency, currentFrequency, SOURCE_1, "FREQ:FIX:Direct "),
-        std::async(std::launch::async,&RpSignalGn::DetectRampUpOrDown,this, SECONDARY_BOARD, nextFrequency, currentFrequency, SOURCE_2, "FREQ:FIX:Direct ")
+        std::async(std::launch::async,&RpSignalGn::DetectRampUpOrDown,this, SECONDARY_BOARD, nextFrequency, currentFrequency, SOURCE_2, "FREQ:FIX:Direct "),
+        std::async(std::launch::async,&RpSignalGn::DetectRampUpOrDown,this, TERTIARY_BOARD, nextFrequency, currentFrequency, SOURCE_1, "FREQ:FIX:Direct "),
+        std::async(std::launch::async,&RpSignalGn::DetectRampUpOrDown,this, TERTIARY_BOARD, nextFrequency, currentFrequency, SOURCE_2, "FREQ:FIX:Direct ")
 
 
         };

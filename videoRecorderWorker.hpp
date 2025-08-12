@@ -72,6 +72,7 @@ public slots:
 
             connect(ffmpegProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                 [this](int exitCode, QProcess::ExitStatus exitStatus) {
+                    (void)exitStatus;
                     std::cout << "FFmpeg finished with exit code: " << exitCode << std::endl;
                 });
         }
@@ -85,7 +86,7 @@ public slots:
         args << "-f" << "rawvideo"
             << "-pix_fmt" << "gray"
             << "-s" << QString("%1x%2").arg(width).arg(height)
-            << "-r" << "35"
+            << "-r" << "25"
             << "-i" << "-"
             << "-vcodec" << "libx264"
             << "-preset" << "ultrafast"  // Move here

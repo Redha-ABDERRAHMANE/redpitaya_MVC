@@ -88,7 +88,7 @@ void View::UpdateLastDirectionButtonUsed(const int &newDirectionIndex)
     if(indexLastDirectionUsed != -1){
         auto previous_button=arrayDirectionButtons[indexLastDirectionUsed];
         previous_button->setDisabled(false);
-        previous_button->setStyleSheet("background-color: #3c3c3c; QPushButton:hover { background-color: #5c5c5c; }");
+        previous_button->setStyleSheet("QPushButton { background-color: #3c3c3c; } QPushButton:hover { background-color: #5c5c5c; }");
     }
     auto new_button =arrayDirectionButtons[newDirectionIndex];
     new_button->setDisabled(true);
@@ -207,11 +207,14 @@ void View::SetAxisDirectionButtons(QVBoxLayout*& movementInfoVerticalLayout,QHBo
         new QPushButton("YZ", this),
     };
 
-    for(QPushButton*& axisButton: arrayAxisButtons) {
-
-        axisButton->setDisabled(true);
-        axisInfoHorizontalLayout->addWidget(axisButton);
+    for (size_t i = 0;i < arrayAxisButtons.size();i++) {
+        axisInfoHorizontalLayout->addWidget(arrayAxisButtons[i]);
+        connect(arrayAxisButtons[i], &QPushButton::clicked, this, [this, i]() { 
+            SetDirectionDimension(i,true);
+            emit PressedDimensionChange(i,true);
+            });
     }
+    arrayAxisButtons[0]->setDisabled(true);
     arrayAxisButtons[0]->setStyleSheet("background-color: green");
 
 
@@ -351,6 +354,7 @@ void View::SetNewFrameToDisplay( const QImage& image) {
     targetSize = imageView->viewport()->size();
     scale = qMin(targetSize.width() / imageSize.width(),targetSize.height() / imageSize.height());
 
+
     imageView->resetTransform();
     pixmapItem->resetTransform();
 
@@ -364,6 +368,7 @@ void View::SetNewFrameToDisplay( const QImage& image) {
     pixmapItem->setTransform(QTransform::fromScale(scale, scale));
     pixmapItem->setRotation(imageRotationAngle);
     //imageView->centerOn(pixmapItem);
+    imageView->fitInView(pixmapItem, Qt::KeepAspectRatio);
     imageView->viewport()->update();
     
 
@@ -381,6 +386,42 @@ void View::EnableLinearStageButtons() {
     for (int i = 0; i < LinearStageMotion::MOTIONSIZE;i++) {
         arrayLinearStageControlsButtons[i]->setDisabled(false);
     }
+}
+
+void View::SetDirectionDimension(const int& button_value, const bool GUI_button) {
+    int index = 0;
+    for (size_t i = 0;i < arrayAxisButtons.size();i++) {
+        if (!arrayAxisButtons[i]->isEnabled()) {
+            index = i;
+            arrayAxisButtons[i]->setDisabled(false);
+            arrayAxisButtons[index]->setStyleSheet("QPushButton { background-color: #3c3c3c; } QPushButton:hover { background-color: #5c5c5c; }");
+            break;
+        }
+
+    }
+    if (!GUI_button) {
+        switch (button_value) {
+
+        case Buttons::TRIGGER_LEFT:
+            index = ((index - 1) % Dimensions::DIMENSIONSIZE) < 0 ? Dimensions::DIMENSIONSIZE - 1 : (index - 1);
+            break;
+
+        case Buttons::TRIGGER_RIGHT:
+            index = (index + 1) % Dimensions::DIMENSIONSIZE;
+            break;
+        }
+    }
+    else { index = button_value; }
+
+
+
+   
+
+    arrayAxisButtons[index]->setDisabled(true);
+        
+    
+    arrayAxisButtons[index]->setStyleSheet("background-color: green");
+
 }
 
 void View::ConfigureLeftLayout() {
@@ -856,6 +897,8 @@ bool View::eventFilter(QObject* obj, QEvent* event) {
                 groupBoxCamera->hide(); // Hide the widget
                 layoutverticalCamera->removeWidget(imageView);
                 layoutCameraWindowPopup->addWidget(imageView);
+                layoutCameraWindowPopup->update();
+                layoutCameraWindowPopup->activate();
                 layoutLeftPart->update(); // Update the layout
                 layoutLeftPart->activate(); // Activate layout changes
 

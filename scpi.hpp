@@ -30,6 +30,8 @@ public:
 
     }
 
+    ScpiServer() = default;
+
     ~ScpiServer() {
         std::cout << "DESTRUCTOR CALLED\n";
         if (clientTCPSocket) NET_DestroyStreamSocket(clientTCPSocket);
@@ -81,7 +83,7 @@ public:
         std::string full_message = message + delimiter;
 
 
-        bool sentBytes = NET_WriteToStreamSocket(clientTCPSocket, (void*)full_message.c_str(), strlen(full_message.c_str()));
+        bool sentBytes = NET_WriteToStreamSocket(clientTCPSocket, (void*)full_message.c_str(),static_cast<int>( strlen(full_message.c_str())));
 
         //ADD IN CASE DATA ARE NOT SENT PROPERLY : NET_WaitUntilStreamSocketDrained
 

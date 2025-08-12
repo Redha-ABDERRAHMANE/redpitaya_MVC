@@ -23,16 +23,16 @@ public:
     }
 
 signals:
-    void ValidInputDetected(int button_value);
+    void ValidInputDetected(int button_value,bool is_trigger= false);
 
 protected:
     void run() override {
-        int button_value;
+        PressedButton pressedButton;
         while (!isInterruptionRequested()) {
            
-            button_value = controller->CheckControllerEvent();
-            if (button_value != Buttons::INVALID_BUTTON) {
-                emit ValidInputDetected(button_value);
+            pressedButton = controller->CheckControllerEvent();
+            if (pressedButton.button != Buttons::INVALID_BUTTON) {
+                emit ValidInputDetected(pressedButton.button,pressedButton.isTrigger);
             }
         }
         

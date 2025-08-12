@@ -50,16 +50,28 @@ public slots:
         std::cout << "GUI called to apply new preset\n";
         model->GetAndApplyPresetMVC( button_combination.nextButton, button_combination.currentHat);
     }
-    void apply_ControllerInput(const int& button_value){
-        model->GetAndApplyPreset(button_value);
+    void apply_ControllerInput(const int& button_value,const bool is_trigger){
+        if (is_trigger) {
+            model->ChangeDirectionDimension(button_value);
+        }
+        else {
+            model->GetAndApplyPreset(button_value);
+        }
     }
 
     void apply_FrequencyShift(const int& frequencyValue) {
         model->ApplyFrequencyValue(frequencyValue);
+        model->CapacitiveBankManagerFrequencyChange(frequencyValue);
     }
 
     void apply_PhaseShift(const int& card,const int& phaseValue) {
         model->ApplyPhaseValue( card, phaseValue);
+    }
+
+    void ApplyDimensionChange(const int dimensionIndex, const bool GUI_button = false) {
+
+        model->ChangeDirectionDimension(dimensionIndex, GUI_button);
+
     }
 
     void ApplyLinearStageMotion(const LinearStageMotion motionState ) {

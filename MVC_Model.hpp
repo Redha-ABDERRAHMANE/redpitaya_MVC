@@ -2,11 +2,12 @@
 #include "RpSignalGn.hpp"
 #include "waveGnPresets.hpp"
 #include "linearStage.hpp"
+#include "capacitiveBankManager.hpp"
 #include <QObject>
 #include <QThread>
 #include <QDebug>
 #include <commonValues.h>
-typedef std::array<float, 6> preset_array_t ;
+
 class MVC_Model: public QObject
 {
     Q_OBJECT
@@ -14,12 +15,14 @@ class MVC_Model: public QObject
 
 private:
 
-    const char* IP_PRIMARY = "169.254.139.169"; // Master board
-    const char* IP_SECONDARY = "127.0.0.1";     // Slave board
+    const char* IP_PRIMARY = "169.254.112.159"; //"169.254.139.169"; // Master board
+    const char* IP_SECONDARY = "169.254.9.76";     // Slave board
+    std::array<const char*, SLAVE_BOARDS> arraySlaveBoardIPs = { "169.254.9.76", "169.254.139.169" };
     RpSignalGn signalGn;
     waveGnPresets presetsGn;
     Controller& controller ;
     LinearStage linearStage;
+    CapacitiveBankManager capacitiveBankManager;
     
   
 
@@ -30,11 +33,15 @@ private:
 
 public:
     
-    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, IP_SECONDARY), presetsGn(), controller(c),linearStage(), nextPreset({}), currentPreset({}) {
+    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, arraySlaveBoardIPs), presetsGn(), controller(c),linearStage(),capacitiveBankManager(), nextPreset({}), currentPreset({}) {
+        if (!capacitiveBankManager.ConnectToDevice()) {
+            std::cout << "Could not connect to Serial Device\n";
+        }
         if (!linearStage.ConnectToDevice()) {
             std::cout << "Could not connect to linear stage\n";
 
         }
+
 
     }
     MVC_Model() = default;
@@ -62,7 +69,9 @@ signals:
 
 public slots:
 
-
+    void ChangeDirectionDimension(int button_value, const bool GUI_button = false) {
+        presetsGn.SetDimension(button_value, GUI_button);
+    }
 
     void GetAndApplyPreset(const int& button_value) {
 
@@ -106,7 +115,7 @@ public slots:
 
         // Change this by signal emition 
         // Let the MVC_Controller handle the lastDpasUsed update
-        controller.set_lastDpadUsed(button_current_value != -1 ? button_current_value : button_next_value);
+        controller.SetLastDpadUsed(button_current_value != -1 ? button_current_value : button_next_value);
 
 
         presetsGn.SetNextPreset(button_next_value,button_current_value);
@@ -171,6 +180,16 @@ public slots:
 
     bool LinearStageHome() {
         return linearStage.Home();
+    }
+
+    bool CapacitiveBankManagerFrequencyChange(const int frequency) {
+        bool result = false;
+        QMetaObject::invokeMethod(&capacitiveBankManager, [&]() {
+            result = capacitiveBankManager.sendFrequencyChange(frequency);
+            });
+
+        return result;
+
     }
 
 

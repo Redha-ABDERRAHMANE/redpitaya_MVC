@@ -568,14 +568,14 @@ public:
             uchar* frameBuffer;
             int frameCount = 0;
             std::cout << "entered camera get frame " << std::endl;
-            bool frameToCapture = true;
+            //bool frameToCapture = true;
             QThread* currentThread = QThread::currentThread();
 
             auto lastDisplayTime = std::chrono::high_resolution_clock::now();
             auto lastCaptureTime = std::chrono::high_resolution_clock::now();
             const int displayInterval = 25; // experimental value for 30+ fps
-            const int captureInterval = 40; // experimental value for 25 fps recording
-            const int displayWhileCaptureInterval = 25;// experimental value for 25 fps for GUI display due to SendImageToCapture
+            //const int captureInterval = 40; // experimental value for 25 fps recording
+            //const int displayWhileCaptureInterval = 25;// experimental value for 25 fps for GUI display due to SendImageToCapture
 
             while (!currentThread->isInterruptionRequested()) {
                 if (frameObserver->GetFrame(displayFrame,frameBuffer)) {
@@ -592,6 +592,7 @@ public:
                                    emit ImageReceived(displayFrame);
                                    emit SendImageToCapture(frameBuffer, (long int)payloadSize);});
 
+                                
                                 
                             }
                             else {
