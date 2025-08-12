@@ -65,8 +65,8 @@ const enum LinearStageMotion:int {
 };
 
 const enum CameraFrameResolution {
-    FRAMEWIDTH = 2592,
-    FRAMEHEIGHT= 1944
+    FRAMEWIDTH = 2584,//2592,
+    FRAMEHEIGHT= 1942//1944
 };
 const enum Dimensions {
     XY,
