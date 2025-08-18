@@ -57,6 +57,7 @@ private:
         // 
         //{TERTIARY_BOARD,    TERTIARY_BOARD_FIRST_AMP_INDEX      ,  SOURCE_1, "VOLT"},
         //{TERTIARY_BOARD,    TERTIARY_BOARD_SECOND_AMP_INDEX     ,  SOURCE_2, "VOLT"}
+    static constexpr double EPSILON = 1E-3;
 
 
 
@@ -79,7 +80,12 @@ public:
 
 
     void SignalGradualShift(const int& card, const int& source, const float& current_value, const float& target_value, const std::string& V_P = "VOLT") {
-        if(IsEqual(target_value,current_value)) { return; }
+        
+        if (IsFloatEqual(target_value, current_value)) {
+            
+            return;
+        }
+        
 		float step_size = (target_value - current_value) / STEPS;
 		const std::string command = "SOUR" + std::to_string(source) + ":" + V_P + " ";
 		float new_value = current_value;
@@ -94,9 +100,9 @@ public:
         for (uint8_t i = 0; i < STEPS; i++) {
 			
             new_value += step_size;
-            if (!IsEqual(new_value,target_value)) {
+            if (!IsFloatEqual(new_value , target_value)) {
                 rpBoards.send_txt(card, command + std::to_string(new_value));
-                //std::cout << command + std::to_string(new_value) << std::endl;
+                std::cout << command + std::to_string(new_value) << std::endl;
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
@@ -107,6 +113,7 @@ public:
         rpBoards.send_txt(card, command + std::to_string(target_value));
 
 	}
+
 
 	//TODO COMPLETE THIS METHOD
     bool ApplyPresetValues(preset_array_t& nextPreset, const preset_array_t& currentPreset){
@@ -119,9 +126,9 @@ public:
                 std::launch::async,
                 &RpSignalGn::SignalGradualShift, this,
                 config.board,
-                nextPreset[config.presetValueIndex],
-                currentPreset[config.presetValueIndex],
                 config.source,
+                currentPreset[config.presetValueIndex],
+                nextPreset[config.presetValueIndex],
                 config.param
                 );
         }
@@ -139,12 +146,12 @@ public:
 
 
 
-        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, PRIMARY_BOARD, nextFrequency, currentFrequency, SOURCE_1, "FREQ:FIX:Direct "),
-        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, PRIMARY_BOARD, nextFrequency, currentFrequency, SOURCE_2, "FREQ:FIX:Direct "),
-        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, SECONDARY_BOARD, nextFrequency, currentFrequency, SOURCE_1, "FREQ:FIX:Direct "),
-        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, SECONDARY_BOARD, nextFrequency, currentFrequency, SOURCE_2, "FREQ:FIX:Direct "),
-        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, TERTIARY_BOARD, nextFrequency, currentFrequency, SOURCE_1, "FREQ:FIX:Direct "),
-        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, TERTIARY_BOARD, nextFrequency, currentFrequency, SOURCE_2, "FREQ:FIX:Direct ")
+        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, PRIMARY_BOARD,SOURCE_1, currentFrequency , nextFrequency,  "FREQ:FIX:Direct "),
+        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, PRIMARY_BOARD,SOURCE_2, currentFrequency , nextFrequency,  "FREQ:FIX:Direct "),
+        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, SECONDARY_BOARD,SOURCE_1, currentFrequency , nextFrequency,"FREQ:FIX:Direct "),
+        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, SECONDARY_BOARD,SOURCE_2, currentFrequency , nextFrequency,"FREQ:FIX:Direct "),
+        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, TERTIARY_BOARD,SOURCE_1, currentFrequency , nextFrequency, "FREQ:FIX:Direct "),
+        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, TERTIARY_BOARD,SOURCE_2, currentFrequency , nextFrequency, "FREQ:FIX:Direct ")
 
 
         };
@@ -159,8 +166,8 @@ public:
         
    
         std::array<std::future<void>, 2> threadArray = {
-        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, card, nextPhase, currentPhase, SOURCE_1, "PHAS"),
-        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, card, nextPhase, currentPhase, SOURCE_2, "PHAS"),
+        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, card, SOURCE_1, currentPhase, nextPhase, "PHAS"),
+        std::async(std::launch::async,&RpSignalGn::SignalGradualShift,this, card, SOURCE_2, currentPhase, nextPhase, "PHAS")
         };
 
         for (std::future<void>& thread : threadArray) { thread.get(); }
