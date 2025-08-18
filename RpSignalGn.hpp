@@ -57,7 +57,6 @@ private:
         // 
         //{TERTIARY_BOARD,    TERTIARY_BOARD_FIRST_AMP_INDEX      ,  SOURCE_1, "VOLT"},
         //{TERTIARY_BOARD,    TERTIARY_BOARD_SECOND_AMP_INDEX     ,  SOURCE_2, "VOLT"}
-    static constexpr double EPSILON = 1E-3;
 
 
 
@@ -95,7 +94,7 @@ public:
         for (uint8_t i = 0; i < STEPS; i++) {
 			
             new_value += step_size;
-            if (!(abs(new_value - target_value) < EPSILON)) {
+            if (!IsEqual(new_value,target_value)) {
                 rpBoards.send_txt(card, command + std::to_string(new_value));
                 //std::cout << command + std::to_string(new_value) << std::endl;
 
