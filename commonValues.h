@@ -1,7 +1,8 @@
 #ifndef COMMONVALUES_H
 #define COMMONVALUES_H
-
+#define IsEqual(a,b) (abs((a)-(b)) < EPSILON)
 #include <array>
+constexpr double EPSILON = 1E-3;
 
  enum AmplitudeValues {
     AMPLITUDE_0 = 0,
