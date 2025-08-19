@@ -57,7 +57,7 @@ signals:
     void StartCameraRecord();
     void StopCameraRecord();
 
-    void PressedLinearStageControlButton(LinearStageMotion motion);
+    void PressedLinearStageControlButton(LinearStageAxis axis,LinearStageMotion motion);
     void PressedDimensionChange(const int dimension_index, const bool GUI_button);
 
 
@@ -153,8 +153,9 @@ QPushButton*             buttonCaptureVideo         = nullptr;
 bool                     recording                  = false;
 // Linear Stage controls
 QGroupBox*               groupBoxLinearStageControls= nullptr;
-std::array<QPushButton*, LinearStageMotion::MOTIONSIZE> arrayLinearStageControlsButtons;
-
+std::array<QPushButton*, LinearStageMotion::MOTIONSIZE> arrayLinearStageControlsButtons = { nullptr};
+std::array<QPushButton*, (int)LinearStageAxis::AXISSIZE> arrayLinearStageAxis= { nullptr};
+int currentLinearStageAxis = LinearStageAxis::XAXIS;
 //Second window
 QWidget*                 windowCameraPopup          = nullptr;
 QVBoxLayout*             layoutCameraWindowPopup    = nullptr;
@@ -166,8 +167,8 @@ QVBoxLayout*             layoutCameraWindowPopup    = nullptr;
 
     //Template for arrayDirectionButtons = {up-left, up-right,down-left, down-right, right-up , right-down, left-up  , left-down}
 
-    std::array<QPushButton*, 10> arrayDirectionButtons;
-    std::array<QPushButton*, 3> arrayAxisButtons;
+    std::array<QPushButton*, 10> arrayDirectionButtons = { nullptr };
+    std::array<QPushButton*, 3> arrayAxisButtons = { nullptr };
 
 
 

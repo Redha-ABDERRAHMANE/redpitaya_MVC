@@ -77,6 +77,12 @@ const enum Dimensions {
     DIMENSIONSIZE
 };
 
+const enum  LinearStageAxis {
+    XAXIS,
+    YAXIS,
+    AXISSIZE
+};
+
 
 const std::array<const char*, SLAVE_BOARDS> arraySlaveBoardsIP = { };
 

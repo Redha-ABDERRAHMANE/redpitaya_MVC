@@ -21,7 +21,7 @@ private:
     RpSignalGn signalGn;
     waveGnPresets presetsGn;
     Controller& controller ;
-    LinearStage linearStage;
+    std::array<LinearStage,LinearStageAxis::AXISSIZE> linearStagesXY;
     CapacitiveBankManager capacitiveBankManager;
     
   
@@ -33,14 +33,16 @@ private:
 
 public:
     
-    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, arraySlaveBoardIPs), presetsGn(), controller(c),linearStage(),capacitiveBankManager(), nextPreset({}), currentPreset({}) {
+    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, arraySlaveBoardIPs), presetsGn(), controller(c), linearStagesXY(),capacitiveBankManager(), nextPreset({}), currentPreset({}) {
         if (!capacitiveBankManager.ConnectToDevice()) {
             std::cout << "Could not connect to Serial Device\n";
         }
-        if (!linearStage.ConnectToDevice()) {
-            std::cout << "Could not connect to linear stage\n";
-
+        for (LinearStage& linearStage : linearStagesXY) {
+            if (!linearStage.ConnectToDevice()) {
+                std::cout << "Could not connect to linear stage\n";
+            }
         }
+
 
 
     }
@@ -159,27 +161,27 @@ public slots:
         
     }
 
-    bool LinearStageMoveForward() {
-        return linearStage.MoveForward();
+    bool LinearStageMoveForward(const LinearStageAxis axis) {
+        return linearStagesXY[axis].MoveForward();
     }
-    bool LinearStageMoveBackward() {
-        return linearStage.MoveBackward();
+    bool LinearStageMoveBackward(const LinearStageAxis axis) {
+        return linearStagesXY[axis].MoveBackward();
     }
-    bool LinearStageJogForward(){
-        return linearStage.JogForward();
+    bool LinearStageJogForward(const LinearStageAxis axis){
+        return linearStagesXY[axis].JogForward();
 
     }
-    bool LinearStageJogBackward(){
-        return linearStage.JogBackward();
+    bool LinearStageJogBackward(const LinearStageAxis axis){
+        return linearStagesXY[axis].JogBackward();
 
     }
 
-    bool LinearStageStopMotion() {
-        return linearStage.StopMotion();
+    bool LinearStageStopMotion(const LinearStageAxis axis) {
+        return linearStagesXY[axis].StopMotion();
     }
 
-    bool LinearStageHome() {
-        return linearStage.Home();
+    bool LinearStageHome(const LinearStageAxis axis) {
+        return linearStagesXY[axis].Home();
     }
 
     bool CapacitiveBankManagerFrequencyChange(const int frequency) {
