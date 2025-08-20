@@ -186,6 +186,8 @@ public slots:
 
     LinearStageMotion DetermineLinearStageMotion(const int button_value, const int axis_value) {
         LinearStageMotion motion = LinearStageMotion::STOPMOTION;
+        if (axis_value == 0) return motion;
+
         if (button_value == Buttons::RIGHT_THUMBSTICK_X) {
             motion = axis_value == AXISMAXVALUE ? LinearStageMotion::MOVEFORWARD : axis_value == AXISMINVALUE ? LinearStageMotion::MOVEBACKWARD : LinearStageMotion::STOPMOTION;
 

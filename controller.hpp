@@ -77,6 +77,7 @@ private:
 	static constexpr int INVALID_VALUE = -1;
 	static constexpr int SDL_WAITPOLLTIMEOUT = 100;
 	const int DEADZONE = 10000;
+	const 
 	int gamepadIndex = 0;
 
 	bool SDLInitialized;
@@ -87,7 +88,8 @@ private:
 	SDL_Event event;
 
 	int lastDpadUsed = Buttons::INVALID_BUTTON;
-	bool isThumbstickUsed = false;
+	bool thumbstickReachedMax = false;
+	PressedButton lastUsedThumbstick = { Buttons::INVALID_BUTTON, InputType::THUMBSTICKMOTION,INVALID_VALUE };
 
 	int CheckValidControllerButtonAndCoherence(const int& button_value) {
 		std::cout << "button used" << button_value << std::endl;
@@ -136,9 +138,7 @@ private:
 	int CheckValidControllerThumbstickAndCoherence(const int& button_value) {
 		
 		std::cout << "thumbstick pressed \n";
-		if (!isThumbstickUsed) {
-			isThumbstickUsed = true;
-		}
+
 		switch (button_value) {
 		case Thumbsticks::LEFT_THUMBSTICK_X_AXIS: return Buttons::LEFT_THUMBSTICK_X;  break;
 		case Thumbsticks::LEFT_THUMBSTICK_Y_AXIS: return Buttons::LEFT_THUMBSTICK_Y;  break;
@@ -228,23 +228,37 @@ public:
 			else { std::cout << "Gamepad not connected\n"; }
 			
 		}
-		//ADD HISTORY CHECKER FOR THUMBSTICK ITS NOT BEEN DONE YET
-		if (event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION && (event.gaxis.value== SDL_JOYSTICK_AXIS_MAX || event.gaxis.value == SDL_JOYSTICK_AXIS_MIN)) {
-
-			if (IsTrigger(static_cast<int>(event.gaxis.axis))) {
-				std::cout << "Trigger pressed : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n";
-				return { CheckValidControllerTriggerAndCoherence(static_cast<int>(event.gaxis.axis)),InputType::TRIGGERPRESS,event.gaxis.value };
-			}
-			if (IsThumbstick(static_cast<int>(event.gaxis.axis))) {
-				std::cout << "Thumbstick moved : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n";
-				return { CheckValidControllerThumbstickAndCoherence(static_cast<int>(event.gaxis.axis)),InputType::THUMBSTICKMOTION,event.gaxis.value };
-			}
-
-		}
-
+		
 		if (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) {
 			return { CheckValidControllerButtonAndCoherence(static_cast<int>(event.gbutton.button)),InputType::BUTTONPRESS, INVALID_VALUE };
 		}
+		//ADD HISTORY CHECKER FOR THUMBSTICK ITS NOT BEEN DONE YET
+		if (event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION) {
+			if ((event.gaxis.value == SDL_JOYSTICK_AXIS_MAX || event.gaxis.value == SDL_JOYSTICK_AXIS_MIN)) {
+
+				if (IsTrigger(static_cast<int>(event.gaxis.axis))) {
+					std::cout << "Trigger pressed : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n";
+					return { CheckValidControllerTriggerAndCoherence(static_cast<int>(event.gaxis.axis)),InputType::TRIGGERPRESS,event.gaxis.value };
+				}
+				if (IsThumbstick(static_cast<int>(event.gaxis.axis))) {
+					std::cout << "Thumbstick moved : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n";
+					
+					lastUsedThumbstick.button = event.gaxis.axis;
+					thumbstickReachedMax = true;
+
+					return { CheckValidControllerThumbstickAndCoherence(static_cast<int>(event.gaxis.axis)),InputType::THUMBSTICKMOTION,event.gaxis.value };
+				}
+			}
+			else if (IsThumbstick(event.gaxis.axis)&&(abs(event.gaxis.value) < SDL_JOYSTICK_AXIS_MAX) && thumbstickReachedMax && lastUsedThumbstick.button== event.gaxis.axis) {
+				std::cout << "Thumbstick moved : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n";
+				thumbstickReachedMax = false;
+				return { CheckValidControllerThumbstickAndCoherence(static_cast<int>(event.gaxis.axis)),InputType::THUMBSTICKMOTION,0 };
+
+			}
+
+		}
+
+
 
 		return { Buttons::INVALID_BUTTON,InputType::NOINPUT,INVALID_VALUE };
 
