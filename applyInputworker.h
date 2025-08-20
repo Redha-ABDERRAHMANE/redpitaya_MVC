@@ -33,6 +33,7 @@ private:
         return model->LinearStageHome(axis);
     }
 
+
 public:
     ApplyInputWorker(MVC_Model* m)
         : model(m) {}
@@ -51,12 +52,17 @@ public slots:
         model->GetAndApplyPresetMVC( button_combination.nextButton, button_combination.currentHat);
     }
     void apply_ControllerInput(const int& button_value,const bool is_trigger){
+        std::cout << "apply controller input called \n";
         if (is_trigger) {
+            std::cout << "ITS TRIGGER\n";
             model->ChangeDirectionDimension(button_value);
         }
         else {
+            std::cout << "ITS BUTTON\n";
             model->GetAndApplyPreset(button_value);
         }
+       
+    
     }
 
     void apply_FrequencyShift(const int& frequencyValue) {
@@ -75,7 +81,7 @@ public slots:
     }
 
     void ApplyLinearStageMotion(const LinearStageAxis axis,const LinearStageMotion motionState ) {
-        std::cout << "linear stage signal called with axis"<<(int) axis<<"\n";
+        std::cout << "linear stage signal called with axis: "<<(int) axis<<"and motion: "<<motionState<<"\n";
         switch (motionState) {
         case LinearStageMotion::MOVEFORWARD:    ApplyLinearStageMoveForward(axis);  break;
         case LinearStageMotion::MOVEBACKWARD:   ApplyLinearStageMoveBackward(axis); break;
@@ -84,6 +90,15 @@ public slots:
         case LinearStageMotion::STOPMOTION:     ApplyLinearStageStopMotion(axis);   break;
         case LinearStageMotion::HOME:           if (ApplyLinearStageHome(axis)) { emit HomingComplete(); };         break;
         }
+
+    }
+
+    void FindAndApplyValidLinearStageMotion(const int button_value, const int axis_value) {
+        LinearStageMotion motion = model->DetermineLinearStageMotion(button_value, axis_value);
+        LinearStageAxis axis = model->DetermineLinearStageMotionAxis(button_value);
+
+        ApplyLinearStageMotion(axis, motion);
+
 
     }
 

@@ -85,6 +85,7 @@ public:
             
             return;
         }
+        std::cout << "SignalGradualShiftCalled\n";
         
 		float step_size = (target_value - current_value) / STEPS;
 		const std::string command = "SOUR" + std::to_string(source) + ":" + V_P + " ";
@@ -134,7 +135,7 @@ public:
         }
 
 		for (std::future<void>& thread : threadArray) {thread.get();}
-
+        std::cout << "PRESET APPLIED\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		return true;
 	}

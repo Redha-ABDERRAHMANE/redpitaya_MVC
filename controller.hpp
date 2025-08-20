@@ -24,6 +24,8 @@ enum Buttons {
 
 	TRIGGER_RIGHT = 100, TRIGGER_LEFT = 101,
 
+	RIGHT_THUMBSTICK_X, RIGHT_THUMBSTICK_Y, LEFT_THUMBSTICK_X, LEFT_THUMBSTICK_Y,
+
 	SELECT = SDL_GAMEPAD_BUTTON_BACK, START = SDL_GAMEPAD_BUTTON_START,
 	INVALID_BUTTON = SDL_GAMEPAD_BUTTON_INVALID
 
@@ -33,6 +35,17 @@ enum Triggers {
 	AXIS_TRIGGER_RIGHT = SDL_GAMEPAD_AXIS_RIGHT_TRIGGER, AXIS_TRIGGER_LEFT = SDL_GAMEPAD_AXIS_LEFT_TRIGGER
 };
 
+enum Thumbsticks {
+	LEFT_THUMBSTICK_X_AXIS = SDL_GAMEPAD_AXIS_LEFTX, LEFT_THUMBSTICK_Y_AXIS = SDL_GAMEPAD_AXIS_LEFTY,
+	RIGHT_THUMBSTICK_X_AXIS = SDL_GAMEPAD_AXIS_RIGHTX, RIGHT_THUMBSTICK_Y_AXIS = SDL_GAMEPAD_AXIS_RIGHTY
+};
+
+enum InputType {
+	NOINPUT,
+	BUTTONPRESS,
+	TRIGGERPRESS,
+	THUMBSTICKMOTION
+};
 inline std::unordered_map<int, int> dictionary_ButtonDirection{
 	{HAT_UP, 0},
 	{HAT_DOWN, 2},
@@ -49,9 +62,13 @@ struct ButtonCombination {
 
 struct PressedButton {
 	int button = Buttons::INVALID_BUTTON;
-	bool isTrigger = false;
+	int inputType = InputType::NOINPUT;
 	int triggerForce = -1;
+
 };
+
+static constexpr int AXISMAXVALUE = SDL_JOYSTICK_AXIS_MAX;
+static constexpr int AXISMINVALUE = SDL_JOYSTICK_AXIS_MIN;
 
 class Controller
 {
@@ -59,6 +76,7 @@ class Controller
 private:
 	static constexpr int INVALID_VALUE = -1;
 	static constexpr int SDL_WAITPOLLTIMEOUT = 100;
+	const int DEADZONE = 10000;
 	int gamepadIndex = 0;
 
 	bool SDLInitialized;
@@ -69,6 +87,7 @@ private:
 	SDL_Event event;
 
 	int lastDpadUsed = Buttons::INVALID_BUTTON;
+	bool isThumbstickUsed = false;
 
 	int CheckValidControllerButtonAndCoherence(const int& button_value) {
 		std::cout << "button used" << button_value << std::endl;
@@ -78,7 +97,6 @@ private:
 			return button_value;
 		}
 		if (button_value == Buttons::SELECT) {
-			blockTrigger = not blockTrigger;
 			return Buttons::INVALID_BUTTON;
 		}
 		if (isHat(button_value)) {
@@ -105,13 +123,36 @@ private:
 
 	}
 	int CheckValidControllerTriggerAndCoherence(const int& button_value) {
-		if (IsTrigger(button_value)) {
-			std::cout << "trigger pressed \n";
-			Buttons realButtonValue = button_value == Triggers::AXIS_TRIGGER_LEFT ? Buttons::TRIGGER_LEFT : Buttons::TRIGGER_RIGHT;
-			if (blockTrigger) { return Buttons::INVALID_BUTTON; }
-			lastDpadUsed = Buttons::INVALID_BUTTON;
-			return realButtonValue;
+		
+		std::cout << "trigger pressed \n";
+		Buttons realButtonValue = button_value == Triggers::AXIS_TRIGGER_LEFT ? Buttons::TRIGGER_LEFT : Buttons::TRIGGER_RIGHT;
+		if (blockTrigger) { return Buttons::INVALID_BUTTON; }
+		lastDpadUsed = Buttons::INVALID_BUTTON;
+		return realButtonValue;
+		
+
+
+	}
+	int CheckValidControllerThumbstickAndCoherence(const int& button_value) {
+		
+		std::cout << "thumbstick pressed \n";
+		if (!isThumbstickUsed) {
+			isThumbstickUsed = true;
 		}
+		switch (button_value) {
+		case Thumbsticks::LEFT_THUMBSTICK_X_AXIS: return Buttons::LEFT_THUMBSTICK_X;  break;
+		case Thumbsticks::LEFT_THUMBSTICK_Y_AXIS: return Buttons::LEFT_THUMBSTICK_Y;  break;
+		case Thumbsticks::RIGHT_THUMBSTICK_X_AXIS:return Buttons::RIGHT_THUMBSTICK_X;  break;
+		case Thumbsticks::RIGHT_THUMBSTICK_Y_AXIS:return Buttons::RIGHT_THUMBSTICK_Y;  break;
+
+		}
+		
+	}
+	bool IsTrigger(const int& button_value) {
+		return WithInInterval(Triggers::AXIS_TRIGGER_LEFT, button_value, Triggers::AXIS_TRIGGER_RIGHT);
+	}
+	bool IsThumbstick(const int& button_value) {
+		return WithInInterval(Thumbsticks::LEFT_THUMBSTICK_X_AXIS, button_value, Thumbsticks::RIGHT_THUMBSTICK_Y_AXIS);
 	}
 
 public:
@@ -187,18 +228,25 @@ public:
 			else { std::cout << "Gamepad not connected\n"; }
 			
 		}
+		//ADD HISTORY CHECKER FOR THUMBSTICK ITS NOT BEEN DONE YET
+		if (event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION && (event.gaxis.value== SDL_JOYSTICK_AXIS_MAX || event.gaxis.value == SDL_JOYSTICK_AXIS_MIN)) {
 
-		if (event.type == SDL_EVENT_GAMEPAD_AXIS_MOTION && event.gaxis.value== SDL_JOYSTICK_AXIS_MAX) {
-			if (IsTrigger(static_cast<int>(event.gaxis.axis)) && !blockTrigger) { std::cout << "Trigger pressed : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n"; }
-			return { CheckValidControllerTriggerAndCoherence(static_cast<int>(event.gaxis.axis)),true,event.gaxis.value };
+			if (IsTrigger(static_cast<int>(event.gaxis.axis))) {
+				std::cout << "Trigger pressed : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n";
+				return { CheckValidControllerTriggerAndCoherence(static_cast<int>(event.gaxis.axis)),InputType::TRIGGERPRESS,event.gaxis.value };
+			}
+			if (IsThumbstick(static_cast<int>(event.gaxis.axis))) {
+				std::cout << "Thumbstick moved : " << event.gaxis.axis << " with value : " << event.gaxis.value << "\n";
+				return { CheckValidControllerThumbstickAndCoherence(static_cast<int>(event.gaxis.axis)),InputType::THUMBSTICKMOTION,event.gaxis.value };
+			}
 
 		}
 
 		if (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) {
-			return { CheckValidControllerButtonAndCoherence(static_cast<int>(event.gbutton.button)),false, INVALID_VALUE };
+			return { CheckValidControllerButtonAndCoherence(static_cast<int>(event.gbutton.button)),InputType::BUTTONPRESS, INVALID_VALUE };
 		}
 
-		return { Buttons::INVALID_BUTTON,false,INVALID_VALUE };
+		return { Buttons::INVALID_BUTTON,InputType::NOINPUT,INVALID_VALUE };
 
 
 
@@ -220,10 +268,13 @@ public:
 
 	}
 
-	static bool IsTrigger(const int& button_value) {
-		return WithInInterval(Triggers::AXIS_TRIGGER_LEFT, button_value, Triggers::AXIS_TRIGGER_RIGHT);
-	}
 
+	static bool IsLeftThumbstick(const int& button_value) {
+		return WithInInterval(Buttons::LEFT_THUMBSTICK_X, button_value, Buttons::LEFT_THUMBSTICK_Y);
+	}
+	static bool IsRightThumbstick(const int& button_value) {
+		return WithInInterval(Buttons::RIGHT_THUMBSTICK_X, button_value, Buttons::RIGHT_THUMBSTICK_Y);
+	}
 	int get_lastDpadUsed() const {
 		return lastDpadUsed;
 	}

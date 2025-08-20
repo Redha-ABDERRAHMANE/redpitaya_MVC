@@ -57,6 +57,8 @@ signals:
     void change_exposureTimeValue(int value);
     void workerThreads_shutdown();
     void SetDimensionONGUI(const int& button_value,const bool GUI_button);
+    void ValidSignalGenerationInput(const int button_value, const bool isTrigger);
+    void ValidMotionHardwareInputDetected(const int button_value, const int axis_value);
 
 public slots:
 
@@ -158,6 +160,18 @@ public slots:
         std::cout << "done" << std::endl;
     }
 
+    void RedirectValidInput(PressedButton pressed_button) {
+        switch (pressed_button.inputType) {
+        case InputType::BUTTONPRESS:
+            emit ValidSignalGenerationInput(pressed_button.button, false); break;
+        case InputType::TRIGGERPRESS:
+            emit ValidSignalGenerationInput(pressed_button.button,true); break;
+        case InputType::THUMBSTICKMOTION:
+            if(pressed_button.button==Buttons::RIGHT_THUMBSTICK_X || pressed_button.button == Buttons::RIGHT_THUMBSTICK_Y)
+            emit ValidMotionHardwareInputDetected(pressed_button.button,pressed_button.triggerForce);
+        }
+    }
+
 public:
     MVC_Controller(View* view) :
         controller(),
@@ -201,9 +215,18 @@ public:
         
 
         // Connect worker signals
-        connect(&workerThread_controllerInput, &InputThread::ValidInputDetected, &worker_ApplyInput, &ApplyInputWorker::apply_ControllerInput);
+        //void ValidSignalGenerationInput(const int button_value, const int input_type);
+        //void ValidMotionHardwareInputDetected(const int button_value, const int input_type);
 
-        connect(&workerThread_controllerInput, &InputThread::ValidInputDetected, this, &MVC_Controller::send_ControllerInput_Direction);
+
+
+        connect(&workerThread_controllerInput, &InputThread::ValidInputDetected, this, &MVC_Controller::RedirectValidInput, Qt::QueuedConnection);
+
+        connect(this, &MVC_Controller::ValidSignalGenerationInput, &worker_ApplyInput, &ApplyInputWorker::apply_ControllerInput, Qt::QueuedConnection);
+
+        connect(this, &MVC_Controller::ValidSignalGenerationInput, this, &MVC_Controller::send_ControllerInput_Direction, Qt::QueuedConnection);
+
+        connect(this, &MVC_Controller::ValidMotionHardwareInputDetected, &worker_ApplyInput, &ApplyInputWorker::FindAndApplyValidLinearStageMotion, Qt::QueuedConnection);
         
 
         // Connect view to workers
