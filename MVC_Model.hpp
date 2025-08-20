@@ -198,12 +198,8 @@ public slots:
         return motion;
     }
     LinearStageAxis DetermineLinearStageMotionAxis(const int button_value) {
-        if (button_value == Buttons::RIGHT_THUMBSTICK_X) {
-            return LinearStageAxis::XAXIS;
-        }
-        if (button_value == Buttons::RIGHT_THUMBSTICK_Y) {
-            return LinearStageAxis::YAXIS;
-        }
+
+        return button_value == Buttons::RIGHT_THUMBSTICK_X ? LinearStageAxis::XAXIS : LinearStageAxis::YAXIS;
     }
 
     bool CapacitiveBankManagerFrequencyChange(const int frequency) {

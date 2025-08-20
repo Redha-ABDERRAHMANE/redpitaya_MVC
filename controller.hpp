@@ -144,6 +144,7 @@ private:
 		case Thumbsticks::LEFT_THUMBSTICK_Y_AXIS: return Buttons::LEFT_THUMBSTICK_Y;  break;
 		case Thumbsticks::RIGHT_THUMBSTICK_X_AXIS:return Buttons::RIGHT_THUMBSTICK_X;  break;
 		case Thumbsticks::RIGHT_THUMBSTICK_Y_AXIS:return Buttons::RIGHT_THUMBSTICK_Y;  break;
+		default: return Buttons::INVALID_BUTTON;break;
 
 		}
 		

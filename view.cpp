@@ -424,6 +424,15 @@ void View::SetDirectionDimension(const int& button_value, const bool GUI_button)
 
 }
 
+void View::UpdateLinearStageMotionControl(const bool state) {
+    for (auto& button : arrayLinearStageControlsButtons) {
+        button->setDisabled(state);
+    }
+    for (auto& button : arrayLinearStageAxis) {
+        button->setDisabled(state);
+    }
+}
+
 void View::ConfigureLeftLayout() {
 
     imageView = new QGraphicsView(this);

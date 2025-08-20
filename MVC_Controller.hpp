@@ -60,6 +60,8 @@ signals:
     void ValidSignalGenerationInput(const int button_value, const bool isTrigger);
     void ValidMotionHardwareInputDetected(const int button_value, const int axis_value);
 
+    void DisableLinearStageMotionControl(const bool state);
+
 public slots:
 
     void SendSignalstartCheckInput() {
@@ -167,8 +169,18 @@ public slots:
         case InputType::TRIGGERPRESS:
             emit ValidSignalGenerationInput(pressed_button.button,true); break;
         case InputType::THUMBSTICKMOTION:
-            if(pressed_button.button==Buttons::RIGHT_THUMBSTICK_X || pressed_button.button == Buttons::RIGHT_THUMBSTICK_Y)
-            emit ValidMotionHardwareInputDetected(pressed_button.button,pressed_button.triggerForce);
+            if (controller.IsRightThumbstick(pressed_button.button)) {
+                emit ValidMotionHardwareInputDetected(pressed_button.button, pressed_button.triggerForce);
+                emit DisableLinearStageMotionControl(true);
+                if (pressed_button.triggerForce != 0) {
+                    emit DisableLinearStageMotionControl(true);
+                    return;
+                }
+                emit DisableLinearStageMotionControl(false);
+
+            }
+            break;
+
         }
     }
 
@@ -227,6 +239,7 @@ public:
         connect(this, &MVC_Controller::ValidSignalGenerationInput, this, &MVC_Controller::send_ControllerInput_Direction, Qt::QueuedConnection);
 
         connect(this, &MVC_Controller::ValidMotionHardwareInputDetected, &worker_ApplyInput, &ApplyInputWorker::FindAndApplyValidLinearStageMotion, Qt::QueuedConnection);
+        connect(this, &MVC_Controller::DisableLinearStageMotionControl, view, &View::UpdateLinearStageMotionControl, Qt::QueuedConnection);
         
 
         // Connect view to workers

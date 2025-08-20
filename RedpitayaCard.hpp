@@ -90,7 +90,6 @@ public:
 
     }
     bool GetConnectionStatus()const {
-        bool AllRPSlavesConnected = true;
         for (const ScpiServer& rp_slave : arrayRpSlaves) {
             if (!rp_slave.GetConnectionStatus()) { return false; }
         }
