@@ -189,7 +189,7 @@ public slots:
         if (axis_value == 0) return motion;
 
         if (button_value == Buttons::RIGHT_THUMBSTICK_X) {
-            motion = axis_value == AXISMAXVALUE ? LinearStageMotion::MOVEFORWARD : axis_value == AXISMINVALUE ? LinearStageMotion::MOVEBACKWARD : LinearStageMotion::STOPMOTION;
+            motion = axis_value == AXISMINVALUE ? LinearStageMotion::MOVEFORWARD : axis_value == AXISMAXVALUE ? LinearStageMotion::MOVEBACKWARD : LinearStageMotion::STOPMOTION;
 
         }
         else if (button_value == Buttons::RIGHT_THUMBSTICK_Y) {
