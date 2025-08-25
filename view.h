@@ -70,12 +70,15 @@ private slots:
 public slots:
     void LoadControllerImage(const int& button_value);
     void HandleInputReceived(const int& button_value, const int& directionIndex);
+    void HandleRecordInputReceived(const bool start_recording);
     void ConnectionToBoardsFailedPopUp();
     void CameraFailedPopUp();
 
     void StartGUIComponentsInitialization();
 
     void SetNewFrameToDisplay(const QImage& image);
+
+    void HandleVideoRecordButton();
     void EnableLinearStageButtons();
     void SetDirectionDimension(const int& button_value, const bool GUI_button = false);
     void UpdateLinearStageMotionControl(const bool state);

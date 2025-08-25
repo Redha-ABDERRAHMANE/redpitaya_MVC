@@ -98,9 +98,6 @@ private:
 			lastDpadUsed = Buttons::INVALID_BUTTON;
 			return button_value;
 		}
-		if (button_value == Buttons::SELECT) {
-			return Buttons::INVALID_BUTTON;
-		}
 		if (isHat(button_value)) {
 			if (button_value != lastDpadUsed) {
 				lastDpadUsed = button_value;
@@ -109,6 +106,8 @@ private:
 			return Buttons::INVALID_BUTTON;
 		}
 		switch (button_value) {
+		case Buttons::SELECT:
+		case Buttons::START: return button_value;break;
 
 		case  Buttons::A:
 		case  Buttons::Y:  return (lastDpadUsed == Buttons::HAT_LEFT || lastDpadUsed == Buttons::HAT_RIGHT) ? button_value : Buttons::INVALID_BUTTON; break;
@@ -231,6 +230,7 @@ public:
 		}
 		
 		if (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) {
+
 			return { CheckValidControllerButtonAndCoherence(static_cast<int>(event.gbutton.button)),InputType::BUTTONPRESS, INVALID_VALUE };
 		}
 		

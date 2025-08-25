@@ -242,7 +242,8 @@ void View::UpdateDirectionIndicators(const int &newDirectionIndex)
  * -disable the direction button used by the user
 */
 void View::HandleInputReceived(const int& button_value , const int& directionIndex)
-{
+{   
+    
     qDebug()<<"button value: "<< button_value<<" direction : "<< directionIndex;
     LoadControllerImage(button_value);
     UpdateLastDirectionButtonUsed(directionIndex);
@@ -252,6 +253,11 @@ void View::HandleInputReceived(const int& button_value , const int& directionInd
 
 
 
+}
+void View::HandleRecordInputReceived(const  bool start_recording) {
+    if ((!start_recording && recording) || (start_recording && !recording)) {
+        HandleVideoRecordButton();
+    }
 }
 
 void View:: ConnectionToBoardsFailedPopUp() {
@@ -381,6 +387,20 @@ void View::SetNewFrameToDisplay( const QImage& image) {
 
 }
 
+
+void View::HandleVideoRecordButton() {
+    if (!recording) {
+        buttonCaptureVideo->setText("stop recording");
+        recording = true;
+        emit StartCameraRecord();
+    }
+    else {
+        recording = false;
+        emit StopCameraRecord();
+        buttonCaptureVideo->setText("video capture");
+    }
+
+}
 
 void View::EnableLinearStageButtons() {
     for (int i = 0; i < LinearStageMotion::MOTIONSIZE;i++) {
@@ -704,16 +724,7 @@ void View::ConfigureInfoLayout() {
     
 
     connect(buttonCaptureVideo, &QPushButton::clicked, this, [this]() {
-        if (!recording) {
-            buttonCaptureVideo->setText("stop recording");
-            recording = true;
-            emit StartCameraRecord();
-        }
-        else {
-            recording = false;
-            emit StopCameraRecord();
-            buttonCaptureVideo->setText("video capture");
-        }
+        this->HandleVideoRecordButton();
     });
 
  
