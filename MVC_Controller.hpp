@@ -48,6 +48,10 @@ private:
         return directionIndexToSend;
     }
 
+    bool IsRecordingButtons(const int button_value) {
+        return button_value == Buttons::SELECT || button_value == Buttons::START;
+    }
+
 signals:
     void startCheckInput();
     void startMainGUI();
@@ -57,6 +61,12 @@ signals:
     void change_exposureTimeValue(int value);
     void workerThreads_shutdown();
     void SetDimensionONGUI(const int& button_value,const bool GUI_button);
+    void ValidSignalGenerationInput(const int button_value, const bool isTrigger);
+    void ValidMotionHardwareInputDetected(const int button_value, const int axis_value);
+
+    void DisableLinearStageMotionControl(const bool state);
+
+    void UpdateCameraRecordState(const bool start_recording);
 
 public slots:
 
@@ -158,6 +168,33 @@ public slots:
         std::cout << "done" << std::endl;
     }
 
+    void RedirectValidInput(PressedButton pressed_button) {
+        static int lastRecordButtonPressed = Buttons::INVALID_BUTTON;
+        switch (pressed_button.inputType) {
+        case InputType::BUTTONPRESS:
+            if (IsRecordingButtons(pressed_button.button)) { std::cout << "EMITING RECORD\n";emit UpdateCameraRecordState(pressed_button.button == Buttons::SELECT ? false : true); } // SIGNAL NOT CONNECTED
+            else {
+                emit ValidSignalGenerationInput(pressed_button.button, false);
+            }
+            break;
+        case InputType::TRIGGERPRESS:
+            emit ValidSignalGenerationInput(pressed_button.button,true); break;
+        case InputType::THUMBSTICKMOTION:
+            if (controller.IsRightThumbstick(pressed_button.button)) {
+                emit ValidMotionHardwareInputDetected(pressed_button.button, pressed_button.triggerForce);
+                emit DisableLinearStageMotionControl(true);
+                if (pressed_button.triggerForce != 0) {
+                    emit DisableLinearStageMotionControl(true);
+                    return;
+                }
+                emit DisableLinearStageMotionControl(false);
+
+            }
+            break;
+
+        }
+    }
+
 public:
     MVC_Controller(View* view) :
         controller(),
@@ -201,9 +238,19 @@ public:
         
 
         // Connect worker signals
-        connect(&workerThread_controllerInput, &InputThread::ValidInputDetected, &worker_ApplyInput, &ApplyInputWorker::apply_ControllerInput);
+        //void ValidSignalGenerationInput(const int button_value, const int input_type);
+        //void ValidMotionHardwareInputDetected(const int button_value, const int input_type);
 
-        connect(&workerThread_controllerInput, &InputThread::ValidInputDetected, this, &MVC_Controller::send_ControllerInput_Direction);
+
+
+        connect(&workerThread_controllerInput, &InputThread::ValidInputDetected, this, &MVC_Controller::RedirectValidInput, Qt::QueuedConnection);
+
+        connect(this, &MVC_Controller::ValidSignalGenerationInput, &worker_ApplyInput, &ApplyInputWorker::apply_ControllerInput, Qt::QueuedConnection);
+
+        connect(this, &MVC_Controller::ValidSignalGenerationInput, this, &MVC_Controller::send_ControllerInput_Direction, Qt::QueuedConnection);
+
+        connect(this, &MVC_Controller::ValidMotionHardwareInputDetected, &worker_ApplyInput, &ApplyInputWorker::FindAndApplyValidLinearStageMotion, Qt::QueuedConnection);
+        connect(this, &MVC_Controller::DisableLinearStageMotionControl, view, &View::UpdateLinearStageMotionControl, Qt::QueuedConnection);
         
 
         // Connect view to workers
@@ -240,7 +287,7 @@ public:
         /////////////////////DEBUG//
         workerThread_videoRecorder.start();
 
-
+        connect(this, &MVC_Controller::UpdateCameraRecordState, view, &View::HandleRecordInputReceived);
         connect(view, &View::StartCameraRecord, &worker_videoRecorder, &VideoRecorderThread::startRecording, Qt::QueuedConnection);
         connect(view, &View::StopCameraRecord, &worker_videoRecorder, &VideoRecorderThread::stopRecording, Qt::QueuedConnection);
 

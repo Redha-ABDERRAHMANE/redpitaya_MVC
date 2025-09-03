@@ -242,7 +242,8 @@ void View::UpdateDirectionIndicators(const int &newDirectionIndex)
  * -disable the direction button used by the user
 */
 void View::HandleInputReceived(const int& button_value , const int& directionIndex)
-{
+{   
+    
     qDebug()<<"button value: "<< button_value<<" direction : "<< directionIndex;
     LoadControllerImage(button_value);
     UpdateLastDirectionButtonUsed(directionIndex);
@@ -252,6 +253,11 @@ void View::HandleInputReceived(const int& button_value , const int& directionInd
 
 
 
+}
+void View::HandleRecordInputReceived(const  bool start_recording) {
+    if ((!start_recording && recording) || (start_recording && !recording)) {
+        HandleVideoRecordButton();
+    }
 }
 
 void View:: ConnectionToBoardsFailedPopUp() {
@@ -382,6 +388,20 @@ void View::SetNewFrameToDisplay( const QImage& image) {
 }
 
 
+void View::HandleVideoRecordButton() {
+    if (!recording) {
+        buttonCaptureVideo->setText("stop recording");
+        recording = true;
+        emit StartCameraRecord();
+    }
+    else {
+        recording = false;
+        emit StopCameraRecord();
+        buttonCaptureVideo->setText("video capture");
+    }
+
+}
+
 void View::EnableLinearStageButtons() {
     for (int i = 0; i < LinearStageMotion::MOTIONSIZE;i++) {
         arrayLinearStageControlsButtons[i]->setDisabled(false);
@@ -422,6 +442,15 @@ void View::SetDirectionDimension(const int& button_value, const bool GUI_button)
     
     arrayAxisButtons[index]->setStyleSheet("background-color: green");
 
+}
+
+void View::UpdateLinearStageMotionControl(const bool state) {
+    for (auto& button : arrayLinearStageControlsButtons) {
+        button->setDisabled(state);
+    }
+    for (auto& button : arrayLinearStageAxis) {
+        button->setDisabled(state);
+    }
 }
 
 void View::ConfigureLeftLayout() {
@@ -695,16 +724,7 @@ void View::ConfigureInfoLayout() {
     
 
     connect(buttonCaptureVideo, &QPushButton::clicked, this, [this]() {
-        if (!recording) {
-            buttonCaptureVideo->setText("stop recording");
-            recording = true;
-            emit StartCameraRecord();
-        }
-        else {
-            recording = false;
-            emit StopCameraRecord();
-            buttonCaptureVideo->setText("video capture");
-        }
+        this->HandleVideoRecordButton();
     });
 
  
@@ -739,19 +759,108 @@ void View::ConfigureInfoLayout() {
 void View::ConfigureLinearStageSubLayout() {
 
     groupBoxLinearStageControls = new QGroupBox(this);
+
+    QHBoxLayout* layoutLinearStageAxis = new QHBoxLayout();
     QVBoxLayout* layoutLinearStageControls = new QVBoxLayout();
     QHBoxLayout* layoutLinearStageMoveButtons = new QHBoxLayout();
     QHBoxLayout* layoutLinearStageJogButtons = new QHBoxLayout();
 
-    std::array<QString, 6> arrayLetter = { "Backward","Stop","Forward","Home","Jog backward","Jog forward" };
-    for (int index = 0; index < LinearStageMotion::MOTIONSIZE;index++) {
+    std::array<QString, LinearStageMotion::MOTIONSIZE> arrayLetter = { "Backward","Stop","Forward","Home","Jog backward","Jog forward" };
+    std::map<int, QString> dictionaryMotionString = { 
+        {LinearStageMotion::MOVEBACKWARD,"Backward"},{LinearStageMotion::STOPMOTION,"Stop"},{LinearStageMotion::MOVEFORWARD,"Forward"},
+        {LinearStageMotion::HOME,"Home"},{LinearStageMotion::JOGBACKWARD,"Jog backward"},{LinearStageMotion::JOGFORWARD,"Jog forward"}
+    };
+    std::map<int, QString> dictionaryAxisLetter = { { LinearStageAxis::XAXIS,"X" },{ LinearStageAxis::YAXIS,"Y"} };
+
+
+    for (auto&[axis,letter] : dictionaryAxisLetter) {
+        arrayLinearStageAxis[axis] = new QPushButton(letter, this);
+        connect(arrayLinearStageAxis[axis], &QPushButton::clicked, this, [this,axis] {
+
+            currentLinearStageAxis =axis;
+
+            arrayLinearStageAxis[axis]->setDisabled(true);
+            arrayLinearStageAxis[axis]->setStyleSheet("background-color: green");
+
+            arrayLinearStageAxis[((axis+1)%(int)LinearStageAxis::AXISSIZE) ]->setStyleSheet("QPushButton { background-color: #3c3c3c; } QPushButton:hover { background-color: #5c5c5c; }");
+            
+            arrayLinearStageAxis[((axis + 1) %(int) LinearStageAxis::AXISSIZE)]->setDisabled(false);
+        });
+
+        layoutLinearStageAxis->addWidget(arrayLinearStageAxis[axis]);
+
+    }
+
+
+
+    for (auto& [motion, motionString] : dictionaryMotionString) {
+        arrayLinearStageControlsButtons[motion] = new QPushButton(motionString, this);
+
+        switch (motion) {
+        case LinearStageMotion::HOME:
+            connect(arrayLinearStageControlsButtons[motion], &QPushButton::clicked, this, [this,motion]() {
+
+                emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , (LinearStageMotion)motion);
+
+                for (QPushButton*& button : arrayLinearStageControlsButtons) {
+                    button->setDisabled(true);
+                }
+                });
+
+            break;
+
+        case LinearStageMotion::MOVEFORWARD:
+        case LinearStageMotion::MOVEBACKWARD:
+            std::cout << "CONNECTING BUTTONS\n";
+            connect(arrayLinearStageControlsButtons[motion], &QPushButton::pressed, this, [this,motion]() {
+
+                emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , (LinearStageMotion)motion);
+
+                });
+
+            connect(arrayLinearStageControlsButtons[motion], &QPushButton::released, this, [this,motion]() {
+
+                emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , LinearStageMotion::STOPMOTION);
+
+                });
+
+            break;
+
+        default:
+            connect(arrayLinearStageControlsButtons[motion], &QPushButton::clicked, this, [this,motion]() {
+
+                std::cout << "button pressed \n";
+                emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , (LinearStageMotion)motion);
+
+                });
+
+            break;
+
+
+
+
+        }
+
+
+        if (motion <= LinearStageMotion::HOME) {
+            layoutLinearStageMoveButtons->addWidget(arrayLinearStageControlsButtons[motion]);
+        }
+        else {
+            layoutLinearStageJogButtons->addWidget(arrayLinearStageControlsButtons[motion]);
+        }
+
+    }
+
+    
+
+  /*  for (int index = 0; index < LinearStageMotion::MOTIONSIZE;index++) {
         arrayLinearStageControlsButtons[index] = new QPushButton(arrayLetter[index],this );
 
         switch (index) {
         case LinearStageMotion::HOME:
             connect(arrayLinearStageControlsButtons[index], &QPushButton::clicked, this, [this, index]() {
 
-                emit PressedLinearStageControlButton((LinearStageMotion)index);
+                emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , (LinearStageMotion)index);
 
                 for (QPushButton*& button: arrayLinearStageControlsButtons) {
                     button->setDisabled(true);
@@ -765,13 +874,13 @@ void View::ConfigureLinearStageSubLayout() {
             std::cout << "CONNECTING BUTTONS\n";
             connect(arrayLinearStageControlsButtons[index], &QPushButton::pressed, this, [this, index]() {
 
-                emit PressedLinearStageControlButton((LinearStageMotion)index);
+                emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , (LinearStageMotion)index);
 
                 });
 
             connect(arrayLinearStageControlsButtons[index], &QPushButton::released, this, [this, index]() {
 
-                emit PressedLinearStageControlButton(LinearStageMotion::STOPMOTION);
+                emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , LinearStageMotion::STOPMOTION);
 
                 });
 
@@ -781,7 +890,7 @@ void View::ConfigureLinearStageSubLayout() {
             connect(arrayLinearStageControlsButtons[index], &QPushButton::clicked, this, [this, index]() {
 
                 std::cout << "button pressed \n";
-                emit PressedLinearStageControlButton((LinearStageMotion)index);
+                emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , (LinearStageMotion)index);
 
                 });
 
@@ -799,10 +908,10 @@ void View::ConfigureLinearStageSubLayout() {
         else {
             layoutLinearStageJogButtons->addWidget(arrayLinearStageControlsButtons[index]);
         }
-    }
+    }*/
 
 
-
+    layoutLinearStageControls->addLayout(layoutLinearStageAxis);
     layoutLinearStageControls->addLayout(layoutLinearStageMoveButtons);
     layoutLinearStageControls->addLayout(layoutLinearStageJogButtons);
 
@@ -816,7 +925,7 @@ void View::UpdateLinearStageButton(const LinearStageMotion motionButtonIndex) {
 
     
 
-    emit PressedLinearStageControlButton(motionButtonIndex);
+    emit PressedLinearStageControlButton( (LinearStageAxis)currentLinearStageAxis , motionButtonIndex);
 
 }
 

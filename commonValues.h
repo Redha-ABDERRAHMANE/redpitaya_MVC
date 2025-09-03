@@ -1,7 +1,9 @@
 #ifndef COMMONVALUES_H
 #define COMMONVALUES_H
-
+#define IsFloatEqual(a,b) (abs((a)-(b)) < EPSILON)
 #include <array>
+constexpr double EPSILON = 1E-3;
+
 
  enum AmplitudeValues {
     AMPLITUDE_0 = 0,
@@ -73,6 +75,12 @@ const enum Dimensions {
     XZ,
     YZ,
     DIMENSIONSIZE
+};
+
+const enum  LinearStageAxis {
+    XAXIS,
+    YAXIS,
+    AXISSIZE
 };
 
 

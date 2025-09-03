@@ -33,8 +33,8 @@ private:
     static constexpr int ACCELERATIONTYPE = 2;
 
 
-    const double defaultVelocityRU = 2.0;
-    const double defaultAccelerationRU = 1.0;
+    const double defaultVelocityRU = 0.9; //2.0;
+    const double defaultAccelerationRU = 0.2; //1.0;
 
 
     int positionDU = 346020;  // 1mm ->34602 device units 
@@ -135,6 +135,8 @@ public:
             return false;
 
         }
+        CC_SetLimitsSoftwareApproachPolicy(bufferSerialNo, AllowAllMoves); // To make the linear stage move in the negative range
+        
         std::cout << "Linear stage connected and ready to use\n";
         return true;
 

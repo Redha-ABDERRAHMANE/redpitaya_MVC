@@ -104,7 +104,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>opencv_world4110.lib;opencv_world4110d.lib;SDL3.lib;SDL3_net.lib;VmbCPP.lib;VmbC.lib;$(QTDIR)\lib\Qt6EntryPoint.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\opt\opencv\build\x64\vc16\lib;C:\SDL3\SDL3-3.2.18\lib\x64;C:\SDL3\SDL_net-main\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\SDL3\SDL3-3.2.18\lib\x64;C:\SDL3\SDL_net-main\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -161,7 +161,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opencv_world4110.lib;opencv_world4110d.lib;SDL3.lib;SDL3_net.lib;VmbCPP.lib;VmbC.lib;$(QTDIR)\lib\Qt6EntryPointd.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL3.lib;SDL3_net.lib;VmbCPP.lib;VmbC.lib;$(QTDIR)\lib\Qt6EntryPointd.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\SDL3\SDL3-3.2.18\lib\x64;C:\SDL3\SDL_net-main\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>

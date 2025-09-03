@@ -12,6 +12,7 @@
 #include <QIODevice>
 #include <iostream>
 #include <QCoreApplication>
+#include <QDateTime>
 #include <commonValues.h>
 #include<chrono>
 
@@ -81,7 +82,10 @@ public slots:
         
         int width = FRAMEWIDTH; 
         int height = FRAMEHEIGHT;
-        
+        QDateTime local(QDateTime::currentDateTime());
+
+        QString dateTime = local.toString("dd-MM-yyyy_hh-mm-ss");
+        qDebug() << dateTime;
 
         args << "-f" << "rawvideo"
             << "-pix_fmt" << "gray"
@@ -92,7 +96,7 @@ public slots:
             << "-preset" << "ultrafast"  // Move here
             << "-pix_fmt" << "yuv420p"
             << "-y"
-            << QString("C:/Users/Redha/Pictures/testcapture/output_%1.mp4").arg(i);
+            << QString("C:/Users/Redha/Pictures/testcapture/output_%1.mp4").arg(dateTime);
 
         ffmpegProcess->start("ffmpeg", args);
         i++;
