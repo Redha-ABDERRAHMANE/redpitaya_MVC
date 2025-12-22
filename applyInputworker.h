@@ -33,6 +33,9 @@ private:
         return model->LinearStageHome(axis);
     }
 
+    void ApplyCameraLinearStageMotion(const LinearStageMotion motion) {
+        model->cameraLinearStageMotionChange(motion);
+    }
 
 public:
     ApplyInputWorker(MVC_Model* m)
@@ -80,6 +83,7 @@ public slots:
 
     }
 
+
     void ApplyLinearStageMotion(const LinearStageAxis axis,const LinearStageMotion motionState ) {
         std::cout << "linear stage signal called with axis: "<<(int) axis<<"and motion: "<<motionState<<"\n";
         switch (motionState) {
@@ -93,11 +97,19 @@ public slots:
 
     }
 
-    void FindAndApplyValidLinearStageMotion(const int button_value, const int axis_value) {
+    void FindAndApplyValidLinearStageMotion(const int button_value, const int axis_value,bool isForXYLinearStage) {
         LinearStageMotion motion = model->DetermineLinearStageMotion(button_value, axis_value);
-        LinearStageAxis axis = model->DetermineLinearStageMotionAxis(button_value);
+        if (isForXYLinearStage) {
+            
+            LinearStageAxis axis = model->DetermineLinearStageMotionAxis(button_value);
 
-        ApplyLinearStageMotion(axis, motion);
+            ApplyLinearStageMotion(axis, motion);
+        }
+        else {
+            ApplyCameraLinearStageMotion(motion);
+
+
+        }
 
 
     }

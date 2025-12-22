@@ -88,6 +88,9 @@
     <QtMoc Include="capacitiveBankManager.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="CameraSerialLinearStage.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">

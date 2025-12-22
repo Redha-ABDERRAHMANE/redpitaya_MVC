@@ -83,7 +83,6 @@ const enum  LinearStageAxis {
     AXISSIZE
 };
 
-
 const std::array<const char*, SLAVE_BOARDS> arraySlaveBoardsIP = { };
 
 const static int LINEARSTAGEYSERIALNUMBER = 27270930;
