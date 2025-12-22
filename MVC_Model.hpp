@@ -21,7 +21,7 @@ private:
     RpSignalGn signalGn;
     waveGnPresets presetsGn;
     Controller& controller ;
-    std::array<LinearStage,LinearStageAxis::AXISSIZE> linearStagesXY;
+    std::vector<LinearStage> linearStagesXY;
     CapacitiveBankManager capacitiveBankManager;
     
   
@@ -33,10 +33,15 @@ private:
 
 public:
     
-    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, arraySlaveBoardIPs), presetsGn(), controller(c), linearStagesXY(),capacitiveBankManager(), nextPreset({}), currentPreset({}) {
+    MVC_Model(Controller& c) : signalGn(IP_PRIMARY, arraySlaveBoardIPs), presetsGn(), controller(c), linearStagesXY(),capacitiveBankManager(), nextPreset({}), currentPreset({}){
+
         if (!capacitiveBankManager.ConnectToDevice()) {
             std::cout << "Could not connect to Serial Device\n";
         }
+
+        linearStagesXY.emplace_back(LINEARSTAGEYSERIALNUMBER);
+        linearStagesXY.emplace_back(LINEARSTAGEDEFAULTSERIALNUMBER);
+        
         for (LinearStage& linearStage : linearStagesXY) {
             if (!linearStage.ConnectToDevice()) {
                 std::cout << "Could not connect to linear stage\n";

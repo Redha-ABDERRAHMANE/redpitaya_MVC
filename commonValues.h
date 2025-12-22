@@ -86,6 +86,7 @@ const enum  LinearStageAxis {
 
 const std::array<const char*, SLAVE_BOARDS> arraySlaveBoardsIP = { };
 
-
+const static int LINEARSTAGEYSERIALNUMBER = 27270930;
+static constexpr int LINEARSTAGEDEFAULTSERIALNUMBER = 27007209;
 
 #endif // COMMONVALUES_H
