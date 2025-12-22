@@ -19,7 +19,7 @@ private:
 		if (availableDevicePortList.size() != 0) {
 			deviceSerialPort = new QSerialPort(availableDevicePortList[0], this);
 
-			deviceSerialPort->setBaudRate(QSerialPort::Baud115200);
+			deviceSerialPort->setBaudRate(QSerialPort::Baud9600);
 			deviceSerialPort->setDataBits(QSerialPort::Data8);
 			deviceSerialPort->setParity(QSerialPort::NoParity);
 			deviceSerialPort->setStopBits(QSerialPort::OneStop);
@@ -41,6 +41,7 @@ private:
 		availableDevicePortList = QSerialPortInfo::availablePorts();
 		if (availableDevicePortList.size() == 0) {
 			std::cout << "NO SERIAL PORT DEVICE FOUND \n";
+			deviceSerialPort = nullptr;
 			return false;
 		}
 
@@ -50,6 +51,8 @@ private:
 	}
 
 	bool SendData(const char* data) {
+		if (deviceSerialPort==nullptr) return false;
+
 		std::cout << " DATA TO SEND" << data;
 		qint64 bytesWritten = deviceSerialPort->write(data, strlen(data));
 

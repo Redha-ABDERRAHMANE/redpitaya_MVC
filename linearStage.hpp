@@ -8,6 +8,7 @@
 #include <conio.h>
 #include <stdint.h>
 #include <iostream>
+#include <commonValues.h>
 
 #include "Thorlabs.MotionControl.KCube.DCServo.h"
 #pragma comment(lib, "Thorlabs.MotionControl.KCube.DCServo.lib")
@@ -23,7 +24,7 @@ class LinearStage
 {
 
 private:
-    static constexpr int SERIALNUMBER = 27007209;
+    static constexpr int DEFAULTSERIALNUMBER = 27007209;
     static constexpr int BUFFERSIZE = 100;
     static constexpr int TYPEID = 27;
     static constexpr int POLLINGRATE = 200;
@@ -35,6 +36,8 @@ private:
 
     const double defaultVelocityRU = 0.9; //2.0;
     const double defaultAccelerationRU = 0.2; //1.0;
+
+    int serialNumber=0;
 
 
     int positionDU = 346020;  // 1mm ->34602 device units 
@@ -70,7 +73,7 @@ private:
 
 
 public:
-    LinearStage() {}
+    LinearStage(const int serialnumber = DEFAULTSERIALNUMBER) : serialNumber(serialnumber) { std::cout << "serial number " << serialNumber<<std::endl; }
 
 
     ~LinearStage() {
@@ -90,7 +93,7 @@ public:
             return true;
         }
 
-        sprintf_s(bufferSerialNo, "%d", SERIALNUMBER); // assign to bufferSerialNo formatted version of the Serial number
+        sprintf_s(bufferSerialNo, "%d", serialNumber); // assign to bufferSerialNo formatted version of the Serial number
         if (TLI_BuildDeviceList() != SUCCESS) {
             std::cout << "Failed to fetch device list \n";
             return false;
