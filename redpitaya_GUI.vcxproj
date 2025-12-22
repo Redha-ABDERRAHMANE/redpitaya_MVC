@@ -203,6 +203,7 @@
     <QtMoc Include="MVC_Model.hpp" />
     <QtMoc Include="cameraInputworker.hpp" />
     <QtMoc Include="capacitiveBankManager.hpp" />
+    <QtMoc Include="CameraSerialLinearStage.hpp" />
     <ClInclude Include="linearStage.hpp" />
     <ClInclude Include="RedpitayaCard.hpp" />
     <ClInclude Include="RpSignalGn.hpp" />

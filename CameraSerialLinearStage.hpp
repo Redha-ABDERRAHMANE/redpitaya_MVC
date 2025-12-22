@@ -4,19 +4,20 @@
 #include <iostream>
 #include <QObject>
 #include <QDebug>
-class CapacitiveBankManager: public QObject
+#include "commonValues.h"
+class CameraSerialLinearStage : public QObject
 {
 	Q_OBJECT
 public:
-	CapacitiveBankManager() {}
-	~CapacitiveBankManager() {
+	CameraSerialLinearStage() {}
+	~CameraSerialLinearStage() {
 		DisconnectSerialPortDevice();
 
 	}
 
 private:
 	bool ConnectToSerialPortDevice() {
-		/*if (availableDevicePortList.size() != 0) {
+		if (availableDevicePortList.size() != 0) {
 			deviceSerialPort = new QSerialPort(availableDevicePortList[0], this);
 
 			deviceSerialPort->setBaudRate(QSerialPort::Baud9600);
@@ -33,7 +34,7 @@ private:
 			return true;
 
 
-		}*/
+		}
 		return false;
 	}
 
@@ -51,21 +52,21 @@ private:
 	}
 
 	bool SendData(const char* data) {
-		if (deviceSerialPort==nullptr) return false;
+		if (deviceSerialPort == nullptr) return false;
 
 		std::cout << " DATA TO SEND" << data;
 		qint64 bytesWritten = deviceSerialPort->write(data, strlen(data));
 
 		if (bytesWritten == -1) {
 			qDebug() << "TX failed:" << deviceSerialPort->errorString();
-			
+
 			return false;
 		}
 
 		// Wait for data to be written
 		if (!deviceSerialPort->waitForBytesWritten(1000)) {
 			qDebug() << "Write timeout:" << deviceSerialPort->errorString();
-			
+
 			return false;
 		}
 		return true;
@@ -76,24 +77,24 @@ private:
 			QByteArray rx = deviceSerialPort->readAll();
 			return rx;
 		}
-		
+
 		qDebug() << "No response received:" << deviceSerialPort->errorString();
 		return QByteArray();
 
 	}
-	 bool DisconnectSerialPortDevice() {
-		 if (deviceSerialPort) {
-			 deviceSerialPort->close();
-			 deviceSerialPort->deleteLater();
-			 deviceSerialPort = nullptr;
-			 std::cout << "device port closed \n";
-			 return true;
-		 }
-		 return false;
-	 }
+	bool DisconnectSerialPortDevice() {
+		if (deviceSerialPort) {
+			deviceSerialPort->close();
+			deviceSerialPort->deleteLater();
+			deviceSerialPort = nullptr;
+			std::cout << "device port closed \n";
+			return true;
+		}
+		return false;
+	}
 
 
-public :
+public:
 
 	bool ConnectToDevice() {
 		if (LookForAvailableDevices()) {
@@ -102,12 +103,10 @@ public :
 		return false;
 	}
 
-	bool sendFrequencyChange(int frequency) {
-		if (SendData(std::to_string(frequency).c_str())) {
-			if (ReceiveData() == std::to_string(frequency)) {
-				qDebug() << "FREQUENCY CHANGE SUCCESS";
-				return true;
-			}
+	bool sendMotionChange(LinearStageMotion motion) {
+
+		if (SendData(std::to_string(motion).c_str())) {
+			return true;
 		}
 		return false;
 
@@ -118,6 +117,6 @@ public :
 
 private:
 	QList<QSerialPortInfo> availableDevicePortList = {};
-	QSerialPort* deviceSerialPort=nullptr;
+	QSerialPort* deviceSerialPort = nullptr;
 };
 

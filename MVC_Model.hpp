@@ -3,6 +3,7 @@
 #include "waveGnPresets.hpp"
 #include "linearStage.hpp"
 #include "capacitiveBankManager.hpp"
+#include "CameraSerialLinearStage.hpp"
 #include <QObject>
 #include <QThread>
 #include <QDebug>
@@ -23,6 +24,7 @@ private:
     Controller& controller ;
     std::vector<LinearStage> linearStagesXY;
     CapacitiveBankManager capacitiveBankManager;
+    CameraSerialLinearStage cameraSerialLinearStage;
     
   
 
@@ -36,9 +38,11 @@ public:
     MVC_Model(Controller& c) : signalGn(IP_PRIMARY, arraySlaveBoardIPs), presetsGn(), controller(c), linearStagesXY(),capacitiveBankManager(), nextPreset({}), currentPreset({}){
 
         if (!capacitiveBankManager.ConnectToDevice()) {
-            std::cout << "Could not connect to Serial Device\n";
+            std::cout << "Could not connect to capacitor bank Serial Device\n";
         }
-
+        if (!cameraSerialLinearStage.ConnectToDevice()) {
+            std::cout << "Could not connect to  camera linear stage Serial Device\n";
+        }
         linearStagesXY.emplace_back(LINEARSTAGEYSERIALNUMBER);
         linearStagesXY.emplace_back(LINEARSTAGEDEFAULTSERIALNUMBER);
         
@@ -200,6 +204,10 @@ public slots:
         else if (button_value == Buttons::RIGHT_THUMBSTICK_Y) {
             motion = axis_value == AXISMAXVALUE ? LinearStageMotion::MOVEBACKWARD : axis_value == AXISMINVALUE ? LinearStageMotion::MOVEFORWARD : LinearStageMotion::STOPMOTION;
         }
+        else if (button_value == Buttons::LEFT_THUMBSTICK_Y) {
+            motion = axis_value == AXISMINVALUE ? LinearStageMotion::MOVEFORWARD : axis_value == AXISMAXVALUE ? LinearStageMotion::MOVEBACKWARD : LinearStageMotion::STOPMOTION;
+
+        }
         return motion;
     }
     LinearStageAxis DetermineLinearStageMotionAxis(const int button_value) {
@@ -211,6 +219,16 @@ public slots:
         bool result = false;
         QMetaObject::invokeMethod(&capacitiveBankManager, [&]() {
             result = capacitiveBankManager.sendFrequencyChange(frequency);
+            });
+
+        return result;
+
+    }
+
+    bool cameraLinearStageMotionChange(LinearStageMotion motion) {
+        bool result = false;
+        QMetaObject::invokeMethod(&cameraSerialLinearStage, [&]() {
+            result = cameraSerialLinearStage.sendMotionChange(motion);
             });
 
         return result;

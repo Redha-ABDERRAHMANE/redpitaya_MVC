@@ -62,7 +62,7 @@ signals:
     void workerThreads_shutdown();
     void SetDimensionONGUI(const int& button_value,const bool GUI_button);
     void ValidSignalGenerationInput(const int button_value, const bool isTrigger);
-    void ValidMotionHardwareInputDetected(const int button_value, const int axis_value);
+    void ValidMotionHardwareInputDetected(const int button_value, const int axis_value,bool isForXYLinearStage);
 
     void DisableLinearStageMotionControl(const bool state);
 
@@ -181,13 +181,17 @@ public slots:
             emit ValidSignalGenerationInput(pressed_button.button,true); break;
         case InputType::THUMBSTICKMOTION:
             if (controller.IsRightThumbstick(pressed_button.button)) {
-                emit ValidMotionHardwareInputDetected(pressed_button.button, pressed_button.triggerForce);
+                emit ValidMotionHardwareInputDetected(pressed_button.button, pressed_button.triggerForce,true);
                 emit DisableLinearStageMotionControl(true);
                 if (pressed_button.triggerForce != 0) {
                     emit DisableLinearStageMotionControl(true);
                     return;
                 }
                 emit DisableLinearStageMotionControl(false);
+
+            }
+            else if (controller.IsLeftThumbstick(pressed_button.button)) {
+                emit ValidMotionHardwareInputDetected(pressed_button.button, pressed_button.triggerForce, false);
 
             }
             break;
