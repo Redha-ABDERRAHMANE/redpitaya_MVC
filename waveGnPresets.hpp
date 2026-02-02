@@ -12,6 +12,7 @@
 
 //#define DELAY 0.3f
 //#define STEPS 20
+#define EPSILON 1E-3
 #define check_Equals(val, x, y) ((val) == (x) || (val) == (y))
 
 
@@ -63,7 +64,7 @@ public:
 		}
 		std::cout << "DIMENSION SET TO : " << dimension << std::endl;
 		dictionary_bumperHatPreset = &arrayDimensionDictionnaries.at(dimension).first;
-		dictionary_buttonPreset = &arrayDimensionDictionnaries.at(dimension).second ;
+		dictionary_buttonPreset = &arrayDimensionDictionnaries.at(dimension).second;
 
 
 
@@ -83,12 +84,14 @@ public:
 		static int lastUsedDimension = dimension;
 		static preset_array_t hat_up_preset = dictionary_bumperHatPreset->at(Buttons::HAT_UP);
 		static preset_array_t hat_left_preset = dictionary_bumperHatPreset->at(Buttons::HAT_LEFT);
+		static preset_array_t hat_up_X_preset = dictionary_buttonPreset->at(Buttons::X).first;
+		static preset_array_t hat_left_X_preset = dictionary_buttonPreset->at(Buttons::Y).first;
 
 		if (lastUsedDimension != dimension) {
 			hat_up_preset = dictionary_bumperHatPreset->at(Buttons::HAT_UP);
 			hat_left_preset = dictionary_bumperHatPreset->at(Buttons::HAT_LEFT);
 			lastUsedDimension = dimension;
-			
+
 		}
 
 
@@ -97,10 +100,11 @@ public:
 			bool isUp_or_left;
 			if (GUI_hat_button != -1) {
 				preset_array_t& hatPreset = dictionary_bumperHatPreset->at(GUI_hat_button);
-				isUp_or_left = (hatPreset == hat_up_preset) || (hatPreset == hat_left_preset);
+				isUp_or_left = (currentPreset == hat_up_preset) || (currentPreset == hat_left_preset) || (currentPreset == hat_up_X_preset) || (currentPreset == hat_left_X_preset);
+
 			}
 			else {
-				isUp_or_left = (currentPreset == hat_up_preset) || (currentPreset == hat_left_preset);
+				isUp_or_left = (currentPreset == hat_up_preset) || (currentPreset == hat_left_preset) || (currentPreset == hat_up_X_preset) || (currentPreset == hat_left_X_preset);
 			}
 			const std::pair<preset_array_t, preset_array_t>& preset_pair = dictionary_buttonPreset->at(button_value);
 			nextPreset = isUp_or_left ? preset_pair.first : preset_pair.second;
@@ -116,6 +120,22 @@ public:
 	void UpdateCurrentAndPreviousPreset() {
 		SetPreviousPresetUsed(currentPreset);
 		SetCurrentPreset(nextPreset);
+	}
+
+
+	bool ComparePresets(preset_array_t& preset, preset_array_t& reference) {
+		for (size_t i = 0; i < preset.size(); i++) {
+
+			if (preset[i] - reference[i] > EPSILON) {
+				std::cout << " failed because : " << "   current preset: " << preset[i] << "   reference preset; " << reference[i] << "  comparaison : " << preset[i] - reference[i] << std::endl;
+
+				return false;
+			}
+
+		}
+		return true;
+
+
 	}
 
 

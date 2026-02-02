@@ -1,3 +1,4 @@
 C:\Users\Redha\Documents\cnrs\redpitaya_GUI\debug\redpitaya_GUI.exe
 C:\Users\mraboisson\Desktop\new version redpitayaGUI\redpitaya_MVC\debug\redpitaya_GUI.exe
 C:\Users\mraboisson\Desktop\new version redpitayaGUI\release version\debug\redpitaya_GUI.exe
+C:\Users\mraboisson\Desktop\new version redpitayaGUI\VERSION_FINAL_REDPITAYA\redpitaya_MVC\debug\redpitaya_GUI.exe

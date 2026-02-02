@@ -5,7 +5,7 @@
 class RedpitayaCards
 {
 private:
-    
+
     ScpiServer rp_primary;
     std::array<ScpiServer, SLAVE_BOARDS> arrayRpSlaves;
 
@@ -13,8 +13,8 @@ private:
 
 public:
 
-    RedpitayaCards(const char* hostAddress_primary, std::array<const char*,SLAVE_BOARDS> hostAddress_slave, const int& frequency = 5) :rp_primary(hostAddress_primary) {
-        for (int i = 0;i < SLAVE_BOARDS;i++) {
+    RedpitayaCards(const char* hostAddress_primary, std::array<const char*, SLAVE_BOARDS> hostAddress_slave, const int& frequency = 5) :rp_primary(hostAddress_primary) {
+        for (int i = 0; i < SLAVE_BOARDS; i++) {
             arrayRpSlaves[i] = ScpiServer(hostAddress_slave[i]);
         }
         std::cout << "frequency:" << frequency << std::endl;
@@ -38,7 +38,7 @@ public:
     }
 
 
-    bool ConnectConfigureRpBoards(const int& frequency=5) {
+    bool ConnectConfigureRpBoards(const int& frequency = 5) {
         rp_primary.ConnectServer();
         bool allRPSlavesConnected = true;
 
@@ -49,26 +49,30 @@ public:
             if (!rp_slave.GetConnectionStatus()) {
                 allRPSlavesConnected = false;
             }
-            
+
         }
 
 
 
         if (rp_primary.GetConnectionStatus() && allRPSlavesConnected) {
             ResetGenerators();
-            SetDaisyChainSourceTriggerMasterBoard();
-            SetDaisySourceTriggerSlaveBoard();
+            //SetDaisyChainSourceTriggerMasterBoard();
+            //SetDaisySourceTriggerSlaveBoard();
             CheckBoardDaisyConfiguration();
             SetInitialSourceSineWaveParams(PRIMARY_BOARD, frequency, PHASE_0);
-            
+
             SetInitialSourceSineWaveParams(SECONDARY_BOARD, frequency, PHASE_0);
             SetInitialSourceSineWaveParams(TERTIARY_BOARD, frequency, PHASE_0);
             EnableAllBoardsOutputs();
 
-            SetArmTriggerSlaveBoard();
+            //SetArmTriggerSlaveBoard();
             DisplayBoardsConfig();
 
             rp_primary.tx_txt("SOUR:TRig:INT");
+            for (ScpiServer& rp_slaveboard : arrayRpSlaves) {
+                rp_slaveboard.tx_txt("SOUR:TRig:INT");
+            }
+
             return true;
 
         }
@@ -76,20 +80,21 @@ public:
     }
 
 
-    void send_txt(const int& card,std::string full_command) {
-        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : arrayRpSlaves[card-SLAVE_BOARDS];
+    void send_txt(const int& card, std::string full_command) {
+        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : arrayRpSlaves[card - SLAVE_BOARDS];
         rp_board.tx_txt(full_command.c_str());
 
 
     }
 
-    std::string send_txrxt(const int& card,std::string full_command) {
-        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : arrayRpSlaves[card-SLAVE_BOARDS];
+    std::string send_txrxt(const int& card, std::string full_command) {
+        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : arrayRpSlaves[card - SLAVE_BOARDS];
         return rp_board.txrx_txt(full_command.c_str());
 
 
     }
     bool GetConnectionStatus()const {
+        bool AllRPSlavesConnected = true;
         for (const ScpiServer& rp_slave : arrayRpSlaves) {
             if (!rp_slave.GetConnectionStatus()) { return false; }
         }
@@ -99,12 +104,28 @@ public:
 
 private:
 
+    void configure_board(ScpiServer& board, int freq, float amp)
+    {
+        board.tx_txt("GEN:RST");
+
+        for (int ch = 1; ch <= 2; ++ch)
+        {
+            board.tx_txt("SOUR" + std::to_string(ch) + ":FUNC SINE");
+            board.tx_txt("SOUR" + std::to_string(ch) + ":FREQ:FIX " + std::to_string(freq));
+            board.tx_txt("SOUR" + std::to_string(ch) + ":VOLT " + std::to_string(amp));
+            board.tx_txt("SOUR" + std::to_string(ch) + ":PHAS 0");
+            board.tx_txt("SOUR" + std::to_string(ch) + ":TRIG:SOUR INT");
+        }
+
+        board.tx_txt("OUTPUT1:STATE ON");
+        board.tx_txt("OUTPUT2:STATE ON");
+    }
 
 
     void ResetGenerators() {
         rp_primary.tx_txt("GEN:RST");
         for (ScpiServer& rp_slave : arrayRpSlaves) { rp_slave.tx_txt("GEN:RST"); }
-        
+
     }
 
 
@@ -139,17 +160,17 @@ private:
     void CheckBoardDaisyConfiguration() {
         printf("PRIMARY Trig Sync:  %s\n", (rp_primary.txrx_txt("DAISY:SYNC:TRig?")).c_str());
         printf("PRIMARY Clock Sync: %s\n", (rp_primary.txrx_txt("DAISY:SYNC:CLK?")).c_str());
-        for (int i = 0; i < SLAVE_BOARDS;i++) {
-            printf("SLAVE BOARD %d Trig Sync: %s\n", i + 1 ,arrayRpSlaves[i].txrx_txt("DAISY:SYNC:TRig?").c_str());
-            printf("SLAVE BOARD %d  Clock Sync: %s\n",i+1, arrayRpSlaves[i].txrx_txt("DAISY:SYNC:CLK?").c_str());
-        
+        for (int i = 0; i < SLAVE_BOARDS; i++) {
+            printf("SLAVE BOARD %d Trig Sync: %s\n", i + 1, arrayRpSlaves[i].txrx_txt("DAISY:SYNC:TRig?").c_str());
+            printf("SLAVE BOARD %d  Clock Sync: %s\n", i + 1, arrayRpSlaves[i].txrx_txt("DAISY:SYNC:CLK?").c_str());
+
         }
-        
+
     }
 
     // Amplitude , frequency and phase are fixed at the start of the code.No need to put them as parameters
     void SetInitialSourceSineWaveParams(const int card, const int frequency, const float amplitude = AMPLITUDE_0, const int phase = PHASE_0) {
-        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : arrayRpSlaves[card-SLAVE_BOARDS];
+        ScpiServer& rp_board = card == PRIMARY_BOARD ? rp_primary : arrayRpSlaves[card - SLAVE_BOARDS];
         for (int source = 1; source <= 2; source++) {
             rp_board.tx_txt("SOUR" + std::to_string(source) + ":FUNC SINE");
             rp_board.tx_txt("SOUR" + std::to_string(source) + ":FREQ:FIX " + std::to_string(frequency));
@@ -172,7 +193,7 @@ private:
 
     // Make the slave board sources wait for the external trigger
     void SetArmTriggerSlaveBoard() {
-        
+
         for (ScpiServer& rp_slave : arrayRpSlaves) {
             rp_slave.tx_txt("SOUR1:TRIG:ARM");
             rp_slave.tx_txt("SOUR2:TRIG:ARM");
