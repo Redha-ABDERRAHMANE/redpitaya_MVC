@@ -96,7 +96,7 @@ public slots:
             << "-preset" << "ultrafast"  // Move here
             << "-pix_fmt" << "yuv420p"
             << "-y"
-            << QString("C:/Users/Redha/Pictures/testcapture/output_%1.mp4").arg(dateTime);
+            << QString("C:/Users/mraboisson/Videos/capture_RP/output_%1.mp4").arg(dateTime);
 
         ffmpegProcess->start("ffmpeg", args);
         i++;

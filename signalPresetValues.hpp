@@ -14,8 +14,9 @@ inline std::map<int, preset_array_t> dictionary_bumperHatPreset_XY{
 	{ Buttons::BUMPER_RIGHT, preset_array_t{ 0.16f, 0.15f, PHASE_0, 0.065f, 0.062f, 90.0f, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } },
 	{ Buttons::HAT_UP,       preset_array_t{ AMPLITUDE_0, 0.29f, PHASE_0, 0.065f, 0.062f, 90.0f, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } },
 	{ Buttons::HAT_DOWN,     preset_array_t{ 0.295f, AMPLITUDE_0, PHASE_0, 0.065f, 0.062f, 90.0f, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } },
-	{ Buttons::HAT_RIGHT,    preset_array_t{ 0.16f, 0.15f, PHASE_0, AMPLITUDE_0, 0.122f, 90.0f, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } },
-	{ Buttons::HAT_LEFT,     preset_array_t{ 0.16f, 0.15f, PHASE_0, 0.129f, AMPLITUDE_0, 90.0f, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } }
+	{ Buttons::HAT_LEFT,     preset_array_t{ 0.16f, 0.15f, PHASE_0, 0.129f, AMPLITUDE_0, 90.0f, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } },
+	{ Buttons::HAT_RIGHT,    preset_array_t{ 0.16f, 0.15f, PHASE_0, AMPLITUDE_0, 0.122f, 90.0f, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } }
+	 
 };
 // Button combinations - each button has 2 presets (up/down with X/B or left/right with Y/A variants)
 inline std::map<int, pair_p_array_t> dictionary_buttonPreset_XY{
@@ -30,8 +31,8 @@ inline std::map<int, pair_p_array_t> dictionary_buttonPreset_XY{
 	  }
 	},
 	{ Buttons::Y, {
-		{ 0.16f, 0.15f, PHASE_0, AMPLITUDE_0, 0.122f, 90.0f, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 }, // hatleft Y k
-		{ 0.16f, 0.15f, 90.0f, 0.129f, AMPLITUDE_0, PHASE_0, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } // hatright Y k
+		{ 0.16f, 0.15f, 90.0f, 0.129f, AMPLITUDE_0, PHASE_0, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 }, // hatleft Y k
+		{ 0.16f, 0.15f, 90.0f, AMPLITUDE_0, 0.122f, PHASE_0, AMPLITUDE_0, AMPLITUDE_0, PHASE_0 } // hatright Y k
 
 	  }
 	},
