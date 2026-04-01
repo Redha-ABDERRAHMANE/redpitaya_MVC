@@ -123,3 +123,4 @@ CMakeLists.txt.user*
 /debug/moc_predefs.h
 /debug/redpitaya_GUI.tlog/uic.read.1u.tlog
 /debug/redpitaya_GUI.tlog/CustomBuild.write.1.tlog
+/debug/qt/qmake
