@@ -98,6 +98,8 @@ redpitaya_GUI/
         └── lib/                         ← must be sourced by user
 │   └── VimbaX_dependencies/
 │       └── lib/                     ← must be sourced by user
+├── include/                         ← header files go here (.h, .hpp)
+├── source/                          ← source files go here (.cpp)
 ├── *.dll                            ← Thorlabs and Vimba X runtime DLLs go here
 ├── redpitaya_GUI.vcxproj
 ├── redpitaya_GUI.sln
