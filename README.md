@@ -94,7 +94,8 @@ redpitaya_GUI/
 ├── external/
 │   ├── SDL3/                        ← provided, unmodified (zlib license)
 │   ├── Thorlabs_dependencies/
-│   │   └── lib/                     ← must be sourced by user
+│   │   └── include/                     ← must be sourced by user
+        └── lib/                         ← must be sourced by user
 │   └── VimbaX_dependencies/
 │       └── lib/                     ← must be sourced by user
 ├── *.dll                            ← Thorlabs and Vimba X runtime DLLs go here
