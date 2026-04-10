@@ -1,0 +1,137 @@
+================================================================================
+  LICENSE AND THIRD-PARTY NOTICES
+  redpitaya_GUI
+================================================================================
+
+This software is intended for commercial use. It incorporates several
+third-party libraries, each governed by their own license terms as described
+below. By using this software, you agree to comply with all applicable
+third-party license terms.
+
+--------------------------------------------------------------------------------
+1. SDL3 (Simple DirectMedia Layer)  *** INCLUDED IN THIS REPOSITORY ***
+   License: zlib License
+   Website: https://www.libsdl.org
+   Source:  https://github.com/libsdl-org/SDL
+
+   INCLUDED IN THIS REPOSITORY: The SDL3 binaries (DLLs) are provided
+   directly in this repository for convenience. They are included unmodified,
+   exactly as obtained from the official SDL3 release. No changes have been
+   made to the SDL3 source code or binaries.
+
+   Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
+
+   This software is provided 'as-is', without any express or implied
+   warranty. In no event will the authors be held liable for any damages
+   arising from the use of this software.
+
+   Permission is granted to anyone to use this software for any purpose,
+   including commercial applications, and to alter it and redistribute it
+   freely, subject to the following restrictions:
+
+     1. The origin of this software must not be misrepresented; you must
+        not claim that you wrote the original software. If you use this
+        software in a product, an acknowledgment in the product documentation
+        would be appreciated but is not required.
+     2. Altered source versions must be plainly marked as such, and must
+        not be misrepresented as being the original software.
+     3. This notice may not be removed or altered from any source
+        distribution.
+
+--------------------------------------------------------------------------------
+2. FFmpeg  *** MUST BE INSTALLED SEPARATELY ***
+   License: GNU Lesser General Public License (LGPL) version 2.1 or later
+   Website: https://ffmpeg.org
+   Source:  https://ffmpeg.org/download.html
+
+   NOT INCLUDED IN THIS REPOSITORY: FFmpeg libraries are not distributed
+   with this project. You must download and install FFmpeg separately from
+   the official website above.
+
+   This application uses FFmpeg libraries (libavcodec, libavformat,
+   libavutil, libswscale, libswresample), dynamically linked, compiled
+   WITHOUT --enable-gpl, in compliance with the LGPL v2.1.
+
+   FFmpeg is a trademark of Fabrice Bellard.
+
+   IMPORTANT: This application does NOT use GPL-licensed components of
+   FFmpeg (e.g., libx264, libx265). If you rebuild FFmpeg with --enable-gpl,
+   your entire application becomes subject to GPL obligations.
+
+   The full text of the LGPL v2.1 is available at:
+   https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+   The exact version of FFmpeg used and its source code are available upon
+   written request, as required by the LGPL.
+
+--------------------------------------------------------------------------------
+3. Thorlabs API / Kinesis SDK  *** MUST BE INSTALLED SEPARATELY ***
+   License: Proprietary - Thorlabs, Inc.
+   Website: https://www.thorlabs.com
+
+   NOT INCLUDED IN THIS REPOSITORY: The Thorlabs SDK is not distributed
+   with this project. You must download and install it separately from
+   Thorlabs directly at https://www.thorlabs.com.
+
+   The Thorlabs SDK is proprietary software provided by Thorlabs, Inc.
+   for use with Thorlabs hardware products. Use of this SDK is governed
+   by the End User License Agreement (EULA) included with the Thorlabs
+   software installation.
+
+   This software uses the Thorlabs SDK solely for controlling Thorlabs
+   hardware devices as permitted under the Thorlabs EULA. Redistribution
+   of Thorlabs SDK components may require separate authorization from
+   Thorlabs, Inc. Please consult the Thorlabs EULA for full terms.
+
+   For licensing inquiries: https://www.thorlabs.com/contact_us.cfm
+
+--------------------------------------------------------------------------------
+4. Vimba X SDK  *** MUST BE INSTALLED SEPARATELY ***
+   License: Proprietary - Allied Vision Technologies GmbH
+   Website: https://www.alliedvision.com
+
+   NOT INCLUDED IN THIS REPOSITORY: The Vimba X SDK is not distributed
+   with this project. You must download and install it separately from
+   Allied Vision directly at https://www.alliedvision.com/en/products/software/vimba-x-sdk/
+
+   Vimba X is proprietary software provided by Allied Vision Technologies
+   GmbH. Use of this SDK is governed by Allied Vision's Terms and
+   Conditions for the Vimba X software.
+
+   This software uses Vimba X solely for controlling Allied Vision cameras
+   as permitted under Allied Vision's license terms. Distribution of this
+   software bundled with Allied Vision camera hardware is permitted under
+   those terms.
+
+   For licensing inquiries: info@alliedvision.com
+   Full legal terms: https://docs.alliedvision.com/Vimba_X/Vimba_X_DeveloperGuide/legalInformation.html
+
+--------------------------------------------------------------------------------
+5. Qt6  *** MUST BE INSTALLED SEPARATELY ***
+   License: GNU Lesser General Public License (LGPL) version 3
+   Website: https://www.qt.io
+   Source:  https://code.qt.io/cgit/
+
+   NOT INCLUDED IN THIS REPOSITORY: Qt6 libraries are not distributed
+   with this project. You must download and install Qt6 separately from
+   https://www.qt.io/download-open-source/
+
+   This application uses Qt6 libraries, dynamically linked and unmodified,
+   in compliance with the LGPL v3. You have the right to replace the Qt
+   libraries used by this application with your own modified version.
+   The full text of the LGPL v3 is available at:
+   https://www.gnu.org/licenses/lgpl-3.0.html
+
+--------------------------------------------------------------------------------
+
+DISCLAIMER
+----------
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+================================================================================

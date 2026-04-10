@@ -72,16 +72,16 @@
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Program Files\Allied Vision\Vimba X\api\include;C:\SDL3\SDL_net-main\include;C:\SDL3\SDL3-3.2.18\include;C:\opt\opencv\build\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\Allied Vision\Vimba X\api\include;C:\SDL3\SDL_net-main\include;C:\SDL3\SDL3-3.2.18\include;C:\opt\opencv\build\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include</IncludePath>
     <LibraryPath>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\opt\opencv\build\x64\vc16\lib;C:\SDL3\SDL3-3.2.18\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Program Files\Allied Vision\Vimba X\api\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\Allied Vision\Vimba X\api\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include</IncludePath>
     <LibraryPath>C:\Program Files\Allied Vision\Vimba X\api\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files\Allied Vision\Vimba X\api\include;C:\opt\opencv\build;C:\SDL3\SDL3-3.2.18\include;C:\SDL3\SDL_net-main\include;GeneratedFiles\$(ConfigurationName);GeneratedFiles;.;debug;/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Allied Vision\Vimba X\api\include;C:\opt\opencv\build;C:\SDL3\SDL3-3.2.18\include;C:\SDL3\SDL_net-main\include;GeneratedFiles\$(ConfigurationName);GeneratedFiles;.;debug;/include;%(AdditionalIncludeDirectories);$(ProjectDir)include;$(ProjectDir)external\SDL3\include\;$(ProjectDir)external;$(ProjectDir)external\Thorlabs_dependencies\include</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -utf-8 -w34100 -w34189 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -103,8 +103,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opencv_world4110.lib;opencv_world4110d.lib;SDL3.lib;SDL3_net.lib;VmbCPP.lib;VmbC.lib;$(QTDIR)\lib\Qt6EntryPoint.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\SDL3\SDL3-3.2.18\lib\x64;C:\SDL3\SDL_net-main\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>VmbCPP.lib;VmbC.lib;VmbImageTransform.lib;Thorlabs.MotionControl.KCube.DCServo.lib;SDL3.lib;SDL3_net.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)external\VimbaX_dependencies\lib;$(ProjectDir)external\SDL3\lib\x64;$(ProjectDir)external\Thorlabs_dependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -141,7 +141,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files\Allied Vision\Vimba X\api\include;C:\SDL3\SDL_net-main\include;C:\SDL3\SDL3-3.2.18\include;GeneratedFiles\$(ConfigurationName);GeneratedFiles;.;debug;/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Allied Vision\Vimba X\api\include;GeneratedFiles\$(ConfigurationName);GeneratedFiles;.;debug;/include;$(ProjectDir)include;$(ProjectDir)external\SDL3\include;%(AdditionalIncludeDirectories);$(ProjectDir)include;$(ProjectDir)external\SDL3\include\;$(ProjectDir)external;$(ProjectDir)external\Thorlabs_dependencies\include</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -permissive- -Zc:__cplusplus -Zc:externConstexpr -utf-8 -w34100 -w34189 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -161,8 +161,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>SDL3.lib;SDL3_net.lib;VmbCPP.lib;VmbC.lib;$(QTDIR)\lib\Qt6EntryPointd.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files\Allied Vision\Vimba X\api\lib;C:\SDL3\SDL3-3.2.18\lib\x64;C:\SDL3\SDL_net-main\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>VmbCPP.lib;VmbC.lib;VmbImageTransform.lib;Thorlabs.MotionControl.KCube.DCServo.lib;SDL3.lib;SDL3_net.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)external\VimbaX_dependencies\lib;$(ProjectDir)external\SDL3\lib\x64;$(ProjectDir)external\Thorlabs_dependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -194,29 +194,6 @@
       <QtMocFileName>moc_%(Filename).cpp</QtMocFileName>
     </QtMoc>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="view.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="MVC_Controller.hpp" />
-    <QtMoc Include="MVC_Model.hpp" />
-    <QtMoc Include="cameraInputworker.hpp" />
-    <QtMoc Include="capacitiveBankManager.hpp" />
-    <QtMoc Include="CameraSerialLinearStage.hpp" />
-    <ClInclude Include="linearStage.hpp" />
-    <ClInclude Include="RedpitayaCard.hpp" />
-    <ClInclude Include="RpSignalGn.hpp" />
-    <QtMoc Include="applyInputworker.h" />
-    <ClInclude Include="commonValues.h" />
-    <ClInclude Include="controller.hpp" />
-    <QtMoc Include="inputworker.h" />
-    <ClInclude Include="scpi.hpp" />
-    <QtMoc Include="view.h" />
-    <QtMoc Include="videoRecorderWorker.hpp" />
-    <ClInclude Include="signalPresetValues.hpp" />
-    <ClInclude Include="waveGnPresets.hpp" />
-  </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">
       <FileType>Document</FileType>
@@ -311,6 +288,42 @@
     <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_stick_right_press_1.png" />
     <None Include="Images\controller_images\controller_top.png" />
     <None Include="build\Desktop_Qt_6_9_0_MinGW_64_bit-Debug\Images\controller_images\controller_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\inputworker.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\view.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\applyInputworker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\cameraInputworker.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\CameraSerialLinearStage.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\capacitiveBankManager.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\commonValues.h" />
+    <ClInclude Include="include\controller.hpp" />
+    <ClInclude Include="include\linearStage.hpp" />
+    <ClInclude Include="include\RedpitayaCard.hpp" />
+    <ClInclude Include="include\RpSignalGn.hpp" />
+    <ClInclude Include="include\scpi.hpp" />
+    <ClInclude Include="include\signalPresetValues.hpp" />
+    <ClInclude Include="include\ui_view.h" />
+    <ClInclude Include="include\waveGnPresets.hpp" />
+    <QtMoc Include="include\view.h" />
+    <QtMoc Include="include\videoRecorderWorker.hpp" />
+    <QtMoc Include="include\MVC_Model.hpp" />
+    <QtMoc Include="include\MVC_Controller.hpp" />
+    <QtMoc Include="include\inputworker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="license.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(QtMsBuild)\qt.targets" Condition="Exists('$(QtMsBuild)\qt.targets')" />

@@ -47,52 +47,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="view.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="MVC_Controller.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="MVC_Model.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="applyInputworker.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <ClInclude Include="commonValues.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="controller.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <QtMoc Include="inputworker.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="view.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <ClInclude Include="waveGnPresets.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <QtMoc Include="cameraInputworker.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="videoRecorderWorker.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="capacitiveBankManager.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="CameraSerialLinearStage.hpp">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="debug\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
@@ -330,20 +284,75 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="scpi.hpp">
+    <ClCompile Include="source\inputworker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\view.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="include\applyInputworker.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="include\cameraInputworker.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="include\CameraSerialLinearStage.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="include\capacitiveBankManager.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="include\inputworker.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="include\MVC_Controller.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="include\MVC_Model.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="include\videoRecorderWorker.hpp">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="include\view.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\commonValues.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RpSignalGn.hpp">
+    <ClInclude Include="include\controller.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RedpitayaCard.hpp">
+    <ClInclude Include="include\linearStage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="linearStage.hpp">
+    <ClInclude Include="include\RedpitayaCard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="signalPresetValues.hpp">
+    <ClInclude Include="include\RpSignalGn.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\scpi.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\signalPresetValues.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ui_view.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\waveGnPresets.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="license.txt" />
   </ItemGroup>
 </Project>
