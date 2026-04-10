@@ -82,8 +82,10 @@ CMakeLists.txt.user*
 /debug/
 /release/
 /external/Thorlabs_dependencies/include/*
-/external/VimbaX_dependencies/lib/*
+!/external/Thorlabs_dependencies/include/.gitkeep
+
 /external/Thorlabs_dependencies/lib/*
-!/external/Thorlabs_dependencies/include/
-!/external/Thorlabs_dependencies/lib/
-!/external/VimbaX_dependencies/lib/
+!/external/Thorlabs_dependencies/lib/.gitkeep
+
+/external/VimbaX_dependencies/lib/*
+!/external/VimbaX_dependencies/lib/.gitkeep
