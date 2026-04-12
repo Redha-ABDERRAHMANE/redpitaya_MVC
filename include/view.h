@@ -131,12 +131,17 @@ QSlider*                 SliderFrequency            = nullptr;
 QLabel*                  labelFrequencyValue        = nullptr;
 QPushButton*             buttonFrequencyConfirmation = nullptr;
 // Phase controls
-QLabel*                  labelPrimaryPhaseValue     = nullptr;
+QLabel*                  labelPhaseShiftValue     = nullptr;
+
+QLabel*                  labelPrimaryPhaseValue   = nullptr;
 QLineEdit*               textBoxPrimaryPhase        = nullptr;
 QPushButton*             buttonPrimaryPhaseConfirmation = nullptr;
 QLabel*                  labelSecondaryPhaseValue   = nullptr;
 QLineEdit*               textBoxSecondaryPhase      = nullptr;
 QPushButton*             buttonSecondaryPhaseConfirmation = nullptr;
+QLabel*                  labelTertiaryPhaseValue   = nullptr;
+QLineEdit*               textBoxTertiaryPhase      = nullptr;
+QPushButton*             buttonTertiaryPhaseConfirmation = nullptr;
 
 // Exposure controls
 QLabel*                  labelExposureTimeValue     = nullptr;

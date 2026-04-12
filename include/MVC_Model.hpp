@@ -48,7 +48,7 @@ public:
         
         for (LinearStage& linearStage : linearStagesXY) {
             if (!linearStage.ConnectToDevice()) {
-                std::cout << "Could not connect to linear stage\n";
+                std::cout << "Could not configure linear stages properly\n";
             }
         }
 
@@ -160,7 +160,9 @@ public slots:
     }
 
     void ApplyPhaseValue(const int& board,const int& phaseValue) {
-        int phaseIndex = board == PRIMARY_BOARD ? PRIMARY_BOARD_COMMON_PHASE_INDEX : SECONDARY_BOARD_COMMON_PHASE_INDEX;
+        if (phaseValue < 0 || phaseValue >360) { return; }
+
+        int phaseIndex = board == PRIMARY_BOARD ? PRIMARY_BOARD_COMMON_PHASE_INDEX : board == SECONDARY_BOARD? SECONDARY_BOARD_COMMON_PHASE_INDEX: TERTIARY_BOARD_COMMON_PHASE_INDEX;
         int currentPhase = presetsGn.GetCurrentPreset()[phaseIndex];
         signalGn.ApplyPhaseValues(board,phaseValue,currentPhase);
         preset_array_t newPreset = presetsGn.GetCurrentPreset();

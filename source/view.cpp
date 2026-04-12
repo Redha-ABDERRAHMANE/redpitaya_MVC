@@ -580,37 +580,75 @@ void View::ConfigureInfoLayout() {
     /////////////////////////////////////////////////////////////////////
     //// PHASE SLIDER
     //// phase group box with no margins
-    QGroupBox* phaseGroupBox = new QGroupBox("", this);
+    QGroupBox* phaseGroupBox = new QGroupBox("Phase value shift :",this);
     QVBoxLayout* phaseLayout = new QVBoxLayout();
+    QGridLayout* phaseInputBoxLayout = new QGridLayout();
+
+
     // Create the label to be overlaid
-    labelPrimaryPhaseValue = new QLabel("Primary card phase value :", this);
-    labelPrimaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    labelPrimaryPhaseValue->setMargin(0);
-    labelPrimaryPhaseValue->setAlignment(Qt::AlignHCenter);
-    textBoxPrimaryPhase = new QLineEdit("0", this);
-    // Create the button to confirm the new phase value 
-    buttonPrimaryPhaseConfirmation = new QPushButton("Confirm", this);
-    connect(buttonPrimaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-        emit PressedPhaseChange(1, textBoxPrimaryPhase->text().toInt());
-        });
-    // Create the label to be overlaid
-    labelSecondaryPhaseValue = new QLabel("Secondary card phase value :", this);
-    labelSecondaryPhaseValue->setStyleSheet("font-weight: bold;font-size: 20px;");
-    labelSecondaryPhaseValue->setMargin(0);
-    labelSecondaryPhaseValue->setAlignment(Qt::AlignHCenter);
-    textBoxSecondaryPhase = new QLineEdit("0", this);
-    // Create the button to confirm the new phase value 
-    buttonSecondaryPhaseConfirmation = new QPushButton("Confirm", this);
-    connect(buttonSecondaryPhaseConfirmation, &QPushButton::clicked, this, [this]() {
-        emit PressedPhaseChange(2, textBoxSecondaryPhase->text().toInt());
-        });
+    labelPhaseShiftValue = new QLabel("Phase value shift ");
+    labelPhaseShiftValue->setStyleSheet("font-weight: bold;font-size: 20px;");
+    labelPhaseShiftValue->setFixedHeight(30);
+    labelPhaseShiftValue->setAlignment(Qt::AlignHCenter);
+
+    labelPrimaryPhaseValue = new QLabel("Primary card phase value");
+    labelSecondaryPhaseValue = new QLabel("Secondary card phase value");
+    labelTertiaryPhaseValue = new QLabel("Tertiary card phase value");
+
+    textBoxPrimaryPhase = new QLineEdit("0");
+    textBoxSecondaryPhase = new QLineEdit("0");
+    textBoxTertiaryPhase = new QLineEdit("0");
+
+    buttonPrimaryPhaseConfirmation = new QPushButton("Confirm");
+    buttonSecondaryPhaseConfirmation = new QPushButton("Confirm");
+    buttonTertiaryPhaseConfirmation = new QPushButton("Confirm");
+
+    std::array<QLabel*, 3>    ArrayPhaseLabel = { labelPrimaryPhaseValue, labelSecondaryPhaseValue, labelTertiaryPhaseValue };
+    std::array<QLineEdit*, 3> ArrayPhasetextBox = { textBoxPrimaryPhase, textBoxSecondaryPhase, textBoxTertiaryPhase };
+    std::array<QPushButton*, 3> ArrayPhaseButtonConfirmation = { buttonPrimaryPhaseConfirmation, buttonSecondaryPhaseConfirmation, buttonTertiaryPhaseConfirmation };
+
+    //WARNING: in the applyPhase method we used index starting from 1 so the parameter for PressedPhaseChange which is the board index starts at 1 not at 0. We need i+1
+    for (int i = 0; i < 3;i++) {
+
+        ArrayPhaseLabel[i]->setStyleSheet("font-weight: bold;font-size: 15px;");
+        ArrayPhaseLabel[i]->setMargin(0);
+        ArrayPhaseLabel[i]->setAlignment(Qt::AlignHCenter);
+        ArrayPhaseLabel[i]->setFixedHeight(30);
+
+
+        connect(ArrayPhaseButtonConfirmation[i], &QPushButton::clicked, this, [this, i, ArrayPhaseButtonConfirmation, ArrayPhasetextBox]() {
+            emit PressedPhaseChange(i+1, ArrayPhasetextBox[i]->text().toInt());
+            });
+    }
+
+
+
     // Add both widgets to the same cell to stack them
-    phaseLayout->addWidget(labelPrimaryPhaseValue);
-    phaseLayout->addWidget(textBoxPrimaryPhase);
-    phaseLayout->addWidget(buttonPrimaryPhaseConfirmation);
-    phaseLayout->addWidget(labelSecondaryPhaseValue);
-    phaseLayout->addWidget(textBoxSecondaryPhase);
-    phaseLayout->addWidget(buttonSecondaryPhaseConfirmation);
+   // phaseLayout->addWidget(labelPhaseShiftValue);
+
+    phaseInputBoxLayout->addWidget(labelPrimaryPhaseValue, 0, 0);
+
+
+    phaseInputBoxLayout->addWidget(labelSecondaryPhaseValue, 0, 1);
+
+    phaseInputBoxLayout->addWidget(labelTertiaryPhaseValue, 0, 2);
+
+
+    phaseInputBoxLayout->addWidget(textBoxPrimaryPhase,1,0);
+
+
+    phaseInputBoxLayout->addWidget(textBoxSecondaryPhase,1,1);
+
+    phaseInputBoxLayout->addWidget(textBoxTertiaryPhase, 1, 2);
+
+
+    phaseInputBoxLayout->addWidget(buttonPrimaryPhaseConfirmation,2,0);
+    phaseInputBoxLayout->addWidget(buttonSecondaryPhaseConfirmation,2,1);
+    phaseInputBoxLayout->addWidget(buttonTertiaryPhaseConfirmation, 2, 2);
+
+  
+    phaseLayout->addLayout(phaseInputBoxLayout);
+
     phaseGroupBox->setLayout(phaseLayout);
 
     ///////////////////////////////////////////////////////////////////
@@ -758,7 +796,7 @@ void View::ConfigureInfoLayout() {
 
 void View::ConfigureLinearStageSubLayout() {
 
-    groupBoxLinearStageControls = new QGroupBox(this);
+    groupBoxLinearStageControls = new QGroupBox("Linear stage controls", this);
 
     QHBoxLayout* layoutLinearStageAxis = new QHBoxLayout();
     QVBoxLayout* layoutLinearStageControls = new QVBoxLayout();
